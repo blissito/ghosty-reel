@@ -15,14 +15,20 @@ clic y resuelve en la marca.
 Uso:  python3 music.py [salida.wav]
 """
 
+import json
 import math
+import os
 import sys
 import wave
 
 import numpy as np
 
 SR = 48_000
-DUR = 14.0
+# La duración sale de scene.json: si la edición crece, la música crece con ella.
+# Tenerla escrita aquí garantiza que se desincronicen en el primer retoque.
+_scene = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                     "scene.json")))
+DUR = _scene["duration_frames"] / _scene["fps"]
 BPM = 120.0
 BEAT = 60.0 / BPM
 
@@ -33,12 +39,24 @@ T = np.arange(N) / SR
 # sin sonar a jingle.
 A2, C3, E3, F3, G3, A3, C4, E4, G4, A4 = (
     110.00, 130.81, 164.81, 174.61, 196.00, 220.00, 261.63, 329.63, 392.00, 440.00)
-PROG = [  # (compás inicial, raíz del bajo, notas del pad)
-    (0,  A2, (A3, C4, E4)),
-    (4,  F3, (A3, C4, F3 * 2)),
-    (8,  C3, (C4, E4, G4)),
-    (12, G3, (G3 * 2, C4, E4)),
+CYCLE = [  # (raíz del bajo, notas del pad) — 4 tiempos cada uno
+    (A2, (A3, C4, E4)),
+    (F3, (A3, C4, F3 * 2)),
+    (C3, (C4, E4, G4)),
+    (G3, (G3 * 2, C4, E4)),
 ]
+# El ciclo se repite hasta cubrir la duración: la progresión es la misma, lo que
+# cambia entre secciones es la instrumentación (arpegio, ticks, swell).
+PROG = [(i * 4, *CYCLE[i % 4])
+        for i in range(math.ceil(DUR / BEAT / 4))]
+
+
+ARP_IN, ARP_OUT, TICK_IN = 4.2, DUR - 2.2, 6.6
+
+# Instantes en que habla la voz: el bed se agacha desde la SÍNTESIS, así el
+# loudnorm de la mezcla no tiene que pelear. Sale de audio/plan.py.
+DUCKS = [(0.4, 2.4), (2.3, 1.8), (7.2, 2.5), (13.5, 3.0),
+         (19.1, 2.6), (24.9, 1.9), (29.2, 2.8)]
 
 
 def env(start, dur, attack, release):
@@ -112,38 +130,38 @@ def bed():
     arp = np.zeros(N)
     step = BEAT / 2
     k = 0
-    t0 = 3.2
-    while t0 < 12.4:
+    t0 = ARP_IN
+    while t0 < ARP_OUT:
         f = arp_notes[k % len(arp_notes)]
         arp += saw(f, 6) * env(t0, step * 0.85, 0.005, step * 0.6)
         t0 += step
         k += 1
     # el arpegio abre el filtro conforme avanza el anuncio: energía creciente
     # sin subir volumen
-    mix += lowpass(arp, 1400) * 0.07 * np.clip((T - 3.0) / 6.0, 0, 1)
+    mix += lowpass(arp, 1400) * 0.07 * np.clip((T - ARP_IN) / 6.0, 0, 1)
 
     # --- ticks: aire en la parte alta, entran con el producto ----------------
     rng = np.random.default_rng(3)
     noise = rng.standard_normal(N)
     ticks = np.zeros(N)
-    t0 = 4.0
-    while t0 < 12.6:
+    t0 = TICK_IN
+    while t0 < ARP_OUT:
         ticks += noise * env(t0, 0.035, 0.001, 0.03)
         t0 += BEAT / 2
     mix += (ticks - lowpass(ticks, 3000)) * 0.05
 
     # --- swell hacia la marca ------------------------------------------------
-    swell = (sine(A3) + sine(E4) + sine(A4)) * env(10.3, 2.2, 1.6, 0.5)
+    swell = (sine(A3) + sine(E4) + sine(A4)) * env(DUR - 3.4, 2.4, 1.7, 0.5)
     mix += lowpass(swell, 3000) * 0.05
 
     # --- acorde final: sostiene bajo el logo ---------------------------------
     for f in (A2, A3, C4, E4):
-        mix += sine(f) * env(11.8, 2.2, 0.25, 1.3) * 0.10
+        mix += sine(f) * env(DUR - 2.6, 2.6, 0.25, 1.4) * 0.10
 
     # Respiración: baja mientras hablan las dos primeras líneas para que el
     # ducking del mix final no tenga que trabajar de más.
     duck = np.ones(N)
-    for start, dur in ((0.4, 2.4), (2.85, 1.7), (6.15, 2.4), (11.2, 2.8)):
+    for start, dur in DUCKS:
         duck -= env(start, dur, 0.25, 0.5) * 0.52
     duck = np.clip(duck, 0.25, 1.0)
     mix *= duck

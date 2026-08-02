@@ -1,27 +1,47 @@
 {
-  "_comment": "Mapa de audio del anuncio. 'at' en segundos de video (30fps, 14s).",
+  "_comment": "GENERADO por plan.py desde scene.json — no editar a mano. 'at' = instante en que el sonido DEBE oírse; mix.sh compensa el silencio inicial de cada archivo (ver AUDIO.md).",
   "sfx_dir": "audio/sfx",
+  "lead_ms": 60,
+  "duration": 32.0,
   "voice": [
     {
-      "at": 0.55,
+      "at": 0.6,
       "file": "vo/vo1.wav",
       "gain": 1.0,
       "text": "Tus agentes generan archivos."
     },
     {
-      "at": 3.0,
+      "at": 2.4,
       "file": "vo/vo2.wav",
       "gain": 1.0,
       "text": "¿Dónde los guardas?"
     },
     {
-      "at": 6.3,
+      "at": 7.3,
       "file": "vo/vo3.wav",
       "gain": 1.0,
       "text": "Un clic, y todo queda en su lugar."
     },
     {
-      "at": 11.35,
+      "at": 13.6,
+      "file": "vo/vo5.wav",
+      "gain": 1.0,
+      "text": "Tus agentes suben, buscan y comparten."
+    },
+    {
+      "at": 19.2,
+      "file": "vo/vo6.wav",
+      "gain": 1.0,
+      "text": "Un solo almacén para toda tu flota."
+    },
+    {
+      "at": 25.0,
+      "file": "vo/vo7.wav",
+      "gain": 1.0,
+      "text": "Comparte con un link."
+    },
+    {
+      "at": 29.3,
       "file": "vo/vo4.wav",
       "gain": 1.0,
       "text": "EasyBits. Almacenamiento para agentes."
@@ -29,53 +49,107 @@
   ],
   "sfx": [
     {
-      "at": 3.05,
+      "at": 3.93,
       "file": "whoosh-cinematic.mp3",
       "gain": 0.34,
-      "cue": "los títulos atraviesan la cámara",
-      "align": "peak"
+      "align": "peak",
+      "cue": "los títulos atraviesan la cámara"
     },
     {
-      "at": 6.0,
+      "at": 6.87,
       "file": "click.mp3",
       "gain": 0.46,
-      "cue": "el cursor hace clic",
-      "align": "onset"
+      "align": "onset",
+      "cue": "el cursor hace clic"
     },
     {
-      "at": 6.1,
+      "at": 7.17,
       "file": "impact-bass-1.mp3",
       "gain": 0.4,
-      "cue": "el botón se despega",
-      "align": "onset"
+      "align": "onset",
+      "cue": "el botón se despega"
     },
     {
-      "at": 6.35,
+      "at": 7.33,
       "file": "sparkle.mp3",
       "gain": 0.24,
-      "cue": "salen los archivos",
-      "align": "onset"
+      "align": "onset",
+      "cue": "salen los archivos"
     },
     {
-      "at": 9.6,
+      "at": 10.73,
       "file": "chime.mp3",
       "gain": 0.2,
-      "cue": "los archivos se ordenan",
-      "align": "onset"
+      "align": "onset",
+      "cue": "los archivos se ordenan"
     },
     {
-      "at": 11.6,
-      "file": "riser.mp3",
+      "at": 12.13,
+      "file": "whoosh.mp3",
+      "gain": 0.26,
+      "align": "peak",
+      "cue": "transición al agente"
+    },
+    {
+      "at": 14.33,
+      "file": "ping.mp3",
+      "gain": 0.22,
+      "align": "onset",
+      "cue": "upload_file()"
+    },
+    {
+      "at": 15.0,
+      "file": "ping.mp3",
+      "gain": 0.22,
+      "align": "onset",
+      "cue": "search_documents()"
+    },
+    {
+      "at": 15.67,
+      "file": "ping.mp3",
+      "gain": 0.22,
+      "align": "onset",
+      "cue": "create_share_link()"
+    },
+    {
+      "at": 18.27,
+      "file": "whoosh.mp3",
+      "gain": 0.26,
+      "align": "peak",
+      "cue": "transición a la flota"
+    },
+    {
+      "at": 22.4,
+      "file": "chime.mp3",
+      "gain": 0.2,
+      "align": "onset",
+      "cue": "los archivos convergen"
+    },
+    {
+      "at": 24.0,
+      "file": "whoosh.mp3",
+      "gain": 0.26,
+      "align": "peak",
+      "cue": "transición a compartir"
+    },
+    {
+      "at": 25.87,
+      "file": "sparkle.mp3",
       "gain": 0.24,
-      "cue": "entrada de la marca",
-      "align": "peak"
+      "align": "onset",
+      "cue": "el link se replica"
+    },
+    {
+      "at": 29.6,
+      "file": "riser.mp3",
+      "gain": 0.26,
+      "align": "peak",
+      "cue": "entrada de la marca"
     }
   ],
   "bgm": {
     "file": "bgm.wav",
     "gain": 0.14,
-    "fade_out_at": 12.6
-  },
-  "duration": 14.0,
-  "lead_ms": 60
+    "fade_out_at": 30.6
+  }
 }

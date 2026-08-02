@@ -16,7 +16,7 @@ eso el botón puede salir de la pantalla que lo contenía.
 Uso:
     blender -b -P scene.py                 # render completo
     PREVIEW=1 blender -b -P scene.py       # stills baratos para revisar
-    FRAMES=200,300 PREVIEW=1 blender -b -P scene.py
+    FRAMES=460,640 PREVIEW=1 blender -b -P scene.py
 """
 
 import bpy, json, math, os, random
@@ -261,10 +261,12 @@ def build_camera():
     bpy.context.collection.objects.link(cam)
     bpy.context.scene.camera = cam
 
-    a, z = B["dolly"]
-    key(cam, "location", a, CAM_D, index=2)
-    key(cam, "location", z, CFG["camera"]["dolly_to"], index=2,
-        interp="BEZIER", easing="EASE_IN_OUT")
+    # La cámara nunca se queda quieta, pero tampoco compite con la acción: son
+    # empujes lentos que dan vida y luego devuelven el encuadre completo para las
+    # escenas que necesitan ancho.
+    for frame, z_pos, ease in CFG["camera"]["moves"]:
+        key(cam, "location", frame, z_pos, index=2,
+            interp="BEZIER", easing=ease)
     return cam
 
 
@@ -283,29 +285,74 @@ def build_lights():
         bpy.context.collection.objects.link(o)
 
 
+def fade_out(mat, fade, a, z):
+    key_socket(mat, fade, a, 1.0)
+    key_socket(mat, fade, z, 0.0, easing="EASE_IN")
+
+
 def build_titles():
-    """Acto 1. Entran desde el fondo, se sostienen, y aceleran hasta atravesar
-    la cámara. Ese atravesar ES la transición al acto 2 — no hay corte."""
-    for i, t in enumerate(CFG["titles"]):
-        o, mat, fade, (w, h) = card_obj(f"Title{i}", t["texture"], t["width"])
+    """Acto 1, palabra por palabra.
+
+    Cada palabra es su propio objeto y entra escalonada: por eso la frase se
+    "escribe" en el aire en vez de aparecer como un bloque. Las posiciones NO se
+    calculan aquí — las midió el navegador (`assets/layout.json`, ver capture.sh)
+    y solo se convierten a coordenadas de mundo. Calcularlas a mano se desalinea
+    con cualquier cambio de fuente, kerning o letter-spacing.
+
+    Las palabras cuelgan de un Empty por línea: la entrada se anima por palabra,
+    pero la salida —atravesar la cámara, que ES la transición al acto 2— se anima
+    una sola vez sobre el padre.
+    """
+    layout = json.load(open(os.path.join(ROOT, "assets/layout.json")))
+    PAD = 10          # el margen que capture.sh añade alrededor de cada palabra
+
+    for li, t in enumerate(CFG["titles"]):
+        block = layout[t["layout_key"]]
+        scale = t["width"] / block["w"]
         ia, iz = t["in"]
         oa, oz = t["out"]
+        y_line = t["y"]
 
-        y = 1.1 if i == 0 else -1.5
-        o.location = (0, y, -4.0)
+        group = bpy.data.objects.new(f"TitleLine{li}", None)
+        group.empty_display_size = 0.4
+        bpy.context.collection.objects.link(group)
+        group.location = (0, y_line, 1.0)
 
-        key(o, "location", ia, -4.0, index=2)
-        key(o, "location", iz, 1.0, index=2, interp="BEZIER", easing="EASE_OUT")
-        key(o, "location", oa, 1.0, index=2)
-        key(o, "location", oz, CAM_D + 3, index=2, interp="BEZIER", easing="EASE_IN")
+        mats = []
+        words = block["words"]
+        for wi, wd in enumerate(words):
+            o, mat, fade, _ = card_obj(f"W{li}_{wi}",
+                                       f"assets/w{li}_{wi}.png",
+                                       (wd["w"] + PAD) * scale)
+            mats.append((mat, fade))
+            o.parent = group
+            # centro de la palabra dentro del bloque, en coordenadas de mundo
+            cx = (wd["x"] + (wd["w"] + PAD) / 2 - block["w"] / 2) * scale
+            cy = (block["h"] / 2 - wd["y"] - (wd["h"] + PAD) / 2) * scale
 
-        key(o, "location", ia, y - 0.5, index=1)
-        key(o, "location", iz, y, index=1, interp="BEZIER", easing="EASE_OUT")
+            # escalonado: cada palabra arranca un poco después que la anterior
+            f0 = ia + wi * t["stagger"]
+            f1 = f0 + t["word_dur"]
 
-        key_socket(mat, fade, ia, 0.0)
-        key_socket(mat, fade, ia + 10, 1.0, easing="EASE_OUT")
-        key_socket(mat, fade, oz - 8, 1.0)
-        key_socket(mat, fade, oz, 0.0, easing="EASE_IN")
+            key(o, "location", f0, cx, index=0)
+            key(o, "location", f0, cy - 0.55, index=1)
+            key(o, "location", f0, -1.6, index=2)
+            key(o, "location", f1, cy, index=1, interp="BACK", easing="EASE_OUT")
+            key(o, "location", f1, 0.0, index=2, interp="BEZIER", easing="EASE_OUT")
+
+            # cabecea al entrar y se endereza: da peso sin animar a mano
+            key(o, "rotation_euler", f0, math.radians(-42), index=0)
+            key(o, "rotation_euler", f1, 0.0, index=0, easing="EASE_OUT")
+
+            key_socket(mat, fade, f0, 0.0)
+            key_socket(mat, fade, f0 + 5, 1.0, easing="EASE_OUT")
+
+        # salida en grupo: la línea entera acelera contra la cámara
+        key(group, "location", oa, 1.0, index=2)
+        key(group, "location", oz, CAM_D + 3, index=2, interp="BEZIER", easing="EASE_IN")
+        for mat, fade in mats:
+            key_socket(mat, fade, oz - 9, 1.0)
+            key_socket(mat, fade, oz, 0.0, easing="EASE_IN")
 
 
 def build_page():
@@ -643,6 +690,194 @@ def build_end():
     key_socket(mat, fade, z, 1.0, easing="EASE_OUT")
 
 
+# --------------------------------------------------------------------------- #
+# escenas 3-5: el agente, la flota, compartir
+#
+# Las tres reusan la misma maquinaria del acto 2 —planos con textura capturada,
+# grosor por Solidify, entrada con overshoot— porque ya está probada. Lo que
+# cambia es la coreografía, y eso vive en scene.json.
+# --------------------------------------------------------------------------- #
+
+def scene_title(key_name, tex, width, y):
+    """Título de escena: entra desde abajo, se sostiene, se va hacia atrás."""
+    a, z = B[key_name]
+    o, mat, fade, _ = card_obj(f"T_{key_name}", tex, width)
+    o.location = (0, y, 0.4)
+    key(o, "location", a, y - 0.7, index=1)
+    key(o, "location", a + 20, y, index=1, interp="BACK", easing="EASE_OUT")
+    key_socket(mat, fade, a, 0.0)
+    key_socket(mat, fade, a + 16, 1.0, easing="EASE_OUT")
+    key_socket(mat, fade, z - 18, 1.0)
+    key_socket(mat, fade, z, 0.0, easing="EASE_IN")
+    key(o, "location", z - 18, 0.4, index=2)
+    key(o, "location", z, -3.0, index=2, easing="EASE_IN")
+    return o
+
+
+def emit_card(name, tex, start, src, dst, spin=1.0, dur=46, fade_tail=14):
+    """Un archivo que sale de un punto y viaja a otro. Es el gesto que repite
+    todo el anuncio: en el acto 2 sale del botón, aquí de una tool y de cada
+    canal."""
+    cc = CFG["cards"]
+    o, mat, fade, _ = card_obj(name, tex, cc["width"] * 0.82,
+                               radius_frac=cc["radius_frac"],
+                               depth=cc["depth"], emit=1.7)
+    end = start + dur
+    for ax in range(3):
+        key(o, "location", start, src[ax], index=ax)
+        key(o, "location", end, dst[ax], index=ax,
+            interp="BEZIER", easing="EASE_OUT")
+        key(o, "scale", start, 0.02, index=ax)
+        key(o, "scale", start + 7, 1.0, index=ax, interp="BACK", easing="EASE_OUT")
+    for ax in range(3):
+        key(o, "rotation_euler", start, random.uniform(-0.9, 0.9) * spin, index=ax)
+        key(o, "rotation_euler", end, 0.0, index=ax, easing="EASE_IN_OUT")
+    key_socket(mat, fade, start, 1.0)
+    key_socket(mat, fade, end - fade_tail, 1.0)
+    key_socket(mat, fade, end, 0.0, easing="EASE_IN")
+    return o
+
+
+def build_scene_agent():
+    """El agente trabajando: llama sus tools y de cada llamada sale un archivo.
+
+    Es la escena que explica el producto — las otras lo muestran. Por eso las
+    tools se leen textuales (`upload_file()`), no como iconos abstractos.
+    """
+    cfg = CFG["scenes"]["agent"]
+    a, z = B["agent"]
+
+    panel, pmat, pfade, (pw, ph) = card_obj("AgentPanel", "assets/agent.png",
+                                            cfg["panel_width"],
+                                            radius_frac=0.108, depth=0.09)
+    px, py = cfg["panel_pos"]
+    panel.location = (px, py, 0.15)
+    key(panel, "location", a, -3.2, index=2)
+    key(panel, "location", a + 26, 0.15, index=2, interp="BACK", easing="EASE_OUT")
+    key(panel, "rotation_euler", a, math.radians(-24), index=1)
+    key(panel, "rotation_euler", a + 26, math.radians(-7), index=1, easing="EASE_OUT")
+    key_socket(pmat, pfade, a, 0.0)
+    key_socket(pmat, pfade, a + 18, 1.0, easing="EASE_OUT")
+    fade_out(pmat, pfade, z - 22, z)
+    key(panel, "location", z - 22, 0.15, index=2)
+    key(panel, "location", z, -3.6, index=2, easing="EASE_IN")
+
+    rng = random.Random(21)
+    tx, ty0, gap = cfg["tools_pos"]
+    for i in range(3):
+        o, mat, fade, (tw, th) = card_obj(f"Tool{i}", f"assets/tool{i}.png",
+                                          cfg["tool_width"],
+                                          radius_frac=0.19, depth=0.06)
+        ty = ty0 - i * gap
+        o.location = (tx, ty, 0.5)
+        f0 = a + cfg["tool_in"] + i * cfg["tool_stagger"]
+
+        key(o, "location", f0, tx - 1.1, index=0)
+        key(o, "location", f0 + 18, tx, index=0, interp="BACK", easing="EASE_OUT")
+        key(o, "location", f0, ty, index=1)
+        key_socket(mat, fade, f0, 0.0)
+        key_socket(mat, fade, f0 + 10, 1.0, easing="EASE_OUT")
+        for ax in (0, 1, 2):
+            key(o, "scale", f0, 0.6 if ax != 2 else 1.0, index=ax)
+            key(o, "scale", f0 + 14, 1.0, index=ax, interp="BACK", easing="EASE_OUT")
+        fade_out(mat, fade, z - 26, z - 6)
+
+        # de cada tool sale un archivo hacia el espectador
+        emit_card(f"AgentFile{i}", CFG["cards"]["textures"][i * 2],
+                  f0 + cfg["emit_delay"], (tx + 0.6, ty, 0.6),
+                  (tx + rng.uniform(0.8, 2.4), ty + rng.uniform(1.4, 3.2), 7.5))
+
+    scene_title("agent_title", "assets/t3.png", cfg["title_width"], cfg["title_y"])
+
+
+def build_scene_fleet():
+    """La flota: tres canales distintos alimentando un mismo almacén.
+
+    La convergencia es el mensaje. Los archivos salen de WhatsApp, del widget web
+    y de la terminal, y terminan apilados en el MISMO punto.
+    """
+    cfg = CFG["scenes"]["fleet"]
+    a, z = B["fleet"]
+    rng = random.Random(33)
+    cx, cy = cfg["converge"]
+
+    for i in range(3):
+        o, mat, fade, (w, h) = card_obj(f"Chan{i}", f"assets/chan{i}.png",
+                                        cfg["panel_width"],
+                                        radius_frac=0.096, depth=0.07)
+        x = (i - 1) * cfg["spread"]
+        y = cfg["panel_y"]
+        o.location = (x, y, 0.2)
+        f0 = a + i * cfg["stagger"]
+
+        key(o, "location", f0, y - 1.5, index=1)
+        key(o, "location", f0 + 22, y, index=1, interp="BACK", easing="EASE_OUT")
+        key(o, "rotation_euler", f0, math.radians(-38), index=0)
+        key(o, "rotation_euler", f0 + 22, 0.0, index=0, easing="EASE_OUT")
+        key_socket(mat, fade, f0, 0.0)
+        key_socket(mat, fade, f0 + 12, 1.0, easing="EASE_OUT")
+        fade_out(mat, fade, z - 24, z)
+
+        # cada canal manda archivos al mismo punto: eso ES el mensaje
+        for k in range(cfg["files_per_channel"]):
+            start = a + cfg["emit_in"] + i * 7 + k * cfg["emit_gap"]
+            dst = (cx + rng.uniform(-1.5, 1.5),
+                   cy + k * 0.34 + rng.uniform(-0.1, 0.1),
+                   0.6 + k * 0.09)
+            emit_card(f"FleetFile{i}{k}", CFG["cards"]["textures"][(i * 3 + k) % 8],
+                      start, (x, y - 0.9, 0.5), dst, spin=0.6, dur=40, fade_tail=8)
+
+    scene_title("fleet_title", "assets/t4.png", cfg["title_width"], cfg["title_y"])
+
+
+def build_scene_share():
+    """Compartir: un link que se multiplica.
+
+    El pill entra solo y sostiene —hay que poder LEER la URL— y recién después se
+    replica. Si se replicara de inmediato, el dato que importa no se lee.
+    """
+    cfg = CFG["scenes"]["share"]
+    a, z = B["share"]
+    rng = random.Random(44)
+
+    pill, mat, fade, (pw, ph) = card_obj("SharePill", "assets/share.png",
+                                         cfg["width"], radius_frac=0.25, depth=0.07)
+    pill.location = (0, cfg["y"], 0.6)
+    key(pill, "location", a, -2.4, index=2)
+    key(pill, "location", a + 22, 0.6, index=2, interp="BACK", easing="EASE_OUT")
+    for ax in (0, 1):
+        key(pill, "scale", a, 0.72, index=ax)
+        key(pill, "scale", a + 22, 1.0, index=ax, interp="BACK", easing="EASE_OUT")
+    key_socket(mat, fade, a, 0.0)
+    key_socket(mat, fade, a + 14, 1.0, easing="EASE_OUT")
+    fade_out(mat, fade, z - 26, z - 4)
+
+    # copias que salen disparadas: el link viaja
+    for i in range(cfg["copies"]):
+        o, m2, f2, _ = card_obj(f"ShareCopy{i}", "assets/share.png",
+                                cfg["width"] * 0.46, radius_frac=0.25, depth=0.05)
+        f0 = a + cfg["copy_in"] + i * cfg["copy_stagger"]
+        # círculo completo: media circunferencia las apilaba a la derecha
+        ang = math.tau * (i + 0.35) / cfg["copies"]
+        dist = rng.uniform(6.5, 9.5)
+        for ax, v in enumerate((0.0, cfg["y"], 0.6)):
+            key(o, "location", f0, v, index=ax)
+        key(o, "location", f0 + 44, math.cos(ang) * dist, index=0, easing="EASE_OUT")
+        key(o, "location", f0 + 44, cfg["y"] + math.sin(ang) * dist * 0.48,
+            index=1, easing="EASE_OUT")
+        key(o, "location", f0 + 44, rng.uniform(3.0, 6.5), index=2, easing="EASE_OUT")
+        for ax in range(3):
+            key(o, "scale", f0, 0.05, index=ax)
+            key(o, "scale", f0 + 10, 1.0, index=ax, interp="BACK", easing="EASE_OUT")
+        key(o, "rotation_euler", f0, 0.0, index=1)
+        key(o, "rotation_euler", f0 + 44, rng.uniform(-0.8, 0.8), index=1)
+        key_socket(m2, f2, f0, 1.0)
+        key_socket(m2, f2, f0 + 30, 1.0)
+        key_socket(m2, f2, f0 + 46, 0.0, easing="EASE_IN")
+
+    scene_title("share_title", "assets/t5.png", cfg["title_width"], cfg["title_y"])
+
+
 def setup_glow(sc):
     """Bloom. Dejó de ser opción del motor en EEVEE Next y vive en el
     compositor; en Blender 5 el árbol además se mudó a un node group y los
@@ -729,6 +964,9 @@ def main():
     build_shockwave(origin)
     build_cursor()
     build_file_cards(origin)
+    build_scene_agent()
+    build_scene_fleet()
+    build_scene_share()
     build_end()
     build_camera()
     configure_render()

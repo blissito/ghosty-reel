@@ -5,11 +5,52 @@
     1080
   ],
   "fps": 30,
-  "duration_frames": 420,
+  "duration_frames": 960,
   "camera": {
     "distance": 26.0,
-    "dolly_to": 24.4,
-    "fstop": 6.0
+    "fstop": 6.0,
+    "moves": [
+      [
+        126,
+        26.0,
+        "EASE_IN_OUT"
+      ],
+      [
+        366,
+        24.4,
+        "EASE_IN_OUT"
+      ],
+      [
+        410,
+        26.0,
+        "EASE_IN_OUT"
+      ],
+      [
+        550,
+        25.2,
+        "EASE_IN_OUT"
+      ],
+      [
+        590,
+        26.4,
+        "EASE_IN_OUT"
+      ],
+      [
+        720,
+        25.6,
+        "EASE_IN_OUT"
+      ],
+      [
+        760,
+        26.0,
+        "EASE_IN_OUT"
+      ],
+      [
+        960,
+        24.8,
+        "EASE_IN_OUT"
+      ]
+    ]
   },
   "page": {
     "texture": "assets/page.png"
@@ -50,28 +91,34 @@
   },
   "titles": [
     {
-      "texture": "assets/t1.png",
+      "layout_key": "t1",
       "width": 11.0,
+      "y": 1.1,
       "in": [
         6,
         34
       ],
       "out": [
-        80,
-        106
-      ]
+        104,
+        136
+      ],
+      "stagger": 5,
+      "word_dur": 20
     },
     {
-      "texture": "assets/t2.png",
-      "width": 11.0,
+      "layout_key": "t2",
+      "width": 8.6,
+      "y": -1.7,
       "in": [
-        34,
-        60
+        50,
+        70
       ],
       "out": [
-        80,
-        106
-      ]
+        104,
+        136
+      ],
+      "stagger": 5,
+      "word_dur": 20
     }
   ],
   "cards": {
@@ -107,47 +154,71 @@
   "beats": {
     "titles": [
       1,
-      106
+      136
     ],
     "page_in": [
-      96,
-      128
+      126,
+      158
     ],
     "cursor_in": [
-      120,
-      176
+      150,
+      206
     ],
     "click": [
-      176,
-      188
+      206,
+      218
     ],
     "button_pop": [
-      182,
-      232
+      212,
+      262
     ],
     "shockwave": [
-      180,
-      208
+      210,
+      238
     ],
     "burst": [
-      186,
-      258
+      216,
+      288
     ],
     "settle": [
-      246,
-      322
+      276,
+      352
     ],
     "dolly": [
-      96,
-      336
+      126,
+      366
     ],
     "clear": [
-      322,
-      372
+      356,
+      402
+    ],
+    "agent": [
+      386,
+      558
+    ],
+    "agent_title": [
+      402,
+      542
+    ],
+    "fleet": [
+      554,
+      730
+    ],
+    "fleet_title": [
+      568,
+      714
+    ],
+    "share": [
+      726,
+      898
+    ],
+    "share_title": [
+      742,
+      878
     ],
     "end_in": [
-      348,
-      396
+      880,
+      925
     ]
   },
   "render": {
@@ -155,5 +226,49 @@
     "world_color": "#0B0B0D",
     "motion_blur": true,
     "out_dir": "out"
+  },
+  "scenes": {
+    "agent": {
+      "panel_width": 8.2,
+      "panel_pos": [
+        -3.4,
+        0.9
+      ],
+      "tool_width": 4.4,
+      "tools_pos": [
+        3.9,
+        2.1,
+        1.35
+      ],
+      "tool_in": 44,
+      "tool_stagger": 20,
+      "emit_delay": 16,
+      "title_width": 10.4,
+      "title_y": -3.0
+    },
+    "fleet": {
+      "panel_width": 4.1,
+      "panel_y": 0.4,
+      "spread": 4.8,
+      "stagger": 14,
+      "emit_in": 62,
+      "emit_gap": 13,
+      "files_per_channel": 3,
+      "converge": [
+        0.0,
+        -2.9
+      ],
+      "title_width": 10.4,
+      "title_y": 3.4
+    },
+    "share": {
+      "width": 7.6,
+      "y": 0.9,
+      "copies": 6,
+      "copy_in": 46,
+      "copy_stagger": 8,
+      "title_width": 10.0,
+      "title_y": -2.6
+    }
   }
 }

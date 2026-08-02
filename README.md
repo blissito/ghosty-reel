@@ -7,25 +7,29 @@ renderiza desde la terminal, y todo el stack es libre.
 ## Correr
 
 ```bash
-./capture.sh                             # UI real -> assets/*.png
+./capture.sh                             # UI real -> assets/*.png + layout.json
+python3 plan.py                          # beats de scene.json -> audio/plan.json
 python3 music.py audio/bgm.wav           # música sintetizada
-blender -b -P scene.py                   # render -> out/frames  (~15 min)
+blender -b -P scene.py                   # render -> out/frames  (~35 min)
 ./mix.sh                                 # audio + frames -> out/ad.mp4
 
 PREVIEW=1 blender -b -P scene.py         # stills baratos (~0.5s c/u)
-PREVIEW=1 FRAMES=200,325 blender -b -P scene.py
+PREVIEW=1 FRAMES=460,640 blender -b -P scene.py
 AUDIO_ONLY=1 ./mix.sh                    # solo la pista, sin esperar el render
 ```
 
 `blender` = `/Applications/Blender.app/Contents/MacOS/Blender`.
 
-## El anuncio
+## El anuncio — 32s, seis actos
 
 | Acto | Segundos | Qué pasa |
 |---|---|---|
-| Problema | 0–3.5 | *"Tus agentes generan archivos." / "¿Dónde los guardas?"* Los títulos aceleran contra la cámara y la atraviesan — esa es la transición, no hay corte. |
-| Producto | 3.5–11 | Entra la UI real. El cursor 3D vuela y hace clic. El botón se despega de la pantalla, gana grosor, y del impacto salen archivos 3D que se ordenan solos en una malla. |
-| Marca | 11–14 | Los archivos se apartan y entra el cierre: logo, *Almacenamiento para agentes*, `easybits.cloud`. |
+| Problema | 0–4.5 | *"Tus agentes generan archivos." / "¿Dónde los guardas?"* Cada palabra entra por separado y escalonada; después la línea entera acelera contra la cámara y la atraviesa — esa es la transición, no hay corte. |
+| Producto | 4.5–12 | Entra la UI real. El cursor 3D vuela y hace clic. El botón se despega de la pantalla, gana grosor, y del impacto salen archivos que se ordenan solos en una malla. |
+| El agente | 12.9–18.6 | Panel de chat 3D: el agente llama `upload_file()`, `search_documents()`, `create_share_link()` y de cada llamada sale un archivo. Es la escena que **explica**; las otras muestran. Por eso las tools se leen textuales, no como iconos abstractos. |
+| La flota | 18.5–24.3 | Tres canales —WhatsApp, widget web, terminal— emitiendo archivos que convergen al **mismo** punto. La convergencia es el mensaje. |
+| Compartir | 24.2–29.9 | Un link aparece, se sostiene lo suficiente para leerse, y se replica en todas direcciones. |
+| Marca | 29.9–32 | Todo se aparta y entra el cierre: logo, *Almacenamiento para agentes*, `easybits.cloud`. |
 
 ## Cómo funciona
 
@@ -38,6 +42,8 @@ separadas y Blender las usa como texturas emisivas:
 | `button.png` | solo el botón, con alpha | es su propio objeto: por eso puede salir de la pantalla → 4x |
 | `t1/t2.png` | los títulos | planos 3D que atraviesan la cámara → 2x |
 | `card0..7.png` | tarjetas de archivo | se instancian 20 veces en 3D → 3x |
+| `w0_*.png` | **cada palabra** de los títulos | se animan escalonadas → 2x |
+| `agent/tool*/chan*/share.png` | paneles de las escenas 3-5 | → 2-3x |
 | `end.png` | el cierre de marca | → 2x |
 
 Ese corte en capas **es** el efecto. Si el botón viviera dentro de la textura de
@@ -52,9 +58,23 @@ objetos que vuelan hacia el espectador no crecerían y todo el 3D se perdería. 
 perspectiva encuadrada, el mapeo sigue siendo exacto en `z=0` — que es donde vive
 la UI — y las tarjetas ganan profundidad real.
 
+**Los títulos se animan palabra por palabra, y el navegador decide dónde va cada
+una.** `capture.sh` corre Chrome con `--dump-dom` sobre una capa que mide los
+rects de cada `<w>` y los vuelca a `assets/layout.json`; `scene.py` solo los
+convierte a coordenadas de mundo. Calcular esas posiciones a mano funciona hasta
+el primer cambio de fuente, kerning o `letter-spacing`; medirlas no se rompe
+nunca. Las palabras cuelgan de un Empty por línea: la entrada se anima por
+palabra, la salida una sola vez sobre el padre.
+
 **`scene.json` es la dirección completa.** `scene.py` no tiene números
-hardcodeados: rect del botón, curva del cursor, beats, malla de archivos, cámara.
-Cambiar de demo es cambiar el JSON y recapturar.
+hardcodeados: rect del botón, curva del cursor, beats, malla de archivos, cámara,
+y la coreografía de las tres escenas nuevas. Cambiar de demo es cambiar el JSON y
+recapturar.
+
+**El audio se deriva de los mismos beats.** `plan.py` lee `scene.json` y escribe
+`audio/plan.json`: los efectos no llevan segundos escritos a mano, sino el beat
+visual al que responden (`at("button_pop", 3)`). Mover un beat y volver a correr
+`plan.py` mueve el sonido con él. `music.py` también toma de ahí su duración.
 
 Para el audio, ver **[AUDIO.md](./AUDIO.md)**.
 
@@ -107,9 +127,9 @@ estricta.
 
 ## Rendimiento
 
-EEVEE Next, 1920×1080, 30fps, 14s (420 frames): **~15 min** en un Mac con GPU.
+EEVEE Next, 1920×1080, 30fps, 32s (960 frames): **~35 min** en un Mac con GPU.
 Preview al 40%: ~0.5s por frame — el loop de iteración es de segundos, que es lo
-que hace viable dirigir esto desde un agente. La música tarda 1.2s en CPU.
+que hace viable dirigir esto desde un agente. La música tarda ~2s en CPU.
 
 ## Siguiente
 

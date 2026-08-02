@@ -91,15 +91,22 @@ síntesis y no en la mezcla significa que el `loudnorm` final no tiene que pelea
 **El estéreo es un `np.roll` de 90 muestras** (~2ms) en el canal derecho. Ancho
 sutil por retardo; suficiente para que no suene mono, sin romper la suma a mono.
 
-## Mezcla — `mix.sh` + `audio/plan.json`
+## Mezcla — `plan.py` → `audio/plan.json` → `mix.sh`
 
-`plan.json` es el mapa completo: cada pieza con su segundo exacto, su ganancia y
-una nota de a qué momento visual responde. `mix.sh` lo compila a un grafo de
-ffmpeg. Cambiar el timing de un efecto es editar un número, no tocar el script.
+`plan.json` **se genera**, no se edita. `plan.py` lo escribe leyendo los beats de
+`scene.json`, así que un efecto no lleva su segundo a mano sino el momento visual
+al que responde:
 
-```json
-{ "at": 5.98, "file": "impact-bass-1.mp3", "gain": 0.62, "cue": "el botón se despega" }
+```python
+(at("button_pop", 3), "impact-bass-1.mp3", 0.40, "onset", "el botón se despega"),
 ```
+
+Mover `button_pop` en `scene.json` y volver a correr `plan.py` mueve el impacto
+con él. Escribir los segundos a mano garantiza que imagen y audio se separen en
+cuanto se retoca la edición — y en un pipeline donde el render tarda media hora,
+ese desfase se descubre tarde. `music.py` toma su duración del mismo sitio.
+
+`mix.sh` compila el plan a un grafo de ffmpeg.
 
 Dos detalles del grafo que cuestan si se ignoran:
 

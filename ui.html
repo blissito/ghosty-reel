@@ -20,6 +20,13 @@
   body.l-end   #end{display:flex}
   body.l-card  #card{display:flex}
   body.l-page  #cta{visibility:hidden}
+  body.l-word  #solo{display:block}
+  body.l-agent #agent{display:flex}
+  body.l-tool  #tool{display:flex}
+  body.l-chan  #chan{display:flex}
+  body.l-share #share{display:flex}
+  body.l-line  #line{display:block}
+  body.l-measure #t1, body.l-measure #t2{display:block}
 
   /* ---------- app (1920x1080) ---------- */
   #app{width:1920px;height:1080px;background:var(--onix);position:relative}
@@ -56,9 +63,51 @@
     box-shadow:0 12px 40px -8px rgba(152,112,237,.7)}
   body.l-btn #cta{position:static;box-shadow:none}
 
-  /* ---------- títulos ---------- */
+  /* ---------- títulos ----------
+     Se capturan PALABRA POR PALABRA para animarlas escalonadas en 3D. El layout
+     lo mide el navegador (?layer=measure) y se exporta a assets/layout.json, así
+     cada palabra cae exactamente donde el motor de texto la puso — calcular las
+     posiciones a mano se desalinea con cualquier cambio de fuente o kerning. */
   .title{width:1500px;padding:0 20px;font-size:96px;font-weight:800;letter-spacing:-.045em;line-height:1.05}
   #t2{color:var(--brand)}
+  .title w{display:inline-block}
+  body.l-word .title{position:absolute;left:-9999px}   /* fuera de cuadro: solo medimos */
+  body.l-word #solo{display:block;position:static;width:max-content;padding:0}
+  #solo{font-size:96px;font-weight:800;letter-spacing:-.045em;line-height:1.05;
+        white-space:pre;color:#fff}
+  #solo.brand{color:var(--brand)}
+
+  /* ---------- escena 3: el agente ---------- */
+  #agent{width:900px;background:#141418;border:1px solid #2c2c34;border-radius:26px;
+    flex-direction:column;overflow:hidden}
+  #agent .hd{display:flex;align-items:center;gap:14px;padding:22px 28px;border-bottom:1px solid #24242c}
+  #agent .hd img{height:30px}
+  #agent .hd b{font-size:19px;font-weight:600}
+  #agent .hd i{margin-left:auto;font-style:normal;font-size:15px;color:var(--grass)}
+  #agent .body{padding:26px 28px;display:flex;flex-direction:column;gap:18px}
+  #agent .msg{background:#1f1f26;border-radius:18px;padding:16px 22px;font-size:20px;align-self:flex-start;max-width:78%}
+  .tool{width:420px;height:86px;background:#1b1b22;border:1px solid var(--brand);border-radius:16px;
+    align-items:center;gap:16px;padding:0 22px}
+  .tool .dot{width:11px;height:11px;border-radius:4px;background:var(--grass);flex:none}
+  .tool code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:21px;color:var(--brand);font-weight:600}
+  .tool s{margin-left:auto;text-decoration:none;font-size:15px;color:var(--metal)}
+
+  /* ---------- escena 4: la flota ---------- */
+  .chan{width:400px;height:250px;background:#17171c;border:1px solid #2e2e38;border-radius:24px;
+    flex-direction:column;gap:0;padding:26px 26px}
+  .chan .ic{width:58px;height:58px;border-radius:18px;display:flex;align-items:center;
+    justify-content:center;font-size:28px}
+  .chan h4{margin-top:20px;font-size:26px;font-weight:600;letter-spacing:-.02em}
+  .chan p{margin-top:10px;font-size:17px;color:var(--metal);line-height:1.4}
+
+  /* ---------- escena 5: compartir ---------- */
+  #share{width:760px;height:104px;background:#1b1b22;border:1px solid #33333d;border-radius:26px;
+    align-items:center;gap:20px;padding:0 28px}
+  #share .lk{width:52px;height:52px;border-radius:16px;background:var(--brand);flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:26px}
+  #share code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:24px;color:#fff}
+  #share s{margin-left:auto;text-decoration:none;font-size:16px;color:var(--aqua);
+    background:#242430;border-radius:999px;padding:9px 18px}
 
   /* ---------- tarjeta de archivo (se instancia en 3D) ---------- */
   #card{width:420px;height:132px;background:#26262b;border:1px solid #3a3a42;border-radius:20px;
@@ -108,8 +157,31 @@
 
 <div id="cta" data-layer>Desplegar</div>
 
-<div id="t1" class="title" data-layer>Tus agentes<br>generan archivos.</div>
-<div id="t2" class="title" data-layer>¿Dónde los guardas?</div>
+<div id="t1" class="title" data-layer></div>
+<div id="t2" class="title" data-layer></div>
+<div id="solo" data-layer></div>
+<div id="line" class="title" data-layer></div>
+
+<div id="agent" data-layer>
+  <div class="hd">
+    <img src="brand/eyes.svg"><b>ghosty · agente</b><i>● activo</i>
+  </div>
+  <div class="body">
+    <div class="msg">guarda el reporte del Q3 y compártelo con el equipo</div>
+  </div>
+</div>
+
+<div id="tool" class="tool" data-layer>
+  <span class="dot"></span><code></code><s></s>
+</div>
+
+<div id="chan" class="chan" data-layer>
+  <div class="ic"></div><h4></h4><p></p>
+</div>
+
+<div id="share" data-layer>
+  <div class="lk">🔗</div><code>easybits.cloud/f/a7c3f9</code><s>expira en 7 días</s>
+</div>
 
 <div id="card" data-layer>
   <div class="chip"></div>
@@ -126,6 +198,95 @@
   var q = new URLSearchParams(location.search);
   var layer = q.get('layer') || 'page';
   document.body.className = 'l-' + layer;
+
+  // ---- guion: una sola fuente para el texto y para el layout ----
+  var LINES = [
+    { el: 't1', brand: false, words: ['Tus', 'agentes', '\n', 'generan', 'archivos.'] },
+    { el: 't2', brand: true,  words: ['¿Dónde', 'los', 'guardas?'] },
+    { el: 't3', brand: false, words: ['Tus', 'agentes', 'suben,', '\n', 'buscan', 'y', 'comparten.'] },
+    { el: 't4', brand: false, words: ['Un', 'solo', 'almacén', '\n', 'para', 'toda', 'tu', 'flota.'] },
+    { el: 't5', brand: true,  words: ['Comparte', 'con', 'un', 'link.'] }
+  ];
+
+  function paint(host, line) {
+    host.innerHTML = '';
+    line.words.forEach(function (w, i) {
+      if (w === '\n') { host.appendChild(document.createElement('br')); return; }
+      var s = document.createElement('w');
+      s.dataset.i = i;
+      s.textContent = w;
+      host.appendChild(s);
+      host.appendChild(document.createTextNode(' '));
+    });
+    host.style.color = line.brand ? '#9870ED' : '#fff';
+  }
+
+  var TOOLS = [
+    ['upload_file',        'reporte-q3.pdf'],
+    ['search_documents',   '1,284 archivos'],
+    ['create_share_link',  'expira en 7d']
+  ];
+  var CHANS = [
+    ['💬', 'WhatsApp',  'Tu agente responde y guarda lo que recibe'],
+    ['🌐', 'Web',       'El widget sube archivos desde tu sitio'],
+    ['⌘',  'Terminal',  'MCP y SDK desde cualquier proceso']
+  ];
+  var CHAN_BG = ['#96B894', '#75BAF9', '#9870ED'];
+
+  if (layer === 'measure') {
+    // El navegador MIDE; nosotros solo leemos. Se extrae con --dump-dom.
+    LINES.slice(0, 2).forEach(function (l) {
+      var host = document.getElementById(l.el);
+      if (host) paint(host, l);
+    });
+    document.fonts.ready.then(function () {
+      var out = {};
+      LINES.slice(0, 2).forEach(function (l) {
+        var host = document.getElementById(l.el);
+        if (!host) return;
+        var base = host.getBoundingClientRect();
+        out[l.el] = { w: base.width, h: base.height, words: [] };
+        host.querySelectorAll('w').forEach(function (w) {
+          var r = w.getBoundingClientRect();
+          out[l.el].words.push({
+            i: +w.dataset.i, text: w.textContent,
+            x: r.left - base.left, y: r.top - base.top,
+            w: r.width, h: r.height
+          });
+        });
+      });
+      var pre = document.createElement('pre');
+      pre.id = 'LAYOUT';
+      pre.textContent = 'LAYOUT_JSON:' + JSON.stringify(out);
+      document.body.appendChild(pre);
+    });
+  }
+
+  if (layer === 'word') {
+    var l = LINES[+q.get('line')];
+    var el = document.getElementById('solo');
+    el.textContent = l.words.filter(function (w) { return w !== '\n'; })[+q.get('i')];
+    el.className = l.brand ? 'brand' : '';
+  }
+
+  if (layer === 'line') {
+    paint(document.getElementById('line'), LINES[+q.get('line')]);
+  }
+
+  if (layer === 'tool') {
+    var t = TOOLS[+q.get('i') || 0];
+    document.querySelector('#tool code').textContent = t[0] + '()';
+    document.querySelector('#tool s').textContent = t[1];
+  }
+
+  if (layer === 'chan') {
+    var c = CHANS[+q.get('i') || 0];
+    var host = document.getElementById('chan');
+    host.querySelector('.ic').textContent = c[0];
+    host.querySelector('.ic').style.background = CHAN_BG[+q.get('i') || 0] + '33';
+    host.querySelector('h4').textContent = c[1];
+    host.querySelector('p').textContent = c[2];
+  }
 
   if (layer === 'card') {
     var files = [
