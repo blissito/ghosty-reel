@@ -16,6 +16,8 @@ eso el botón puede salir de la pantalla que lo contenía.
 Uso:
     blender -b -P scene.py                 # render completo
     PREVIEW=1 blender -b -P scene.py       # stills baratos para revisar
+    ONLY=titles,cursor PREVIEW=1 ...       # aislar objetos (biseccion de bugs)
+    RANGE=520,960 blender -b -P scene.py   # re-renderizar solo un tramo
     FRAMES=460,640 PREVIEW=1 blender -b -P scene.py
 """
 
@@ -285,9 +287,49 @@ def build_lights():
         bpy.context.collection.objects.link(o)
 
 
+def only_between(o, a, z):
+    """Sacar del render lo que todavía no entra o ya salió.
+
+    Poner alpha 0 NO basta. EEVEE compone las superficies BLENDED en un número
+    limitado de capas por píxel y descarta el excedente: los planos de una escena
+    futura, invisibles pero presentes en el encuadre, se comen el cupo y tiran la
+    capa de lo que SÍ debería verse. Se manifiesta como texto cortado por una
+    línea recta, o parpadeando entre frames.
+
+    Fue el bug de "guardas?": trece planos de la escena de la flota, a alpha 0 y
+    a 8 segundos de aparecer, cortaban una palabra del primer acto.
+
+    hide_render los quita del apilamiento por completo (y acelera el render).
+    """
+    for f, hidden in ((1, True), (max(2, int(a) - 1), False), (int(z) + 1, True)):
+        o.hide_render = hidden
+        o.keyframe_insert("hide_render", frame=f)
+    for fc in fcurves(o):
+        if fc.data_path == "hide_render":
+            for kp in fc.keyframe_points:
+                kp.interpolation = "CONSTANT"
+
+
 def fade_out(mat, fade, a, z):
     key_socket(mat, fade, a, 1.0)
     key_socket(mat, fade, z, 0.0, easing="EASE_IN")
+
+
+def retire(o, mat, fade, a, z, from_z, to_z=-3.2):
+    """Retirar un objeto = fundirlo Y alejarlo.
+
+    Fundir en el sitio no basta. Los materiales BLENDED de EEVEE no escriben
+    profundidad y se ordenan por la distancia del ORIGEN del objeto: dos planos
+    translúcidos que se solapan en pantalla casi a la misma Z intercambian orden
+    entre frames y parpadean. Mientras una escena se va y la siguiente entra, las
+    dos coexisten unos frames — si no se separan en Z, el bug es seguro.
+
+    Alejar al que sale resuelve el orden y además se lee mejor: las cosas se van,
+    no desaparecen.
+    """
+    fade_out(mat, fade, a, z)
+    key(o, "location", a, from_z, index=2)
+    key(o, "location", z, to_z, index=2, interp="BEZIER", easing="EASE_IN")
 
 
 def build_titles():
@@ -338,7 +380,8 @@ def build_titles():
             key(o, "location", f0, cy - 0.55, index=1)
             key(o, "location", f0, -1.6, index=2)
             key(o, "location", f1, cy, index=1, interp="BACK", easing="EASE_OUT")
-            key(o, "location", f1, 0.0, index=2, interp="BEZIER", easing="EASE_OUT")
+            key(o, "location", f1, wi * 0.012, index=2, interp="BEZIER",
+                easing="EASE_OUT")
 
             # cabecea al entrar y se endereza: da peso sin animar a mano
             key(o, "rotation_euler", f0, math.radians(-42), index=0)
@@ -346,6 +389,7 @@ def build_titles():
 
             key_socket(mat, fade, f0, 0.0)
             key_socket(mat, fade, f0 + 5, 1.0, easing="EASE_OUT")
+            only_between(o, f0, oz)
 
         # salida en grupo: la línea entera acelera contra la cámara
         key(group, "location", oa, 1.0, index=2)
@@ -373,6 +417,7 @@ def build_page():
     key_socket(mat, fade, cz, 0.0, easing="EASE_IN")
     key(p, "location", ca, 0.0, index=2)
     key(p, "location", cz, -6.0, index=2, interp="BEZIER", easing="EASE_IN")
+    only_between(p, a, cz)
     return p
 
 
@@ -428,6 +473,7 @@ def build_button():
     sol.keyframe_insert("thickness", frame=cz)
     key(o, "location", ca, bc["lift"], index=2)
     key(o, "location", cz, -4.0, index=2, interp="BEZIER", easing="EASE_IN")
+    only_between(o, B["page_in"][0], cz)
     return o, (cx, cy)
 
 
@@ -490,6 +536,7 @@ def build_shadow(origin):
     key(s, "location", z, cx + 0.2, index=0)
     key(s, "location", a, cy, index=1)
     key(s, "location", z, cy - 0.28, index=1)
+    only_between(s, a - 1, B["clear"][1])
 
 
 def build_shockwave(origin):
@@ -551,6 +598,7 @@ def build_shockwave(origin):
     key_socket(mat, op.outputs[0], a, 0.0)
     key_socket(mat, op.outputs[0], a + 3, 0.55)
     key_socket(mat, op.outputs[0], z, 0.0, easing="EASE_IN")
+    only_between(o, a, z)
 
 
 def build_file_cards(origin):
@@ -618,9 +666,11 @@ def build_file_cards(origin):
             key(o, "location", ca, (sx, sy, szz)[ax], index=ax)
             key(o, "location", cz, v, index=ax, interp="BEZIER", easing="EASE_IN")
 
+        key_socket(mat, fade, max(1, birth - 1), 0.0)
         key_socket(mat, fade, birth, 1.0)
         key_socket(mat, fade, ca, 1.0)
         key_socket(mat, fade, cz, 0.0, easing="EASE_IN")
+        only_between(o, birth, cz)
     return mats
 
 
@@ -676,6 +726,7 @@ def build_cursor():
     key(c, "location", ex, ly, index=1)
     key(c, "location", ex + 40, lx + 7.0, index=0, easing="EASE_IN")
     key(c, "location", ex + 40, ly - 8.0, index=1, easing="EASE_IN")
+    only_between(c, a, ex + 41)
 
 
 def build_end():
@@ -683,9 +734,11 @@ def build_end():
                                emit=1.6)
     a, z = B["end_in"]
     o.location = (0, 0, 0)
+    # Muy por delante del resto: aunque quede un rastro de la escena anterior,
+    # el orden de dibujado no puede quedar en duda.
     key(o, "location", a, -6.0, index=2)
-    key(o, "location", z, 0.6, index=2, interp="BEZIER", easing="EASE_OUT")
-    key(o, "location", END, 1.4, index=2)
+    key(o, "location", z, 1.6, index=2, interp="BEZIER", easing="EASE_OUT")
+    key(o, "location", END, 2.4, index=2)
     key_socket(mat, fade, a, 0.0)
     key_socket(mat, fade, z, 1.0, easing="EASE_OUT")
 
@@ -711,6 +764,7 @@ def scene_title(key_name, tex, width, y):
     key_socket(mat, fade, z, 0.0, easing="EASE_IN")
     key(o, "location", z - 18, 0.4, index=2)
     key(o, "location", z, -3.0, index=2, easing="EASE_IN")
+    only_between(o, a, z)
     return o
 
 
@@ -732,9 +786,11 @@ def emit_card(name, tex, start, src, dst, spin=1.0, dur=46, fade_tail=14):
     for ax in range(3):
         key(o, "rotation_euler", start, random.uniform(-0.9, 0.9) * spin, index=ax)
         key(o, "rotation_euler", end, 0.0, index=ax, easing="EASE_IN_OUT")
+    key_socket(mat, fade, max(1, start - 1), 0.0)
     key_socket(mat, fade, start, 1.0)
     key_socket(mat, fade, end - fade_tail, 1.0)
     key_socket(mat, fade, end, 0.0, easing="EASE_IN")
+    only_between(o, start, end)
     return o
 
 
@@ -761,6 +817,7 @@ def build_scene_agent():
     fade_out(pmat, pfade, z - 22, z)
     key(panel, "location", z - 22, 0.15, index=2)
     key(panel, "location", z, -3.6, index=2, easing="EASE_IN")
+    only_between(panel, a, z)
 
     rng = random.Random(21)
     tx, ty0, gap = cfg["tools_pos"]
@@ -780,7 +837,8 @@ def build_scene_agent():
         for ax in (0, 1, 2):
             key(o, "scale", f0, 0.6 if ax != 2 else 1.0, index=ax)
             key(o, "scale", f0 + 14, 1.0, index=ax, interp="BACK", easing="EASE_OUT")
-        fade_out(mat, fade, z - 26, z - 6)
+        retire(o, mat, fade, z - 26, z - 6, 0.5)
+        only_between(o, f0, z - 6)
 
         # de cada tool sale un archivo hacia el espectador
         emit_card(f"AgentFile{i}", CFG["cards"]["textures"][i * 2],
@@ -816,7 +874,8 @@ def build_scene_fleet():
         key(o, "rotation_euler", f0 + 22, 0.0, index=0, easing="EASE_OUT")
         key_socket(mat, fade, f0, 0.0)
         key_socket(mat, fade, f0 + 12, 1.0, easing="EASE_OUT")
-        fade_out(mat, fade, z - 24, z)
+        retire(o, mat, fade, z - 24, z, 0.2)
+        only_between(o, f0, z)
 
         # cada canal manda archivos al mismo punto: eso ES el mensaje
         for k in range(cfg["files_per_channel"]):
@@ -850,7 +909,8 @@ def build_scene_share():
         key(pill, "scale", a + 22, 1.0, index=ax, interp="BACK", easing="EASE_OUT")
     key_socket(mat, fade, a, 0.0)
     key_socket(mat, fade, a + 14, 1.0, easing="EASE_OUT")
-    fade_out(mat, fade, z - 26, z - 4)
+    retire(pill, mat, fade, z - 26, z - 4, 0.6)
+    only_between(pill, a, z - 4)
 
     # copias que salen disparadas: el link viaja
     for i in range(cfg["copies"]):
@@ -871,9 +931,11 @@ def build_scene_share():
             key(o, "scale", f0 + 10, 1.0, index=ax, interp="BACK", easing="EASE_OUT")
         key(o, "rotation_euler", f0, 0.0, index=1)
         key(o, "rotation_euler", f0 + 44, rng.uniform(-0.8, 0.8), index=1)
+        key_socket(m2, f2, max(1, f0 - 1), 0.0)
         key_socket(m2, f2, f0, 1.0)
         key_socket(m2, f2, f0 + 30, 1.0)
         key_socket(m2, f2, f0 + 46, 0.0, easing="EASE_IN")
+        only_between(o, f0, f0 + 46)
 
     scene_title("share_title", "assets/t5.png", cfg["title_width"], cfg["title_y"])
 
@@ -957,17 +1019,33 @@ def configure_render():
 def main():
     reset()
     build_lights()
-    build_titles()
-    build_page()
-    _, origin = build_button()
-    build_shadow(origin)
-    build_shockwave(origin)
-    build_cursor()
-    build_file_cards(origin)
-    build_scene_agent()
-    build_scene_fleet()
-    build_scene_share()
-    build_end()
+    only = set(os.environ.get("ONLY", "").split(",")) - {""}
+    want = lambda n: not only or n in only
+
+    if want("titles"):
+        build_titles()
+    origin = px_to_world(CFG["button"]["rect_px"][0] + CFG["button"]["rect_px"][2] / 2,
+                         CFG["button"]["rect_px"][1] + CFG["button"]["rect_px"][3] / 2)
+    if want("page"):
+        build_page()
+    if want("button"):
+        _, origin = build_button()
+    if want("shadow"):
+        build_shadow(origin)
+    if want("shockwave"):
+        build_shockwave(origin)
+    if want("cursor"):
+        build_cursor()
+    if want("cards"):
+        build_file_cards(origin)
+    if want("agent"):
+        build_scene_agent()
+    if want("fleet"):
+        build_scene_fleet()
+    if want("share"):
+        build_scene_share()
+    if want("end"):
+        build_end()
     build_camera()
     configure_render()
 
@@ -987,8 +1065,13 @@ def main():
     else:
         sc.render.resolution_percentage = 100
         sc.render.filepath = os.path.join(out, "frames", "f")
+        # RANGE=a,b re-renderiza solo un tramo. Corregir un bug al final de un
+        # anuncio de 32s no debería costar los 960 frames otra vez.
+        if os.environ.get("RANGE"):
+            a, b = (int(v) for v in os.environ["RANGE"].split(","))
+            sc.frame_start, sc.frame_end = a, b
         bpy.ops.render.render(animation=True)
-        print(f"[ok] frames -> {out}/frames")
+        print(f"[ok] frames {sc.frame_start}-{sc.frame_end} -> {out}/frames")
 
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(ROOT, "scene.blend"))
 
