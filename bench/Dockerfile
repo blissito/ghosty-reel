@@ -10,6 +10,7 @@ FROM debian:12-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
       mesa-vulkan-drivers vulkan-tools \
       libgl1 libxi6 libxxf86vm1 libxfixes3 libxrender1 libsm6 \
+      libxkbcommon0 libx11-6 libxext6 libxcb1 libwayland-client0 \
       libegl1 libgomp1 xz-utils curl ca-certificates bc python3 \
  && rm -rf /var/lib/apt/lists/*
 

@@ -61,3 +61,51 @@ jq '.render.engine="CYCLES"' scene.json > t && mv t scene.json
 
 Es bastante más lento, pero no depende de Vulkan. Merece su propia medición con
 este mismo banco antes de descartarlo.
+
+---
+
+## Resultado — medido 2026-08-02, box B (SYS-3, Xeon-E 2288G, 8c/16t, 128 GB)
+
+**Veredicto: EEVEE sobre lavapipe NO sirve para producción.**
+
+Lo bueno: la duda técnica se resolvió. **lavapipe levanta** (`llvmpipe (LLVM
+15.0.6)`) y Blender 5.2 renderiza sin GPU. Solo hubo que añadir `libxkbcommon0`
+y compañía; los `EGL_BAD_MATCH` son ruido, no fallo.
+
+Lo malo, los números:
+
+| Medición | Resultado |
+|---|---|
+| 40% res, 16 samples | 33s / 357s / 495s para 1 / 6 / 11 frames |
+| **1080p, 64 samples** | **~10 min por frame** (8 núcleos) |
+| Anuncio de 32s (960 frames) | **~160 horas** |
+
+Referencia: ~2.2 s/frame en el mismo render con GPU. La rasterización por CPU es
+~270× más lenta.
+
+**Repartir entre cajas no lo salva.** Harían falta cientos de microVMs corriendo
+horas para un solo anuncio, y el KS-5 tiene 8 núcleos en total para toda la flota.
+
+### Notas de método (para no repetir los errores)
+
+**No midas un solo frame.** El arranque de Blender y la construcción de la escena
+son coste fijo; con un frame dominan el total y el número sale inflado.
+
+**Pero tampoco asumas linealidad.** Los tres puntos dieron marginales de 65 y
+luego 28 s/frame: los frames no cuestan igual entre sí (una escena con más planos
+es más cara) y hay efectos de caché. Un único "s/frame" no está bien definido.
+
+**No extrapoles de preview a calidad final.** Estimé "×6" a ojo; el salto real es
+6× píxeles y 4× samples. Medir un frame a calidad final directamente eliminó toda
+la conjetura — y cambió la conclusión de "malo" a "inviable".
+
+**Un benchmark que falla en silencio es peor que ninguno.** La primera versión
+reportó "0.00 s/frame" como éxito cuando Blender ni había arrancado: un
+`| grep ... || true` se comía el código de salida. Ahora verifica el código Y
+cuenta los PNG escritos.
+
+### Qué queda
+
+Este pipeline es **local o con GPU**. Como servicio en la flota de microVMs, no.
+Las opciones reales son una máquina con GPU fuera de la flota, un proveedor de
+render por GPU, o aceptar que la generación sea local en la máquina del usuario.

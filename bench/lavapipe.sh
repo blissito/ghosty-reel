@@ -30,15 +30,28 @@ fi
 
 hr; echo "RENDER"; hr
 n=$(echo "$FRAMES" | tr ',' '\n' | grep -c .)
+LOG=/tmp/bench.log
 start=$(date +%s.%N)
-PREVIEW=1 FRAMES="$FRAMES" blender -b -P "$SCENE" 2>&1 \
-  | grep -E "Saved:|Error|error|not supported|fallback" || true
-rc=${PIPESTATUS[0]}
+# Sin pipe: un `| grep ... || true` se come el codigo de salida y el banco
+# reporta "0.00 s/frame" como si fuera un exito cuando Blender ni arranco.
+PREVIEW=1 FRAMES="$FRAMES" blender -b -P "$SCENE" > "$LOG" 2>&1
+rc=$?
 end=$(date +%s.%N)
+grep -E "Saved:|Error|error|not supported|fallback" "$LOG" | head -20 || true
+
+# Exito = tantos PNG escritos como frames pedidos. El codigo de salida solo no
+# basta: Blender puede salir 0 habiendo fallado el render.
+saved=$(grep -c "Saved:" "$LOG" || true)
+if [ "$saved" -ne "$n" ]; then
+  echo "!! se pidieron $n frames y se guardaron $saved"
+  rc=1
+fi
 
 hr; echo "RESULTADO"; hr
 if [ "$rc" -ne 0 ]; then
-  echo "Blender salió con código $rc — EEVEE no levantó sobre lavapipe."
+  echo "FALLO — el render no se completó. Ultimas lineas:"
+  tail -15 "$LOG" | sed 's/^/  /'
+  echo
   echo "Plan B: Cycles en CPU, que funciona headless sin nada extra."
   echo "  jq '.render.engine=\"CYCLES\"' scene.json > t && mv t scene.json"
   exit "$rc"
