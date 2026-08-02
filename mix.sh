@@ -12,7 +12,9 @@ command -v ffmpeg >/dev/null || { echo "falta ffmpeg: brew install ffmpeg"; exit
   { echo "no hay frames: corre blender -b -P scene.py"; exit 1; }
 
 python3 - "$@" <<'PY'
-import json, os, shlex, subprocess, sys
+import json, os, subprocess, sys
+
+import numpy as np
 
 plan = json.load(open("audio/plan.json"))
 dur = plan["duration"]
@@ -28,11 +30,39 @@ inputs, filters, mixed = [], [], []
 LEAD = plan.get("lead_ms", 0) / 1000.0
 
 
-def add(path, at, gain, tag):
+def cue_offset(path, mode):
+    """Cuánto silencio/rampa hay ANTES del punto audible del archivo.
+
+    Es el bug que más desalinea y el menos evidente: `whoosh-cinematic.mp3` trae
+    2.05s de rampa antes del golpe y `riser.mp3` 2.09s. Colocados por inicio de
+    archivo sonaban dos segundos tarde. Se alinea por el punto que el oído
+    reconoce como "el sonido", no por el byte cero.
+
+      onset -> primer punto con 20% del pico (golpes: clic, impacto, chime)
+      peak  -> el máximo (swells: whoosh, riser, que culminan en el corte)
+    """
+    raw = subprocess.run(
+        ["ffmpeg", "-v", "error", "-i", path, "-ar", "48000", "-ac", "1",
+         "-f", "s16le", "-"], capture_output=True).stdout
+    a = np.abs(np.frombuffer(raw, dtype="<i2").astype(np.float32))
+    if not a.size:
+        return 0.0
+    # envolvente suavizada: un pico de una sola muestra no es un transitorio
+    win = 512
+    env = np.convolve(a, np.ones(win) / win, mode="same")
+    idx = int(env.argmax()) if mode == "peak" else int(np.argmax(env > env.max() * 0.20))
+    return idx / 48000.0
+
+
+def add(path, at, gain, tag, align="onset"):
     if not os.path.exists(path):
         print(f"  [skip] {tag}: falta {path}")
         return
-    at = max(0.0, at - LEAD)
+    off = cue_offset(path, align)
+    at = at - LEAD - off
+    if at < 0:
+        print(f"  [aviso] {tag}: arranca {-at:.2f}s antes de 0, recortado")
+        at = 0.0
     i = len(inputs)
     inputs.append(path)
     # adelay coloca el clip en su beat; sin él todo empieza en cero y el audio
@@ -44,7 +74,8 @@ def add(path, at, gain, tag):
 for v in plan["voice"]:
     add(os.path.join("audio", v["file"]), v["at"], v["gain"], v["text"])
 for s in plan["sfx"]:
-    add(os.path.join(sfx_dir, s["file"]), s["at"], s["gain"], s["cue"])
+    add(os.path.join(sfx_dir, s["file"]), s["at"], s["gain"], s["cue"],
+        s.get("align", "onset"))
 
 b = plan["bgm"]
 bgm_path = os.path.join("audio", b["file"])

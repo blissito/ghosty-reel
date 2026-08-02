@@ -154,7 +154,49 @@ Se verifica con `ffprobe -show_entries stream=start_time,initial_padding` — aq
 ambos streams dan `start_time=0`, así que no era el problema, pero es lo primero
 que hay que descartar en otro pipeline.
 
-### 2. El ajuste: el sonido va ADELANTE del golpe visual
+### 2. El culpable de verdad: los archivos traen silencio al frente
+
+Lo que más desalineaba, y lo menos evidente. Un `.mp3` de librería no empieza a
+sonar en el byte cero:
+
+```
+whoosh-cinematic.mp3   2055 ms de rampa antes del golpe
+riser.mp3              2089 ms
+chime.mp3               416 ms
+click.mp3                48 ms
+```
+
+Colocar el whoosh "en el segundo 2.55" lo hacía sonar en el **4.6**. Dos segundos
+tarde, en el efecto más audible del anuncio.
+
+El fix es alinear por el punto que el oído reconoce como *el sonido*, no por el
+inicio del archivo. `mix.sh` lo mide con ffmpeg + una envolvente suavizada y lo
+resta del `at`:
+
+| modo | qué busca | para qué |
+|---|---|---|
+| `onset` | primer punto con 20% del pico | golpes: clic, impacto, chime |
+| `peak` | el máximo de la envolvente | swells: whoosh, riser, que culminan en el corte |
+
+```json
+{ "at": 3.05, "file": "whoosh-cinematic.mp3", "align": "peak" }
+```
+
+Con esto, `at` significa **el instante en que el sonido debe oírse**, que es como
+se piensa el timing, y no cuándo arranca un archivo. Medido sobre el MP4 final,
+los seis efectos caen dentro de ±42 ms de su objetivo.
+
+Verificación (vale la pena automatizarla si el pipeline se vuelve servicio):
+
+```bash
+ffmpeg -i out/ad.mp4 -vn -ar 48000 -ac 1 /tmp/a.wav
+# buscar el máximo de la envolvente en una ventana de ±45ms alrededor de cada cue
+```
+
+Ojo al medir: si dos efectos caen a menos de ~200 ms uno del otro, una ventana
+ancha encuentra el vecino más fuerte y reporta un error que no existe.
+
+### 3. El ajuste: el sonido va ADELANTE del golpe visual
 
 Aun con sincronía perfecta al frame, un impacto se siente tarde. Dos razones:
 
