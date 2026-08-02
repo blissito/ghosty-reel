@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Jersey+10&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --onix:#181818; --iron:#323232; --brand:#9870ED; --brand100:#F3F0F5;
+    --yellow:#ECD66E; --aqua:#BAD9D8; --pink:#FFAFA3; --grass:#96B894;
+    --tale:#A19E9E; --metal:#8391A1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:#fff;-webkit-font-smoothing:antialiased;
+       background:transparent;width:max-content;height:max-content;overflow:hidden}
+  [data-layer]{display:none}
+  body.l-page  #app,  body.l-page  #cta{display:block}
+  body.l-btn   #cta{display:flex}
+  body.l-t1    #t1{display:block}
+  body.l-t2    #t2{display:block}
+  body.l-end   #end{display:flex}
+  body.l-card  #card{display:flex}
+  body.l-page  #cta{visibility:hidden}
+
+  /* ---------- app (1920x1080) ---------- */
+  #app{width:1920px;height:1080px;background:var(--onix);position:relative}
+  .sidebar{position:absolute;left:0;top:0;bottom:0;width:280px;background:#101010;border-right:1px solid #262626;padding:36px 24px}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:48px}
+  .eyes{height:44px;width:auto;flex:none}
+  .word{height:26px;width:auto}
+  .nav{display:flex;flex-direction:column;gap:6px}
+  .nav i{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:12px;font-size:16px;color:var(--tale);font-style:normal}
+  .nav i.on{background:#1e1e1e;color:#fff}
+  .dot{width:9px;height:9px;border-radius:3px;background:currentColor;opacity:.55}
+  .main{position:absolute;left:280px;right:0;top:0;bottom:0;padding:56px 72px}
+  h1{font-size:46px;font-weight:700;letter-spacing:-.03em}
+  .sub{margin-top:12px;font-size:19px;color:var(--tale)}
+  .stats{display:flex;gap:24px;margin-top:52px}
+  .kard{flex:1;background:#1c1c1c;border:1px solid #2a2a2a;border-radius:22px;padding:28px 30px}
+  .k{font-size:14px;color:var(--metal);text-transform:uppercase;letter-spacing:.09em}
+  .v{font-size:42px;font-weight:700;margin-top:14px;letter-spacing:-.02em}
+  .bar{height:7px;border-radius:4px;margin-top:20px;background:#2c2c2c;overflow:hidden}
+  .bar>u{display:block;height:100%;border-radius:4px}
+  .panel{margin-top:44px;background:#1c1c1c;border:1px solid #2a2a2a;border-radius:22px;padding:30px 34px}
+  .row{display:flex;align-items:center;gap:18px;padding:15px 0;border-bottom:1px solid #262626}
+  .row:last-child{border-bottom:0}
+  .chip{width:38px;height:38px;border-radius:11px;flex:none}
+  .nm{font-size:17px;font-weight:500}
+  .mt{font-size:14px;color:var(--metal);margin-top:3px}
+  .grow{flex:1}
+  .tag{font-size:13px;padding:6px 13px;border-radius:999px;background:#242424;color:var(--aqua)}
+
+  /* ---------- botón (se captura a 4x; su radio debe ir a scene.json) ---------- */
+  #cta{position:absolute;left:1180px;top:556px;width:280px;height:68px;
+    align-items:center;justify-content:center;background:var(--brand);color:#fff;
+    border-radius:16px;font-size:22px;font-weight:600;letter-spacing:-.01em;
+    box-shadow:0 12px 40px -8px rgba(152,112,237,.7)}
+  body.l-btn #cta{position:static;box-shadow:none}
+
+  /* ---------- títulos ---------- */
+  .title{width:1500px;padding:0 20px;font-size:96px;font-weight:800;letter-spacing:-.045em;line-height:1.05}
+  #t2{color:var(--brand)}
+
+  /* ---------- tarjeta de archivo (se instancia en 3D) ---------- */
+  #card{width:420px;height:132px;background:#26262b;border:1px solid #3a3a42;border-radius:20px;
+    align-items:center;gap:20px;padding:0 26px}
+  #card .chip{width:52px;height:52px;border-radius:15px}
+  #card .nm{font-size:20px}
+  #card .mt{font-size:15px;margin-top:5px}
+
+  /* ---------- cierre ---------- */
+  #end{width:760px;flex-direction:column;align-items:center;gap:0;text-align:center}
+  #end .lock{display:flex;align-items:center;gap:24px}
+  #end .eyes{height:104px}
+  #end .word{height:62px}
+  #end .tl{white-space:nowrap;margin-top:26px;font-size:40px;font-weight:500;color:var(--tale);letter-spacing:-.02em}
+  #end .url{margin-top:34px;font-size:34px;font-weight:600;color:var(--brand);letter-spacing:.01em}
+</style>
+</head>
+<body>
+
+<div id="app" data-layer>
+  <div class="sidebar">
+    <div class="brand"><img class="eyes" src="brand/eyes.svg"><img class="word" src="brand/wordmark.svg"></div>
+    <div class="nav">
+      <i class="on"><span class="dot"></span>Dashboard</i>
+      <i><span class="dot"></span>Archivos</i>
+      <i><span class="dot"></span>Flota</i>
+      <i><span class="dot"></span>Documentos</i>
+      <i><span class="dot"></span>Webhooks</i>
+      <i><span class="dot"></span>Developer</i>
+    </div>
+  </div>
+  <div class="main">
+    <h1>Tu flota, lista para desplegar</h1>
+    <div class="sub">3 agentes activos · 12 archivos sincronizados</div>
+    <div class="stats">
+      <div class="kard"><div class="k">Archivos</div><div class="v">1,284</div><div class="bar"><u style="width:72%;background:var(--brand)"></u></div></div>
+      <div class="kard"><div class="k">Agentes</div><div class="v">3</div><div class="bar"><u style="width:44%;background:var(--aqua)"></u></div></div>
+      <div class="kard"><div class="k">Créditos</div><div class="v">5,000</div><div class="bar"><u style="width:88%;background:var(--yellow)"></u></div></div>
+    </div>
+    <div class="panel">
+      <div class="row"><div class="chip" style="background:var(--pink)"></div><div><div class="nm">landing-hero.webp</div><div class="mt">2.4 MB · hace 3 min</div></div><div class="grow"></div><div class="tag">listo</div></div>
+      <div class="row"><div class="chip" style="background:var(--grass)"></div><div><div class="nm">agente-nik.json</div><div class="mt">18 KB · hace 12 min</div></div><div class="grow"></div><div class="tag">listo</div></div>
+      <div class="row"><div class="chip" style="background:var(--yellow)"></div><div><div class="nm">reporte-q3.pdf</div><div class="mt">840 KB · hace 1 h</div></div><div class="grow"></div><div class="tag">listo</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="cta" data-layer>Desplegar</div>
+
+<div id="t1" class="title" data-layer>Tus agentes<br>generan archivos.</div>
+<div id="t2" class="title" data-layer>¿Dónde los guardas?</div>
+
+<div id="card" data-layer>
+  <div class="chip"></div>
+  <div><div class="nm"></div><div class="mt"></div></div>
+</div>
+
+<div id="end" data-layer>
+  <div class="lock"><img class="eyes" src="brand/eyes.svg"><img class="word" src="brand/wordmark.svg"></div>
+  <div class="tl">Almacenamiento para agentes</div>
+  <div class="url">easybits.cloud</div>
+</div>
+
+<script>
+  var q = new URLSearchParams(location.search);
+  var layer = q.get('layer') || 'page';
+  document.body.className = 'l-' + layer;
+
+  if (layer === 'card') {
+    var files = [
+      ['#FFAFA3', 'landing-hero.webp', '2.4 MB'],
+      ['#96B894', 'agente-nik.json',   '18 KB'],
+      ['#ECD66E', 'reporte-q3.pdf',    '840 KB'],
+      ['#BAD9D8', 'demo-final.mp4',    '12.8 MB'],
+      ['#9870ED', 'embeddings.bin',    '4.1 MB'],
+      ['#F3F0F5', 'contrato.pdf',      '320 KB'],
+      ['#83D0E4', 'dataset.parquet',   '61 MB'],
+      ['#E299A4', 'voz-nik.wav',       '2.9 MB']
+    ];
+    var f = files[(+q.get('i') || 0) % files.length];
+    var c = document.getElementById('card');
+    c.querySelector('.chip').style.background = f[0];
+    c.querySelector('.nm').textContent = f[1];
+    c.querySelector('.mt').textContent = f[2] + ' · sincronizado';
+  }
+</script>
+</body>
+</html>

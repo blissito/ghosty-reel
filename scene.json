@@ -1,0 +1,159 @@
+{
+  "name": "easybits-ad",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "fps": 30,
+  "duration_frames": 420,
+  "camera": {
+    "distance": 26.0,
+    "dolly_to": 24.4,
+    "fstop": 6.0
+  },
+  "page": {
+    "texture": "assets/page.png"
+  },
+  "button": {
+    "texture": "assets/button.png",
+    "rect_px": [
+      1180,
+      556,
+      280,
+      68
+    ],
+    "radius_px": 16,
+    "color": "#9870ED",
+    "depth": 0.26,
+    "lift": 1.25
+  },
+  "cursor": {
+    "color": "#FFFFFF",
+    "path_px": [
+      [
+        1880,
+        1010
+      ],
+      [
+        1500,
+        980
+      ],
+      [
+        1420,
+        700
+      ],
+      [
+        1320,
+        596
+      ]
+    ]
+  },
+  "titles": [
+    {
+      "texture": "assets/t1.png",
+      "width": 11.0,
+      "in": [
+        6,
+        34
+      ],
+      "out": [
+        80,
+        106
+      ]
+    },
+    {
+      "texture": "assets/t2.png",
+      "width": 11.0,
+      "in": [
+        34,
+        60
+      ],
+      "out": [
+        80,
+        106
+      ]
+    }
+  ],
+  "cards": {
+    "textures": [
+      "assets/card0.png",
+      "assets/card1.png",
+      "assets/card2.png",
+      "assets/card3.png",
+      "assets/card4.png",
+      "assets/card5.png",
+      "assets/card6.png",
+      "assets/card7.png"
+    ],
+    "count": 20,
+    "width": 1.55,
+    "radius_frac": 0.152,
+    "depth": 0.055,
+    "grid": [
+      5,
+      4
+    ],
+    "grid_gap": [
+      1.95,
+      0.82
+    ],
+    "grid_z": 2.6,
+    "seed": 11
+  },
+  "end": {
+    "texture": "assets/end.png",
+    "width": 8.6
+  },
+  "beats": {
+    "titles": [
+      1,
+      106
+    ],
+    "page_in": [
+      96,
+      128
+    ],
+    "cursor_in": [
+      120,
+      176
+    ],
+    "click": [
+      176,
+      188
+    ],
+    "button_pop": [
+      182,
+      232
+    ],
+    "shockwave": [
+      180,
+      208
+    ],
+    "burst": [
+      186,
+      258
+    ],
+    "settle": [
+      246,
+      322
+    ],
+    "dolly": [
+      96,
+      336
+    ],
+    "clear": [
+      322,
+      372
+    ],
+    "end_in": [
+      348,
+      396
+    ]
+  },
+  "render": {
+    "engine": "EEVEE",
+    "world_color": "#0B0B0D",
+    "motion_blur": true,
+    "out_dir": "out"
+  }
+}

@@ -1,0 +1,9 @@
+out/
+assets/*.png
+audio/vo/*.wav
+audio/bgm.wav
+audio/mix.wav
+audio/mix.m4a
+scene.blend
+scene.blend1
+.DS_Store
