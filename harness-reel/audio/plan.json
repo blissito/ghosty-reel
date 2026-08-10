@@ -1,6 +1,6 @@
 {
   "_comment": "GENERADO por plan.py desde scene.json — no editar a mano. 'at' = instante en que el sonido DEBE oírse; mix.sh compensa el silencio inicial de cada archivo (ver AUDIO.md).",
-  "sfx_dir": "audio/sfx",
+  "sfx_dir": "../audio/sfx",
   "lead_ms": 60,
   "duration": 31.0,
   "voice": [
