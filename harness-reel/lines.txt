@@ -1,0 +1,8 @@
+Medio millón de líneas de código. Ninguna es el modelo.
+Eso encontraron cuando se filtró Claude Code. ¿Entonces qué son?
+Las tools que el agente puede llamar.
+Las skills que sabe cargar.
+Los servidores MCP que le dan manos.
+Los subagentes en los que delega.
+Todo eso es el harness. Un agente no es un modelo: es todo lo que construyes alrededor.
+Los sistemas agénticos se construyen. Si quieres construir el tuyo, nos vemos el 1 de septiembre en el taller.

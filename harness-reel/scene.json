@@ -1,0 +1,67 @@
+{
+  "_comment": "Beats en segundos. Derivados de las duraciones reales de audio/vo/voN.wav — si cambia la voz, se ajustan aquí y plan.py mueve los SFX solo.",
+  "fps": 30,
+  "duration_frames": 930,
+  "vo": [
+    {
+      "file": "vo1.wav",
+      "at": 0.3,
+      "dur": 3.54,
+      "text": "Medio millón de líneas de código. Ninguna es el modelo."
+    },
+    {
+      "file": "vo2.wav",
+      "at": 4.15,
+      "dur": 3.93,
+      "text": "Eso encontraron cuando se filtró Claude Code. ¿Entonces qué son?"
+    },
+    {
+      "file": "vo3.wav",
+      "at": 8.4,
+      "dur": 2.26,
+      "text": "Las tools que el agente puede llamar."
+    },
+    {
+      "file": "vo4.wav",
+      "at": 10.9,
+      "dur": 1.75,
+      "text": "Las skills que sabe cargar."
+    },
+    {
+      "file": "vo5.wav",
+      "at": 12.9,
+      "dur": 2.52,
+      "text": "Los servidores MCP que le dan manos."
+    },
+    {
+      "file": "vo6.wav",
+      "at": 15.7,
+      "dur": 1.94,
+      "text": "Los subagentes en los que delega."
+    },
+    {
+      "file": "vo7.wav",
+      "at": 18.0,
+      "dur": 5.21,
+      "text": "Todo eso es el harness. Un agente no es un modelo: es todo lo que construyes alrededor."
+    },
+    {
+      "file": "vo8.wav",
+      "at": 23.7,
+      "dur": 6.76,
+      "text": "Los sistemas agénticos se construyen. Si quieres construir el tuyo, nos vemos el 1 de septiembre en el taller."
+    }
+  ],
+  "beats": {
+    "hook": 0.3,
+    "hook_out": 4.0,
+    "nucleo": 4.4,
+    "tools": 8.4,
+    "skills": 10.9,
+    "mcp": 12.9,
+    "subs": 15.7,
+    "harness": 18.0,
+    "cta": 23.7,
+    "end": 31.0
+  }
+}

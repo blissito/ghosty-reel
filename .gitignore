@@ -7,3 +7,12 @@ audio/mix.m4a
 scene.blend
 scene.blend1
 .DS_Store
+
+# harness-reel: frames, voz y música son generados
+harness-reel/out/
+harness-reel/preview/
+harness-reel/seq/
+harness-reel/audio/vo/
+harness-reel/audio/*.wav
+harness-reel/audio/*.m4a
+skills/blender-ad/seq/

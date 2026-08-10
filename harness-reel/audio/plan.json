@@ -1,0 +1,140 @@
+{
+  "_comment": "GENERADO por plan.py desde scene.json — no editar a mano. 'at' = instante en que el sonido DEBE oírse; mix.sh compensa el silencio inicial de cada archivo (ver AUDIO.md).",
+  "sfx_dir": "../audio/sfx",
+  "lead_ms": 60,
+  "duration": 31.0,
+  "voice": [
+    {
+      "at": 0.3,
+      "file": "vo/vo1.wav",
+      "gain": 1.0,
+      "text": "Medio millón de líneas de código. Ninguna es el modelo."
+    },
+    {
+      "at": 4.15,
+      "file": "vo/vo2.wav",
+      "gain": 1.0,
+      "text": "Eso encontraron cuando se filtró Claude Code. ¿Entonces qué son?"
+    },
+    {
+      "at": 8.4,
+      "file": "vo/vo3.wav",
+      "gain": 1.0,
+      "text": "Las tools que el agente puede llamar."
+    },
+    {
+      "at": 10.9,
+      "file": "vo/vo4.wav",
+      "gain": 1.0,
+      "text": "Las skills que sabe cargar."
+    },
+    {
+      "at": 12.9,
+      "file": "vo/vo5.wav",
+      "gain": 1.0,
+      "text": "Los servidores MCP que le dan manos."
+    },
+    {
+      "at": 15.7,
+      "file": "vo/vo6.wav",
+      "gain": 1.0,
+      "text": "Los subagentes en los que delega."
+    },
+    {
+      "at": 18.0,
+      "file": "vo/vo7.wav",
+      "gain": 1.0,
+      "text": "Todo eso es el harness. Un agente no es un modelo: es todo lo que construyes alrededor."
+    },
+    {
+      "at": 23.7,
+      "file": "vo/vo8.wav",
+      "gain": 1.0,
+      "text": "Los sistemas agénticos se construyen. Si quieres construir el tuyo, nos vemos el 1 de septiembre en el taller."
+    }
+  ],
+  "sfx": [
+    {
+      "at": 0.35,
+      "file": "click-soft.mp3",
+      "gain": 0.3,
+      "align": "onset",
+      "cue": "aparece 'medio millón'"
+    },
+    {
+      "at": 1.6,
+      "file": "impact-bass-1.mp3",
+      "gain": 0.38,
+      "align": "onset",
+      "cue": "el giro: 'ninguna es el modelo'"
+    },
+    {
+      "at": 3.85,
+      "file": "whoosh-cinematic.mp3",
+      "gain": 0.3,
+      "align": "peak",
+      "cue": "el texto sale, entra el diagrama"
+    },
+    {
+      "at": 4.45,
+      "file": "pop.mp3",
+      "gain": 0.3,
+      "align": "onset",
+      "cue": "nace el núcleo"
+    },
+    {
+      "at": 8.45,
+      "file": "click.mp3",
+      "gain": 0.26,
+      "align": "onset",
+      "cue": "se traza tools"
+    },
+    {
+      "at": 10.95,
+      "file": "click.mp3",
+      "gain": 0.26,
+      "align": "onset",
+      "cue": "se traza skills"
+    },
+    {
+      "at": 12.95,
+      "file": "click.mp3",
+      "gain": 0.26,
+      "align": "onset",
+      "cue": "se traza mcp"
+    },
+    {
+      "at": 15.75,
+      "file": "click.mp3",
+      "gain": 0.26,
+      "align": "onset",
+      "cue": "se traza subagentes"
+    },
+    {
+      "at": 18.1,
+      "file": "chime.mp3",
+      "gain": 0.24,
+      "align": "onset",
+      "cue": "se cierra el loop: 'el harness'"
+    },
+    {
+      "at": 23.4,
+      "file": "riser.mp3",
+      "gain": 0.26,
+      "align": "peak",
+      "cue": "entrada del CTA"
+    },
+    {
+      "at": 23.8,
+      "file": "sparkle.mp3",
+      "gain": 0.2,
+      "align": "onset",
+      "cue": "aparece el taller"
+    }
+  ],
+  "bgm": {
+    "file": "bgm.wav",
+    "gain": 0.13,
+    "fade_out_at": 29.6
+  }
+}
