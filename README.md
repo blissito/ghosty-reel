@@ -34,13 +34,8 @@ y el trazo se dibuja solo. Render mucho más barato.
 
 ## Producciones
 
-- **EasyBits** — 16:9, 32s, UI capturada. Vive en la raíz: fue la primera.
+- **[EasyBits](./EASYBITS.md)** — 16:9, 32s, UI capturada.
 - **[harness-reel](./harness-reel)** — 9:16, 31s, Grease Pencil.
-
-```bash
-./capture.sh && python3 plan.py && python3 music.py    # EasyBits
-blender -b -P scene.py && ./mix.sh
-```
 
 ## Stack — todo libre
 
