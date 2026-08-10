@@ -20,3 +20,10 @@ sesion1/out/
 sesion1/out_d2/
 sesion1/out3d/
 sesion1/__pycache__/
+sesion1/out_loop/
+sesion1/out_mix/
+sesion1/out_koe3d/
+sesion1/out_tunel/
+sesion1/audio/vo/
+sesion1/audio/*.wav
+sesion1/out_morph/

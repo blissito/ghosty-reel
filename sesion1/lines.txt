@@ -1,0 +1,6 @@
+# Texto para el TTS: los anglicismos van fonéticos (tuls, jarnes) porque Kokoro
+# aplica reglas del español. Lo que se ve en pantalla vive en escena_loop.py.
+El modelo no ejecuta. Pide.
+El jarnes ejecuta, y le devuelve el resultado.
+Y vuelve a empezar.
+Ese ida y vuelta es el agente.

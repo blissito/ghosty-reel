@@ -19,7 +19,7 @@ import bpy, math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import lib
 from lib import (trazo, rrect, circulo, linea, flecha, texto, caja, dibujar,
-                 boil, flujo, resplandor,
+                 boil, flujo, bloom,
                  INK, GRIS, ROJO, AMBAR, VERDE, CIAN, MORA)
 
 S = bpy.context.scene
@@ -67,11 +67,6 @@ for i in range(3):
     TRAMOS.append((a, b))
     t0 = T_FLECHAS + i*0.35
     flecha(*a, *b, GRIS, 0.018, 40 + i, build=(F(t0), F(t0 + 0.3)), prof=1.3)
-    # La chispa va ENCIMA de la flecha sólida, no en lugar de ella: aplicar el
-    # dash a la propia flecha la deja hecha migajas y deja de leerse el camino.
-    chispa = linea(*a, *b, AMBAR, 0.030, 45 + i,
-                   build=(F(T_PULSO), F(T_PULSO + 0.2)), prof=1.28)
-    flujo(chispa, ciclo_s=1.5, fin_s=FIN, fps=FPS, dash=14, hueco=52)
 
 texto("hasta", 0, 0.72, 0.30, GRIS, build=(F(T_PULSO), F(T_PULSO + 0.4)), prof=1.3)
 texto("resolver", 0, 0.15, 0.30, GRIS, build=(F(T_PULSO + 0.2), F(T_PULSO + 0.6)), prof=1.3)
@@ -82,6 +77,30 @@ for i, (t, col) in enumerate(((T_PIE, INK), (T_PIE + 0.7, GRIS), (T_PIE + 1.6, A
                  "Ese ida y vuelta es todo el truco."][i]
     texto(linea_txt, 0, -4.15 - i*0.72 - (0.35 if i == 2 else 0), 0.30, col,
           build=(F(t), F(t + 0.6)), prof=-0.9)
+
+# ------------------------------------------------------------- la pelota ---
+# Recorre el ciclo. Es lo que convierte tres cajas en un loop: sin ella, las
+# flechas son decoración. Con bloom encima, además brilla al pasar.
+pelota = circulo(0, 0, 0.15, AMBAR, 0.038, 99, prof=1.28)
+VUELTA = 2.1
+inicio = T_PULSO + 0.3
+t = inicio
+while t < FIN:
+    for j, ((ax, az), (bx, bz)) in enumerate(TRAMOS):
+        t0 = t + j*(VUELTA/3)
+        for u in (0.0, 1.0):
+            pelota.location = ((ax + (bx-ax)*u) * 1.08, 1.28, (az + (bz-az)*u) * 1.08)
+            pelota.keyframe_insert("location", frame=F(t0 + u*(VUELTA/3)))
+    t += VUELTA
+for f, v in ((1, True), (F(inicio) - 1, False)):
+    pelota.hide_render = v
+    pelota.keyframe_insert("hide_render", frame=f)
+for fc in lib._fc(pelota):
+    modo = 'CONSTANT' if fc.data_path == "hide_render" else 'LINEAR'
+    for kp in fc.keyframe_points:
+        kp.interpolation = modo
+
+bloom(fuerza=0.75, umbral=0.03, tam=0.85)
 
 # ---------------------------------------------------------------- cámara ---
 cam = S.camera

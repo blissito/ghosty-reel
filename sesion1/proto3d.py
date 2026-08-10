@@ -63,7 +63,10 @@ def losa(nombre, w, h, d, loc, color):
     ob = bpy.context.object
     ob.name = nombre
     ob.scale = (w/2, d/2, h/2)
-    bpy.ops.object.transform_apply(scale=True)
+    # location=False y rotation=False EXPLÍCITOS: los defaults del operador son
+    # True, así que 'aplicar la escala' también horneaba la posición y dejaba
+    # el origen del objeto en (0,0,0) — los hijos aterrizaban en el centro.
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     ob.data.materials.append(relleno(color))
     for c in list(ob.users_collection):
         c.objects.unlink(ob)

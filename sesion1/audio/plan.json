@@ -1,0 +1,109 @@
+{
+  "_comment": "Tiempos derivados de los beats de escena_loop.py.",
+  "sfx_dir": "../audio/sfx",
+  "lead_ms": 55,
+  "duration": 12.0,
+  "voice": [
+    {
+      "at": 0.6,
+      "file": "vo/vo1.wav",
+      "gain": 1.0,
+      "text": ""
+    },
+    {
+      "at": 3.5,
+      "file": "vo/vo2.wav",
+      "gain": 1.0,
+      "text": ""
+    },
+    {
+      "at": 6.6,
+      "file": "vo/vo3.wav",
+      "gain": 1.0,
+      "text": ""
+    },
+    {
+      "at": 9.3,
+      "file": "vo/vo4.wav",
+      "gain": 1.0,
+      "text": ""
+    }
+  ],
+  "sfx": [
+    {
+      "at": 0.4,
+      "file": "pop.mp3",
+      "gain": 0.34,
+      "align": "onset",
+      "cue": "aparece el marco 'piensa'"
+    },
+    {
+      "at": 0.8,
+      "file": "pop.mp3",
+      "gain": 0.34,
+      "align": "onset",
+      "cue": "aparece 'actúa'"
+    },
+    {
+      "at": 1.2,
+      "file": "pop.mp3",
+      "gain": 0.34,
+      "align": "onset",
+      "cue": "aparece 'observa'"
+    },
+    {
+      "at": 2.4,
+      "file": "click-soft.mp3",
+      "gain": 0.26,
+      "align": "onset",
+      "cue": "se tiende el primer cable"
+    },
+    {
+      "at": 2.7,
+      "file": "click-soft.mp3",
+      "gain": 0.26,
+      "align": "onset",
+      "cue": "segundo cable"
+    },
+    {
+      "at": 3.0,
+      "file": "click-soft.mp3",
+      "gain": 0.26,
+      "align": "onset",
+      "cue": "tercer cable"
+    },
+    {
+      "at": 3.55,
+      "file": "ping.mp3",
+      "gain": 0.22,
+      "align": "onset",
+      "cue": "arranca el pulso"
+    },
+    {
+      "at": 6.0,
+      "file": "ping.mp3",
+      "gain": 0.18,
+      "align": "onset",
+      "cue": "el pulso completa una vuelta"
+    },
+    {
+      "at": 8.4,
+      "file": "ping.mp3",
+      "gain": 0.18,
+      "align": "onset",
+      "cue": "otra vuelta"
+    },
+    {
+      "at": 9.25,
+      "file": "chime.mp3",
+      "gain": 0.24,
+      "align": "onset",
+      "cue": "entra la conclusión"
+    }
+  ],
+  "bgm": {
+    "file": "bgm.wav",
+    "gain": 0.1,
+    "fade_out_at": 10.6
+  }
+}
