@@ -1,6 +1,9 @@
+# Texto para el TTS. Los anglicismos van escritos fonéticamente en español
+# (tools -> tuls): Kokoro les aplica reglas del español. El texto EN PANTALLA
+# vive en scene.py y conserva su grafía original.
 Medio millón de líneas de código. Ninguna es el modelo.
 Eso encontraron cuando se filtró Claude Code. ¿Entonces qué son?
-Las tools que el agente puede llamar.
+Las tuls que el agente puede llamar.
 Las skills que sabe cargar.
 Los servidores MCP que le dan manos.
 Los subagentes en los que delega.

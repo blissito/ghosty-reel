@@ -1,6 +1,6 @@
 {
   "_comment": "GENERADO por plan.py desde scene.json — no editar a mano. 'at' = instante en que el sonido DEBE oírse; mix.sh compensa el silencio inicial de cada archivo (ver AUDIO.md).",
-  "sfx_dir": "../audio/sfx",
+  "sfx_dir": "audio/sfx",
   "lead_ms": 60,
   "duration": 31.0,
   "voice": [
@@ -20,7 +20,7 @@
       "at": 8.4,
       "file": "vo/vo3.wav",
       "gain": 1.0,
-      "text": "Las tools que el agente puede llamar."
+      "text": "Las tuls que el agente puede llamar."
     },
     {
       "at": 10.9,
@@ -55,14 +55,14 @@
   ],
   "sfx": [
     {
-      "at": 0.35,
+      "at": 0.2,
       "file": "click-soft.mp3",
       "gain": 0.3,
       "align": "onset",
       "cue": "aparece 'medio millón'"
     },
     {
-      "at": 1.6,
+      "at": 1.45,
       "file": "impact-bass-1.mp3",
       "gain": 0.38,
       "align": "onset",
@@ -76,7 +76,7 @@
       "cue": "el texto sale, entra el diagrama"
     },
     {
-      "at": 4.45,
+      "at": 4.0,
       "file": "pop.mp3",
       "gain": 0.3,
       "align": "onset",

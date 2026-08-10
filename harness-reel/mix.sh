@@ -117,8 +117,19 @@ if [ -n "${AUDIO_ONLY:-}" ]; then
 fi
 
 FPS=$(python3 -c "import json;print(json.load(open('scene.json'))['fps'])")
-ffmpeg -y -framerate "$FPS" -pattern_type glob -i 'out/frames/f*.png' -i audio/mix.wav \
-  -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p -movflags +faststart \
-  -c:a aac -b:a 192k -ar 48000 -shortest out/ad.mp4 2>&1 | tail -1
+# Dos pasadas: EEVEE dibuja los trazos de Grease Pencil SIEMPRE encima de las
+# mallas, así que Ghosty se renderiza aparte (ONLY=ghosty, fondo transparente) y
+# se compone aquí con overlay. Si no existe la pasada, se encodea sólo la base.
+if [ -d out/ghosty ]; then
+  ffmpeg -y -framerate "$FPS" -pattern_type glob -i 'out/frames/f*.png' \
+    -framerate "$FPS" -pattern_type glob -i 'out/ghosty/f*.png' -i audio/mix.wav \
+    -filter_complex '[0][1]overlay=format=auto:shortest=1[v]' -map '[v]' -map 2:a \
+    -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p -movflags +faststart \
+    -c:a aac -b:a 192k -ar 48000 -shortest out/ad.mp4 2>&1 | tail -1
+else
+  ffmpeg -y -framerate "$FPS" -pattern_type glob -i 'out/frames/f*.png' -i audio/mix.wav \
+    -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p -movflags +faststart \
+    -c:a aac -b:a 192k -ar 48000 -shortest out/ad.mp4 2>&1 | tail -1
+fi
 
 echo "-> out/ad.mp4  ($(du -h out/ad.mp4 | cut -f1))"

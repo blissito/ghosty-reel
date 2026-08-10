@@ -135,6 +135,16 @@ npx hyperframes tts "texto" -v em_santa -l es -s 0.96 -o vo1.wav
 `em_santa` (español, masculina) **no aparece en `--list`** pero funciona: el CLI
 expone un subconjunto curado. Si dice que una voz no existe, inténtala igual.
 
+**Escribe los anglicismos fonéticamente en el texto que lee el motor.** Kokoro en
+español aplica reglas del español a las palabras en inglés: "tools" hay que
+escribirlo **"tuls"**. Revisa siempre tools, skills, MCP, API, prompt, deploy,
+framework, endpoint y los nombres de producto. El texto EN PANTALLA se queda en
+su grafía original — son dos columnas distintas del guion.
+
+Y **escucha la voz antes de renderizar imagen**: regenerar una línea cuesta
+segundos, re-renderizar el video cuesta minutos, y las duraciones de la voz son
+las que fijan todos los beats.
+
 **Música — sintetízala** (`music.py`). MusicGen y Stable Audio traen pesos con
 licencia no comercial, que rompe la premisa OSS. Un bed de 14s es sub + pad +
 arpegio: determinista, ~1s en CPU, sin GPU, y es tuyo. Detalles que importan: dos
@@ -326,6 +336,94 @@ secuencia PNG y encodea con el `ffmpeg` del sistema (`encode.sh`). No pierdas
 tiempo buscando por qué falta el enum.
 
 Nota: el motor se llama `'BLENDER_EEVEE'`, no `'BLENDER_EEVEE_NEXT'`.
+
+## Color plano: apaga AgX
+
+Blender aplica **AgX** como transformación de vista por defecto. Es un tone
+mapping fotográfico: desatura y comprime los tonos claros para que un render 3D
+se vea a película. En un diagrama de color plano hace justo lo contrario de lo
+que quieres — la paleta sale pastel y el blanco sale gris lavanda.
+
+```python
+scene.view_settings.view_transform = 'Standard'
+scene.view_settings.look = 'None'
+```
+
+Es el tipo de bug que no se busca porque no parece bug: todo "se ve bien", solo
+que apagado. Se detecta comparando un color que sabes que pusiste saturado
+contra lo que sale en el PNG.
+
+## Logos sobre fondo oscuro
+
+**Antes de recolorear un logo, descarta AgX.** Un logo que se ve lavado o gris
+sobre el fondo oscuro casi siempre es el tone mapping, no el archivo. Pasó
+exactamente eso con el logo de FixterGeek: se diagnosticó como "trae las letras
+en negro" y se reconstruyó desde el SVG, cuando con `view_transform = 'Standard'`
+el PNG original renderiza idéntico a como se ve en el sitio. Un logo con contorno
+claro sobre letras oscuras está DISEÑADO para funcionar en ambos fondos.
+
+Si de verdad hace falta una variante clara —un logo sin contorno, letras oscuras
+y nada más— recoloréala desde el **SVG**, nunca sobre el PNG. Aclarar los píxeles
+oscuros del rasterizado deja blanco sobre blanco y lo único que sobrevive es la
+línea de antialias: letras huecas y fantasmales. En el SVG los estorbos son
+separables:
+
+```python
+s = re.sub(r'<rect[^>]*fill="white"[^>]*/>', '', s, count=1)  # fondo del lienzo
+s = s.replace('fill="white"', 'fill="none"')      # contrapunzones (el hueco de la "g")
+s = s.replace('stroke="white"', 'stroke="none"')  # contorno para fondo claro
+s = s.replace('#15191E', '#F5F6FA')               # letras oscuras -> claras
+```
+
+```bash
+rsvg-convert -w 1200 -o logo-light.png logo-dark-bg.svg
+```
+
+Compón el resultado sobre un parche del color de fondo real antes de meterlo a
+la escena. Verlo sobre blanco no dice nada.
+
+## Grease Pencil SIEMPRE se dibuja encima de las mallas
+
+En EEVEE los trazos de Grease Pencil se componen por encima de cualquier malla,
+**esté donde esté**. Una imagen que debe volar POR DELANTE del diagrama no lo
+logra por más que la acerques a la cámara.
+
+Está verificado con la matriz completa — `stroke_depth_order` en `2D` y `3D`
+cruzado con `surface_render_method` en `DITHERED` y `BLENDED`: el trazo gana en
+las cuatro. No pierdas horas moviendo objetos en Z; no es un problema de orden
+ni de z-buffer.
+
+**La salida es renderizar en dos pasadas y componer.** Separa el personaje en su
+propia colección, y con una variable de entorno decide cuál se excluye:
+
+```python
+COL_MAIN, COL_GH = bpy.data.collections.new("MAIN"), bpy.data.collections.new("GH")
+scene.collection.children.link(COL_MAIN); scene.collection.children.link(COL_GH)
+for o in list(scene.collection.objects):
+    scene.collection.objects.unlink(o)
+    (COL_GH if o is PERSONAJE else COL_MAIN).objects.link(o)
+COL_GH.objects.link(cam)              # la cámara tiene que estar en AMBAS
+
+only = os.environ.get("ONLY") == "ghosty"
+for c in bpy.context.view_layer.layer_collection.children:
+    c.exclude = (c.name == "MAIN") if only else (c.name == "GH")
+scene.render.film_transparent = only
+scene.render.image_settings.color_mode = 'RGBA' if only else 'RGB'
+```
+
+Excluir la colección es lo que funciona: poner `hide_render = True` no sirve
+porque `only_between` ya dejó esa propiedad animada y la animación gana.
+
+Y se compone en ffmpeg, sin tocar el compositor de Blender 5:
+
+```bash
+ffmpeg -framerate $FPS -pattern_type glob -i 'out/frames/f*.png' \
+       -framerate $FPS -pattern_type glob -i 'out/ghosty/f*.png' -i audio/mix.wav \
+       -filter_complex '[0][1]overlay=format=auto:shortest=1[v]' -map '[v]' -map 2:a ...
+```
+
+La pasada del personaje es barata (un objeto), así que el costo real es mucho
+menor que duplicar el render.
 
 ## Guion para vertical: la estructura antes que el render
 

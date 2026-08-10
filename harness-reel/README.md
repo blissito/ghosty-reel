@@ -1,40 +1,59 @@
 # harness-reel
 
-Reel vertical 9:16 (~31s) sobre la anatomía de un agente, para el Taller
-Sistemas Agénticos. A diferencia del anuncio de la raíz, aquí **no se captura
-ninguna UI**: el diagrama se traza con Grease Pencil, así que la cámara puede
-entrar entre las capas.
-
-Estructura narrativa: Open Loop — el dato contraintuitivo abre en el segundo
-cero y no se resuelve hasta "todo eso es el harness".
-
-## Construir
+Reel vertical 9:16 (31s) sobre la anatomía de un agente, para el Taller Sistemas
+Agénticos. El diagrama no se captura de ninguna UI: se traza con Grease Pencil,
+así que la cámara entra entre las capas en vez de verlas apiladas.
 
 ```bash
-export HYPERFRAMES_PYTHON=~/.venvs/kokoro/bin/python3
-i=0; while IFS= read -r l; do i=$((i+1)); \
-  npx hyperframes tts "$l" -v em_santa -l es -s 0.96 -o audio/vo/vo$i.wav </dev/null; \
-done < lines.txt                      # 1. voz  (mide las duraciones reales)
-
-python3 plan.py                       # 2. beats -> audio/plan.json
-python3 music.py                      # 3. bed sintetizado
-blender -b -P scene.py                # 4. 930 frames a 1080x1920
-./mix.sh                              # 5. mezcla + encode -> out/ad.mp4
+./build.sh      # voz -> beats -> música -> render -> mezcla -> out/ad.mp4
 ```
 
-Iterar sin esperar el render completo:
+## Arquitectura
+
+**`scene.json` manda.** Los beats están en segundos y salen de las duraciones
+reales de la voz. `plan.py` deriva de ahí los SFX y `music.py` los ducks del bed.
+Mover un beat y volver a correr `build.sh` realinea todo; ningún tiempo se
+escribe a mano dos veces.
+
+**El render son dos pasadas.** EEVEE dibuja los trazos de Grease Pencil siempre
+encima de las mallas, sin importar `stroke_depth_order` ni el método de
+transparencia. Para que Ghosty vuele por delante hay que separarlo y componer:
 
 ```bash
-PREVIEW=1 blender -b -P scene.py              # stills al 40% en cada beat
-PREVIEW=1 FRAMES=95,585,880 blender -b -P scene.py
-AUDIO_ONLY=1 ./mix.sh                         # juzgar la pista aparte
+ONLY=ghosty blender -b -P scene.py    # out/ghosty/  (RGBA, fondo transparente)
+blender -b -P scene.py                # out/frames/  (base)
 ```
 
-## scene.json manda
+`mix.sh` las une con `overlay` de ffmpeg.
 
-Los beats están en SEGUNDOS y salen de las duraciones reales de la voz. `plan.py`
-deriva de ahí los SFX y `music.py` los ducks del bed, así que mover un beat y
-volver a correr los tres realinea todo. Ningún tiempo se escribe a mano dos veces.
+**`lines.txt` es para el motor de voz, no para pantalla.** Los anglicismos van
+fonéticos (`tools` → `tuls`) porque Kokoro les aplica reglas del español. El
+texto visible vive en `scene.py`.
 
-Los gotchas del pipeline (Grease Pencil, formato vertical, audio) están en
-`../skills/blender-ad/SKILL.md`.
+**8 muestras, sin sombras ni GI.** El default de EEVEE (64 muestras + sombras +
+GI) está pensado para render 3D con luces. Esta escena no tiene una sola luz:
+todo es emisión plana, así que ese trabajo se tira. Quitarlo da **3.5×** con una
+diferencia de imagen de 0.004/255 — imperceptible. `SPP=64 SLOW=1` lo revierte.
+
+| | s/frame | 930 frames |
+|---|---|---|
+| 64 spp + sombras + GI | 0.600 | 9.3 min |
+| 8 spp sin sombras/GI | 0.173 | 2.7 min |
+
+**`view_transform = 'Standard'`.** AgX desatura la paleta y agrisa el blanco. Si
+algo se ve lavado, empieza por ahí.
+
+## Iterar
+
+```bash
+PREVIEW=1 blender -b -P scene.py                 # stills al 40% en cada beat
+PREVIEW=1 FRAMES=118,470,880 blender -b -P scene.py
+RANGE=588,930 blender -b -P scene.py             # re-render de un tramo
+AUDIO_ONLY=1 ./mix.sh                            # la pista sin esperar el render
+```
+
+Los gotchas del pipeline están en `../skills/blender-ad/SKILL.md`.
+
+---
+
+Hecho por [blissito](https://github.com/blissito) · [fixter.org](https://fixter.org)

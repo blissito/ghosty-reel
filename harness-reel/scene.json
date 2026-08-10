@@ -18,8 +18,8 @@
     {
       "file": "vo3.wav",
       "at": 8.4,
-      "dur": 2.26,
-      "text": "Las tools que el agente puede llamar."
+      "dur": 2.2,
+      "text": "Las tuls que el agente puede llamar."
     },
     {
       "file": "vo4.wav",
@@ -53,9 +53,9 @@
     }
   ],
   "beats": {
-    "hook": 0.3,
+    "hook": 0.15,
     "hook_out": 4.0,
-    "nucleo": 4.4,
+    "nucleo": 3.95,
     "tools": 8.4,
     "skills": 10.9,
     "mcp": 12.9,
