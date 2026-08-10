@@ -387,8 +387,13 @@ COL_MAIN = bpy.data.collections.new("MAIN")
 COL_GH = bpy.data.collections.new("GH")
 S.collection.children.link(COL_MAIN)
 S.collection.children.link(COL_GH)
-for o in list(S.collection.objects):
-    S.collection.objects.unlink(o)
+# Recorrer S.objects, NO S.collection.objects: bpy.ops.mesh.primitive_plane_add
+# enlaza a una colección llamada "Collection", no a la master de la escena, así
+# que los planos (personaje, logo, halos) quedaban fuera del reparto y salían en
+# LAS DOS pasadas. Hay que desenlazar de todas sus colecciones actuales.
+for o in list(S.objects):
+    for c in list(o.users_collection):
+        c.objects.unlink(o)
     (COL_GH if o is GH else COL_MAIN).objects.link(o)
 COL_GH.objects.link(cam)        # la cámara debe vivir en ambas pasadas
 

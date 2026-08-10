@@ -1,114 +1,77 @@
-# EasyBits — anuncio 3D generado por completo desde CLI
+# Reels generados por completo desde la terminal
 
-Motion graphics de producto en Blender headless, con voz, música y efectos.
-Nadie abre Blender, ni un editor de video, ni un DAW. Todo se genera y se
-renderiza desde la terminal, y todo el stack es libre.
+Sistema para producir video promocional con Blender headless: guion, voz, música,
+efectos, render y mezcla. Nadie abre Blender, ni un editor de video, ni un DAW.
+Todo el stack es libre.
 
-## Correr
+## Producciones
+
+| | formato | técnica | render |
+|---|---|---|---|
+| **EasyBits** (raíz) | 16:9 · 32s | UI real capturada con Chrome, en capas | ~35 min |
+| **[harness-reel](./harness-reel)** | 9:16 · 31s | diagrama trazado con Grease Pencil | ~2.7 min |
+
+EasyBits vive en la raíz por histórico: fue la primera y de ahí salió el motor.
+Las nuevas producciones van en su propia carpeta.
+
+## El motor
+
+Lo que comparten las dos, y lo que hay que entender antes de tocar nada:
+
+**`scene.json` es la dirección completa.** Ningún número vive hardcodeado en el
+script de escena: beats, rects, cámara, coreografía. Cambiar de anuncio es
+cambiar el JSON.
+
+**El audio se deriva de la imagen.** `plan.py` lee los beats de `scene.json` y
+escribe `audio/plan.json`: los efectos no llevan segundos escritos a mano sino el
+beat visual al que responden (`at("button_pop", 3)`). Mover un beat y volver a
+correr `plan.py` mueve el sonido con él. `music.py` sintetiza el bed desde cero
+—sin modelos, sin catálogo, sin licencia— y saca de ahí su duración y sus ducks.
+Detalle en **[AUDIO.md](./AUDIO.md)**.
+
+**El loop de iteración es de segundos, no de minutos.** `PREVIEW=1` saca stills
+al 40%, `FRAMES=a,b` va a beats puntuales, `RANGE=a,b` re-renderiza un tramo y
+`AUDIO_ONLY=1 ./mix.sh` juzga la pista sin esperar el render. Eso es lo que hace
+viable dirigir esto desde un agente.
+
+**Los gotchas están documentados.** [`skills/blender-ad`](./skills/blender-ad)
+recoge lo que costó horas descubrir: las fcurves mudadas a channelbags, el
+compositor de Blender 5, por qué Grease Pencil se dibuja siempre encima de las
+mallas, por qué AgX apaga una paleta plana, el mapeo píxel→mundo en vertical.
+Trae `grease-pencil.py`, un ejemplo mínimo que corre solo.
+
+## Dos técnicas, dos usos
+
+**Capturar la UI** (EasyBits). La interfaz no se modela: `capture.sh` la dispara
+con Chrome headless **en capas separadas** y Blender las usa como texturas
+emisivas. Ese corte en capas *es* el efecto — si el botón viviera dentro de la
+textura de fondo, jamás podría despegarse de ella. Lo que la cámara va a acercar
+se captura a 3-4x; el fondo a 1x.
+
+**Trazar con Grease Pencil** (harness-reel). Cuando no hay UI que mostrar sino
+una idea que explicar, el diagrama se dibuja en el espacio 3D y la cámara entra
+entre las capas. El modificador Build hace que el trazo se dibuje solo, y el
+texto convertido a Grease Pencil se escribe solo. Render mucho más barato.
+
+En ambos casos, **perspectiva y no ortográfica**: el mapeo sigue siendo exacto en
+`z=0` y los objetos que vuelan hacia el espectador sí crecen.
+
+## Correr EasyBits
 
 ```bash
-./capture.sh                             # UI real -> assets/*.png + layout.json
-python3 plan.py                          # beats de scene.json -> audio/plan.json
-python3 music.py audio/bgm.wav           # música sintetizada
-blender -b -P scene.py                   # render -> out/frames  (~35 min)
-./mix.sh                                 # audio + frames -> out/ad.mp4
-
-PREVIEW=1 blender -b -P scene.py         # stills baratos (~0.5s c/u)
-PREVIEW=1 FRAMES=460,640 blender -b -P scene.py
-AUDIO_ONLY=1 ./mix.sh                    # solo la pista, sin esperar el render
+./capture.sh                      # UI real -> assets/*.png + layout.json
+python3 plan.py                   # beats -> audio/plan.json
+python3 music.py audio/bgm.wav    # música sintetizada
+blender -b -P scene.py            # render -> out/frames
+./mix.sh                          # audio + frames -> out/ad.mp4
 ```
 
 `blender` = `/Applications/Blender.app/Contents/MacOS/Blender`.
 
-## El anuncio — 32s, seis actos
-
-| Acto | Segundos | Qué pasa |
-|---|---|---|
-| Problema | 0–4.5 | *"Tus agentes generan archivos." / "¿Dónde los guardas?"* Cada palabra entra por separado y escalonada; después la línea entera acelera contra la cámara y la atraviesa — esa es la transición, no hay corte. |
-| Producto | 4.5–12 | Entra la UI real. El cursor 3D vuela y hace clic. El botón se despega de la pantalla, gana grosor, y del impacto salen archivos que se ordenan solos en una malla. |
-| El agente | 12.9–18.6 | Panel de chat 3D: el agente llama `upload_file()`, `search_documents()`, `create_share_link()` y de cada llamada sale un archivo. Es la escena que **explica**; las otras muestran. Por eso las tools se leen textuales, no como iconos abstractos. |
-| La flota | 18.5–24.3 | Tres canales —WhatsApp, widget web, terminal— emitiendo archivos que convergen al **mismo** punto. La convergencia es el mensaje. |
-| Compartir | 24.2–29.9 | Un link aparece, se sostiene lo suficiente para leerse, y se replica en todas direcciones. |
-| Marca | 29.9–32 | Todo se aparta y entra el cierre: logo, *Almacenamiento para agentes*, `easybits.cloud`. |
-
-## Cómo funciona
-
-**La UI no se modela.** `capture.sh` la dispara con Chrome headless en capas
-separadas y Blender las usa como texturas emisivas:
-
-| capa | qué es | por qué separada |
-|---|---|---|
-| `page.png` | la app **sin** el botón | fondo, nunca se acerca → 1x |
-| `button.png` | solo el botón, con alpha | es su propio objeto: por eso puede salir de la pantalla → 4x |
-| `t1/t2.png` | los títulos | planos 3D que atraviesan la cámara → 2x |
-| `card0..7.png` | tarjetas de archivo | se instancian 20 veces en 3D → 3x |
-| `w0_*.png` | **cada palabra** de los títulos | se animan escalonadas → 2x |
-| `agent/tool*/chan*/share.png` | paneles de las escenas 3-5 | → 2-3x |
-| `end.png` | el cierre de marca | → 2x |
-
-Ese corte en capas **es** el efecto. Si el botón viviera dentro de la textura de
-fondo, jamás podría despegarse de ella.
-
-**El mapeo píxel → mundo es exacto.** El plano de la página mide 16×9 unidades y
-la cámara se encuadra para que calce justo a `z=0`. Un rect en píxeles de
-`scene.json` cae donde debe sin ajustar nada a ojo.
-
-**Perspectiva, no ortográfica.** Ortográfica sería más simple, pero entonces los
-objetos que vuelan hacia el espectador no crecerían y todo el 3D se perdería. Con
-perspectiva encuadrada, el mapeo sigue siendo exacto en `z=0` — que es donde vive
-la UI — y las tarjetas ganan profundidad real.
-
-**Los títulos se animan palabra por palabra, y el navegador decide dónde va cada
-una.** `capture.sh` corre Chrome con `--dump-dom` sobre una capa que mide los
-rects de cada `<w>` y los vuelca a `assets/layout.json`; `scene.py` solo los
-convierte a coordenadas de mundo. Calcular esas posiciones a mano funciona hasta
-el primer cambio de fuente, kerning o `letter-spacing`; medirlas no se rompe
-nunca. Las palabras cuelgan de un Empty por línea: la entrada se anima por
-palabra, la salida una sola vez sobre el padre.
-
-**`scene.json` es la dirección completa.** `scene.py` no tiene números
-hardcodeados: rect del botón, curva del cursor, beats, malla de archivos, cámara,
-y la coreografía de las tres escenas nuevas. Cambiar de demo es cambiar el JSON y
-recapturar.
-
-**El audio se deriva de los mismos beats.** `plan.py` lee `scene.json` y escribe
-`audio/plan.json`: los efectos no llevan segundos escritos a mano, sino el beat
-visual al que responden (`at("button_pop", 3)`). Mover un beat y volver a correr
-`plan.py` mueve el sonido con él. `music.py` también toma de ahí su duración.
-
-Para el audio, ver **[AUDIO.md](./AUDIO.md)**.
-
-## Decisiones que cuestan si se ignoran
-
-**Geometría redondeada de verdad.** Si la malla es un rectángulo recto y el
-redondeo vive solo en el alpha, el Solidify extruye esquinas cuadradas por debajo
-del recorte: se ven como muescas en cuanto el objeto gira. `rounded_rect_mesh`
-construye el contorno real con UVs planares.
-
-**La sombra es falsa a propósito.** La página es emisión pura: no recibe luz, así
-que no puede recibir una sombra real. Sin el blob radial de `build_shadow` el
-botón se lee como calcomanía flotante.
-
-**Nada existe antes de su beat.** Una fcurve extrapola su primer valor hacia
-atrás, así que el botón y el cursor aparecían flotando sobre los títulos del
-primer acto. Se apagan explícitamente hasta que les toca entrar.
-
-**El canto emisivo sobrevive al fundido de la cara.** Al retirar el botón quedaba
-un contorno morado sobre la marca; hay que retraer el grosor del Solidify a cero,
-no solo desvanecer la textura.
-
-**La malla de archivos se calcula contra el ancho visible a su profundidad**, no
-contra 16 unidades. A `z=2.6` con la cámara a 22.5 el encuadre mide ~12 unidades;
-dimensionarla a 16 la desborda.
-
-**El bloom vive en el compositor, y en Blender 5 se mudó otra vez.** El árbol pasó
-a ser un node group y los parámetros del Glare pasaron de propiedades a sockets.
-Además el render **no** entra por la entrada del grupo: hay que leerlo con un
-Render Layers dentro. Cablearlo desde `NodeGroupInput` deja el socket en su valor
-por defecto y el video sale en blanco puro.
-
-**Las fcurves se mudaron a channelbags** en Blender 4.4+. El helper `fcurves()`
-sirve a ambas APIs para no atar el script a una versión.
+Los seis actos: problema (0–4.5s), producto (4.5–12), el agente (12.9–18.6), la
+flota (18.5–24.3), compartir (24.2–29.9), marca (29.9–32). La escena del agente
+es la que **explica** —las tools se leen textuales, no como iconos— y las otras
+muestran.
 
 ## Stack — todo libre
 
@@ -122,21 +85,16 @@ sirve a ambas APIs para no atar el script a una versión.
 | Mezcla y encode | ffmpeg | LGPL/GPL |
 
 Sin cuentas, sin API keys, sin servicios. La única pieza no-OSI son los seis SFX,
-y son sintetizables con el mismo enfoque de `music.py` si hiciera falta pureza
-estricta.
-
-## Rendimiento
-
-EEVEE Next, 1920×1080, 30fps, 32s (960 frames): **~35 min** en un Mac con GPU.
-Preview al 40%: ~0.5s por frame — el loop de iteración es de segundos, que es lo
-que hace viable dirigir esto desde un agente. La música tarda ~2s en CPU.
+sintetizables con el mismo enfoque de `music.py` si hiciera falta pureza estricta.
 
 ## Siguiente
 
 - **Benchmark de lavapipe.** EEVEE necesita GPU; las microVMs del KS-5 son CPU
   pura. Vulkan por software (Mesa lavapipe) es lo que decide si esto puede correr
   como servicio. Sin ese número, todo lo demás es especulación.
-- Escena 2 encadenada desde el cierre.
 - Servicio: `POST {screenshot, rect, guion, paleta}` → MP4, en Firecracker, con
-  job asíncrono y webhook (el render son minutos, no puede ser síncrono como las
-  cajas de voz y render que ya existen).
+  job asíncrono y webhook — el render son minutos, no puede ser síncrono.
+
+---
+
+Hecho por [blissito](https://github.com/blissito) · [fixter.org](https://fixter.org)
