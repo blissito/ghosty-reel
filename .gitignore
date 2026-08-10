@@ -17,3 +17,6 @@ harness-reel/audio/*.wav
 harness-reel/audio/*.m4a
 skills/blender-ad/seq/
 sesion1/out/
+sesion1/out_d2/
+sesion1/out3d/
+sesion1/__pycache__/

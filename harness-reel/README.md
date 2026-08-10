@@ -4,6 +4,12 @@ Reel vertical 9:16 (31s) sobre la anatomía de un agente, para el Taller Sistema
 Agénticos. El diagrama no se captura de ninguna UI: se traza con Grease Pencil,
 así que la cámara entra entre las capas en vez de verlas apiladas.
 
+<p align="center">
+  <img src="docs/preview.gif" width="270" alt="Los primeros 11 segundos del reel">
+</p>
+
+<p align="center"><em><a href="docs/harness-reel.mp4">Ver completo con audio (31s)</a></em></p>
+
 ```bash
 ./build.sh      # voz -> beats -> música -> render -> mezcla -> out/ad.mp4
 ```

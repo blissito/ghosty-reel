@@ -4,6 +4,15 @@ Video promocional con Blender headless: guion, voz, música, efectos, render y
 mezcla. Nadie abre Blender, ni un editor de video, ni un DAW. Todo el stack es
 libre.
 
+<p align="center">
+  <img src="harness-reel/docs/preview.gif" width="270" alt="Reel del harness: diagrama trazándose solo, en 9:16">
+</p>
+
+<p align="center">
+  <em>Trazado con Grease Pencil, voz sintetizada en local, música generada.<br>
+  <a href="harness-reel/docs/harness-reel.mp4">Ver con audio (31s)</a></em>
+</p>
+
 ## Cómo funciona
 
 **1. Se escribe el guion y se genera la voz.** Kokoro local, sin red. Las
