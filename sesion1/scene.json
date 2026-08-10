@@ -1,0 +1,66 @@
+{
+  "_comment": "Beats en segundos, derivados de las duraciones REALES de la voz. Cambiar el guion = regenerar voz y volver a correr esto.",
+  "fps": 30,
+  "duration_frames": 1419,
+  "vo": [
+    {
+      "file": "vo1.wav",
+      "at": 0.35,
+      "dur": 4.71,
+      "beat": "texto"
+    },
+    {
+      "file": "vo2.wav",
+      "at": 5.51,
+      "dur": 3.86,
+      "beat": "dos_piezas"
+    },
+    {
+      "file": "vo3.wav",
+      "at": 9.83,
+      "dur": 1.9,
+      "beat": "pide"
+    },
+    {
+      "file": "vo4.wav",
+      "at": 12.97,
+      "dur": 2.71,
+      "beat": "argumentos"
+    },
+    {
+      "file": "vo5.wav",
+      "at": 16.23,
+      "dur": 7.49,
+      "beat": "condicional"
+    },
+    {
+      "file": "vo6.wav",
+      "at": 24.37,
+      "dur": 6.76,
+      "beat": "historial"
+    },
+    {
+      "file": "vo7.wav",
+      "at": 31.73,
+      "dur": 5.74,
+      "beat": "ciclo"
+    },
+    {
+      "file": "vo8.wav",
+      "at": 38.17,
+      "dur": 7.53,
+      "beat": "cta"
+    }
+  ],
+  "beats": {
+    "texto": 0.35,
+    "dos_piezas": 5.51,
+    "pide": 9.83,
+    "argumentos": 12.97,
+    "condicional": 16.23,
+    "historial": 24.37,
+    "ciclo": 31.73,
+    "cta": 38.17,
+    "end": 47.3
+  }
+}

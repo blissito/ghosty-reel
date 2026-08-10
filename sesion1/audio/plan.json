@@ -1,109 +1,168 @@
 {
-  "_comment": "Tiempos derivados de los beats de escena_loop.py.",
+  "_comment": "GENERADO desde los beats de scene.json — no editar a mano.",
   "sfx_dir": "../audio/sfx",
   "lead_ms": 55,
-  "duration": 12.0,
+  "duration": 47.3,
   "voice": [
     {
-      "at": 0.6,
+      "at": 0.35,
       "file": "vo/vo1.wav",
       "gain": 1.0,
       "text": ""
     },
     {
-      "at": 3.5,
+      "at": 5.51,
       "file": "vo/vo2.wav",
       "gain": 1.0,
       "text": ""
     },
     {
-      "at": 6.6,
+      "at": 9.83,
       "file": "vo/vo3.wav",
       "gain": 1.0,
       "text": ""
     },
     {
-      "at": 9.3,
+      "at": 12.97,
       "file": "vo/vo4.wav",
+      "gain": 1.0,
+      "text": ""
+    },
+    {
+      "at": 16.23,
+      "file": "vo/vo5.wav",
+      "gain": 1.0,
+      "text": ""
+    },
+    {
+      "at": 24.37,
+      "file": "vo/vo6.wav",
+      "gain": 1.0,
+      "text": ""
+    },
+    {
+      "at": 31.73,
+      "file": "vo/vo7.wav",
+      "gain": 1.0,
+      "text": ""
+    },
+    {
+      "at": 38.17,
+      "file": "vo/vo8.wav",
       "gain": 1.0,
       "text": ""
     }
   ],
   "sfx": [
     {
-      "at": 0.4,
+      "at": 5.46,
       "file": "pop.mp3",
       "gain": 0.34,
       "align": "onset",
-      "cue": "aparece el marco 'piensa'"
+      "cue": "nace el marco del modelo"
     },
     {
-      "at": 0.8,
+      "at": 6.36,
       "file": "pop.mp3",
       "gain": 0.34,
       "align": "onset",
-      "cue": "aparece 'actúa'"
+      "cue": "sale disparado el de tools"
     },
     {
-      "at": 1.2,
-      "file": "pop.mp3",
-      "gain": 0.34,
-      "align": "onset",
-      "cue": "aparece 'observa'"
-    },
-    {
-      "at": 2.4,
+      "at": 7.21,
       "file": "click-soft.mp3",
-      "gain": 0.26,
+      "gain": 0.24,
       "align": "onset",
-      "cue": "se tiende el primer cable"
+      "cue": "se tiende el cable de ida"
     },
     {
-      "at": 2.7,
+      "at": 7.51,
       "file": "click-soft.mp3",
-      "gain": 0.26,
+      "gain": 0.24,
       "align": "onset",
-      "cue": "segundo cable"
+      "cue": "el de vuelta"
     },
     {
-      "at": 3.0,
-      "file": "click-soft.mp3",
-      "gain": 0.26,
+      "at": 9.85,
+      "file": "impact-bass-1.mp3",
+      "gain": 0.42,
       "align": "onset",
-      "cue": "tercer cable"
+      "cue": "el golpe: 'Pide'"
     },
     {
-      "at": 3.55,
+      "at": 13.27,
       "file": "ping.mp3",
       "gain": 0.22,
       "align": "onset",
-      "cue": "arranca el pulso"
+      "cue": "aparecen los argumentos"
     },
     {
-      "at": 6.0,
-      "file": "ping.mp3",
-      "gain": 0.18,
+      "at": 16.58,
+      "file": "chime.mp3",
+      "gain": 0.26,
       "align": "onset",
-      "cue": "el pulso completa una vuelta"
+      "cue": "nace la condicional"
     },
     {
-      "at": 8.4,
-      "file": "ping.mp3",
+      "at": 17.83,
+      "file": "whoosh-cinematic.mp3",
+      "gain": 0.26,
+      "align": "peak",
+      "cue": "arranca el recorrido"
+    },
+    {
+      "at": 25.27,
+      "file": "click.mp3",
+      "gain": 0.2,
+      "align": "onset",
+      "cue": "primera línea de historial"
+    },
+    {
+      "at": 26.97,
+      "file": "click.mp3",
       "gain": 0.18,
       "align": "onset",
       "cue": "otra vuelta"
     },
     {
-      "at": 9.25,
-      "file": "chime.mp3",
-      "gain": 0.24,
+      "at": 28.67,
+      "file": "click.mp3",
+      "gain": 0.18,
       "align": "onset",
-      "cue": "entra la conclusión"
+      "cue": "otra"
+    },
+    {
+      "at": 38.72,
+      "file": "riser.mp3",
+      "gain": 0.3,
+      "align": "peak",
+      "cue": "anticipa el colapso: sin esto el golpe llega sin aviso"
+    },
+    {
+      "at": 40.09,
+      "file": "impact-bass-1.mp3",
+      "gain": 0.4,
+      "align": "onset",
+      "cue": "el colapso revienta"
+    },
+    {
+      "at": 40.15,
+      "file": "whoosh-cinematic.mp3",
+      "gain": 0.3,
+      "align": "peak",
+      "cue": "el barrido del reventón"
+    },
+    {
+      "at": 40.52,
+      "file": "sparkle.mp3",
+      "gain": 0.22,
+      "align": "onset",
+      "cue": "entra el título"
     }
   ],
   "bgm": {
     "file": "bgm.wav",
-    "gain": 0.1,
-    "fade_out_at": 10.6
+    "gain": 0.11,
+    "fade_out_at": 45.8
   }
 }

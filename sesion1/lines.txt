@@ -1,6 +1,10 @@
-# Texto para el TTS: los anglicismos van fonéticos (tuls, jarnes) porque Kokoro
-# aplica reglas del español. Lo que se ve en pantalla vive en escena_loop.py.
+# Texto para el TTS. Anglicismos fonéticos: tuls, jarnes. Lo que se ve en
+# pantalla vive en las escenas, con su grafía original.
+Un modelo devuelve texto. No abre archivos, no llama APIs, no ejecuta nada.
+El agente son dos piezas: el modelo, y las tuls que puede usar.
 El modelo no ejecuta. Pide.
-El jarnes ejecuta, y le devuelve el resultado.
-Y vuelve a empezar.
-Ese ida y vuelta es el agente.
+Devuelve el nombre de una tul, y sus argumentos.
+Después de cada respuesta hay una condicional. ¿Pidió una tul? Se ejecuta, y el resultado regresa. ¿No pidió? Entonces termina.
+Cada resultado se suma al historial. En la vuelta siguiente, el modelo decide con información que antes no tenía.
+Esa condicional dentro de un ciclo es el agente. Lo demás son piezas que le agregas después.
+En la primera sesión del taller le pones tus primeras tuls a tu agente, sobre una interfaz que ya te damos. Primero de septiembre.
