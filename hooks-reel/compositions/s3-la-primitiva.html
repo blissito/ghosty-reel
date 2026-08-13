@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          font-family: "JetBrains Mono", monospace;
+          color: #141a1f;
+        }
+        #root .stage {
+          position: absolute;
+          inset: 0;
+          padding: 110px 80px 210px;
+          display: flex;
+          flex-direction: column;
+        }
+        #s3-kicker {
+          font-weight: 700;
+          font-size: 26px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          margin-bottom: 24px;
+          /* Tinta sobre el papel morado: el crema no daba contraste AA. */
+          color: #141a1f;
+        }
+        #s3-title {
+          align-self: flex-start;
+          font-family: "Archivo Black", sans-serif;
+          font-size: 116px;
+          line-height: 0.92;
+          letter-spacing: -0.03em;
+          color: #f7f0e4;
+          background: #141a1f;
+          border: 8px solid #141a1f;
+          box-shadow: 12px 12px 0 #141a1f;
+          padding: 18px 30px 24px;
+        }
+        #s3-title em {
+          font-style: normal;
+          /* Cyan un punto más claro para pasar AA sobre la tinta. */
+          color: #8adaf4;
+        }
+
+        #s3-snips {
+          margin-top: 66px;
+          display: flex;
+          flex-direction: column;
+          gap: 26px;
+        }
+        #root .snip {
+          background: #141a1f;
+          border: 8px solid #141a1f;
+          box-shadow: 7px 7px 0 #141a1f;
+          padding: 0 0 24px;
+        }
+        #root .snip .fw {
+          display: inline-block;
+          font-family: "Archivo Black", sans-serif;
+          font-size: 26px;
+          padding: 12px 20px;
+          border-bottom: 8px solid #141a1f;
+          border-right: 8px solid #141a1f;
+        }
+        #s3-snip1 .fw {
+          background: #f29130;
+        }
+        #s3-snip2 .fw {
+          background: #4fc7ee;
+        }
+        #s3-snip3 .fw {
+          background: #7fc95c;
+        }
+        #root .snip pre {
+          margin: 0;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 27px;
+          line-height: 1.5;
+          color: #f7f0e4;
+          padding: 18px 28px 0;
+          white-space: pre;
+          overflow: hidden;
+        }
+        #root .snip .k {
+          color: #9b7fe8;
+        }
+        #root .snip .f {
+          color: #f5c542;
+        }
+        #root .snip .d {
+          color: #4ecfaf;
+        }
+
+        #s3-punch {
+          margin-top: 56px;
+          font-size: 40px;
+          font-weight: 700;
+          line-height: 1.35;
+          background: #f7f0e4;
+          border: 8px solid #141a1f;
+          box-shadow: 12px 12px 0 #141a1f;
+          padding: 30px 32px;
+        }
+        #s3-emoji {
+          display: inline-block;
+          font-size: 46px;
+          line-height: 1;
+        }
+        #s3-punch u {
+          text-decoration: none;
+          background: #f5c542;
+          color: #141a1f;
+          padding: 2px 12px;
+        }
+      </style>
+
+      <div id="root" data-composition-id="s3-la-primitiva" data-width="1080" data-height="1920">
+        <div class="stage">
+          <div id="s3-kicker">03 · la primitiva</div>
+          <div id="s3-title">Un hook,<br /><em>tres</em> SDKs</div>
+
+          <div id="s3-snips">
+            <div id="s3-snip1" class="snip">
+              <div class="fw">Claude Code</div>
+              <pre><span class="f">"PreToolUse"</span>: [{ matcher: <span class="d">"Bash"</span>,
+  hooks: [{ command: <span class="d">"./guard.sh"</span> }] }]</pre>
+            </div>
+
+            <div id="s3-snip2" class="snip">
+              <div class="fw">LangGraph</div>
+              <pre><span class="k">class</span> Guard(AgentMiddleware):
+  <span class="k">def</span> <span class="f">wrap_tool_call</span>(self, req, handler):
+    <span class="k">if</span> blocked(req): <span class="k">return</span> <span class="d">Command(...)</span></pre>
+            </div>
+
+            <div id="s3-snip3" class="snip">
+              <div class="fw">OpenAI Agents SDK</div>
+              <pre><span class="k">class</span> Guard(RunHooks):
+  <span class="k">async def</span> <span class="f">on_tool_start</span>(self, ctx, agent, tool):
+    <span class="k">if</span> blocked(tool): <span class="k">raise</span> <span class="d">Tripwire()</span></pre>
+            </div>
+          </div>
+
+          <div id="s3-punch">Sin ese punto,<br />tu seguridad es <u>la buena fe</u>. <span id="s3-emoji">🤞</span></div>
+        </div>
+      </div>
+
+      <script>
+        window.__timelines = window.__timelines || {};
+        (function () {
+          const tl = gsap.timeline({ paused: true });
+          const POP = "back.out(1.7)";
+
+          tl.fromTo("#s3-kicker", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+          tl.fromTo(
+            "#s3-title",
+            { scaleX: 1.12, scaleY: 0.86, opacity: 0, y: -40 },
+            { scaleX: 1, scaleY: 1, opacity: 1, y: 0, duration: 0.6, ease: POP },
+            0.4
+          );
+
+          // Un snippet por framework nombrado en la narración.
+          tl.fromTo("#s3-snip1", { opacity: 0, x: -120, scaleX: 1.08 }, { opacity: 1, x: 0, scaleX: 1, duration: 0.5, ease: POP }, 5.6);
+          tl.fromTo("#s3-snip2", { opacity: 0, x: -120, scaleX: 1.08 }, { opacity: 1, x: 0, scaleX: 1, duration: 0.5, ease: POP }, 7.4);
+          tl.fromTo("#s3-snip3", { opacity: 0, x: -120, scaleX: 1.08 }, { opacity: 1, x: 0, scaleX: 1, duration: 0.5, ease: POP }, 9.6);
+
+          // "Tres nombres para el mismo lugar": las tres etiquetas laten juntas.
+          tl.to("#s3-snip1 .fw, #s3-snip2 .fw, #s3-snip3 .fw", { scale: 1.09, duration: 0.2, ease: "power2.out" }, 13.6);
+          tl.to("#s3-snip1 .fw, #s3-snip2 .fw, #s3-snip3 .fw", { scale: 1, duration: 0.36, ease: POP }, 13.8);
+
+          tl.fromTo(
+            "#s3-punch",
+            { opacity: 0, y: 60, scaleY: 0.88 },
+            { opacity: 1, y: 0, scaleY: 1, duration: 0.55, ease: POP },
+            21.6
+          );
+
+          // Remate: el bloque pega un golpe cuando cae "la buena fe".
+          tl.to("#s3-punch", { scale: 1.03, duration: 0.16, ease: "power2.out" }, 24.4);
+          tl.to("#s3-punch", { scale: 1, duration: 0.3, ease: POP }, 24.56);
+
+          window.__timelines["s3-la-primitiva"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

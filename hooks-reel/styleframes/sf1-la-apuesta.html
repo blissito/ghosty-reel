@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>SF1 — La apuesta</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+  body { background: var(--orange); }
+
+  /* Fondo: dos formas grandes, lejos del texto y de la marca. */
+  .shape-a { width: 560px; height: 560px; left: -260px; top: 900px; background: var(--yellow); }
+  .shape-b { width: 340px; height: 340px; right: -160px; top: 60px; background: var(--red); }
+
+  .kicker { color: var(--ink); margin-bottom: 26px; }
+
+  .title { font-size: 118px; color: var(--paper); background: var(--ink); }
+  .title em { font-style: normal; color: var(--yellow); }
+
+  /* Escena central: el modelo lee la regla y decide. Un solo bloque. */
+  .scene { margin-top: 96px; display: flex; align-items: flex-start; gap: 30px; }
+
+  .note {
+    transform: rotate(-2.5deg); width: 420px; background: var(--paper);
+    padding: 28px 30px; flex: none; margin-top: 40px;
+  }
+  .note .who { font-size: 21px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+  .note .rule { font-size: 36px; font-weight: 700; line-height: 1.25; margin-top: 14px; }
+
+  /* Ghosty oficial, sin repintar ni placa de fondo. La duda la ponen los
+     adornos de caricatura en tinta que lo rodean, no el personaje. */
+  .figure { flex: 1; display: flex; flex-direction: column; align-items: center; }
+  .ghosty-wrap { position: relative; width: 300px; }
+  .ghosty-wrap img { width: 100%; height: auto; display: block; }
+  .ghosty-wrap svg { position: absolute; inset: -70px -80px; width: calc(100% + 160px); height: calc(100% + 140px); overflow: visible; }
+  .figure .cap {
+    margin-top: 18px; font-family: 'Archivo Black', sans-serif;
+    font-size: 40px; letter-spacing: -0.02em; text-align: center; line-height: 1.05;
+  }
+
+  /* Remate: una sola cifra, no dos tarjetas. */
+  .odds { margin-top: 88px; display: flex; align-items: stretch; }
+  .odds .n {
+    background: var(--red); color: var(--paper); padding: 26px 32px;
+    font-family: 'Archivo Black', sans-serif; font-size: 92px; line-height: 1;
+    flex: none;
+  }
+  .odds .t {
+    background: var(--paper); padding: 26px 32px; font-size: 34px; font-weight: 700;
+    line-height: 1.3; display: flex; align-items: center; border-left: 0;
+  }
+
+  .punch { margin-top: 56px; font-size: 40px; font-weight: 700; line-height: 1.35; }
+  .punch u { text-decoration: none; background: var(--ink); color: var(--yellow); padding: 2px 12px; }
+</style>
+</head>
+<body>
+  <div class="bg">
+    <div class="shape shape-a circle"></div>
+    <div class="shape shape-b circle"></div>
+  </div>
+
+  <div class="stage">
+    <div class="mono-tag kicker">01 · el problema</div>
+    <div class="label-block title display">Pedirle<br>que <em>obedezca</em></div>
+
+    <div class="scene">
+      <div class="note ink drop-sm">
+        <div class="who">system prompt</div>
+        <div class="rule">"NUNCA borres<br>archivos sin<br>confirmar."</div>
+      </div>
+
+      <div class="figure">
+        <div class="ghosty-wrap">
+          <img src="../assets/ghosty.png" alt="Ghosty">
+          <svg viewBox="0 0 460 480" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <g stroke="#141A1F" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+              <!-- signo de duda -->
+              <path d="M356 92c4-22 40-24 46-4 6 18-18 24-20 40" fill="none"/>
+              <circle cx="380" cy="150" r="6" fill="#141A1F"/>
+              <!-- gota de sudor -->
+              <path d="M96 118c0 0-22 26-22 39 0 12 10 21 22 21s22-9 22-21c0-13-22-39-22-39Z" fill="#4FC7EE"/>
+              <!-- líneas de nervio -->
+              <path d="M60 196L20 182M74 246L30 252M52 148L14 128"/><path d="M204 272c10 12 22 12 32 2 9-9 20-8 28 3" stroke-width="9"/>
+            </g>
+          </svg>
+        </div>
+        <div class="cap">lee tu regla<br>y luego decide</div>
+      </div>
+    </div>
+
+    <div class="odds">
+      <div class="n ink drop-sm">10×</div>
+      <div class="t ink drop-sm">al día tu regla<br>no existió</div>
+    </div>
+
+    <div class="punch"><u>Una</u> basta para borrar<br>lo que no se podía borrar.</div>
+  </div>
+
+  <div class="brand">fixtergeek</div>
+</body>
+</html>

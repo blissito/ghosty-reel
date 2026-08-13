@@ -1,0 +1,81 @@
+/* Style frames — dirección de arte "caricatura plana". Sin gradientes. */
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+  --ink: #141A1F;
+  --paper: #F7F0E4;
+  --mint: #4ECFAF;
+  --purple: #9B7FE8;
+  --orange: #F29130;
+  --red: #E0574E;
+  --cyan: #4FC7EE;
+  --grass: #7FC95C;
+  --yellow: #F5C542;
+  --bw: 8px; /* grosor de tinta */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { width: 1080px; height: 1920px; overflow: hidden; }
+
+body {
+  position: relative;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- primitivas de caricatura --- */
+
+.ink { border: var(--bw) solid var(--ink); }
+
+/* la única sombra permitida: offset sólido, cero difuminado */
+.drop { box-shadow: 12px 12px 0 var(--ink); }
+.drop-sm { box-shadow: 7px 7px 0 var(--ink); }
+
+.display {
+  font-family: 'Archivo Black', sans-serif;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  text-transform: none;
+}
+
+/* rótulo de caricatura: titular dentro de bloque sólido */
+.label-block {
+  display: inline-block;
+  padding: 18px 30px 24px;
+  border: var(--bw) solid var(--ink);
+  box-shadow: 12px 12px 0 var(--ink);
+}
+
+.mono-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* campo de fondo: color plano + formas sólidas con contorno */
+.bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.shape { position: absolute; border: var(--bw) solid var(--ink); }
+.circle { border-radius: 50%; }
+
+.stage { position: relative; z-index: 1; height: 100%; padding: 110px 80px 210px; display: flex; flex-direction: column; }
+
+/* Remate. NUNCA texto suelto sobre el campo: las formas del fondo pasan por
+   detrás y lo vuelven ilegible. Siempre bloque sólido con contorno. */
+.punch {
+  background: var(--paper); color: var(--ink);
+  border: var(--bw) solid var(--ink); box-shadow: 12px 12px 0 var(--ink);
+  padding: 30px 32px;
+}
+
+/* marca de esquina */
+.brand {
+  position: absolute; z-index: 2; left: 80px; bottom: 72px;
+  font-family: 'JetBrains Mono', monospace; font-weight: 700;
+  font-size: 24px; letter-spacing: 0.2em; text-transform: uppercase;
+}
+/* El número de escena vive en el kicker, NO en la esquina: en la esquina
+   chocaba con las formas del fondo. */

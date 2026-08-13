@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        /* Transición entre escenas: barrido de tres barras sólidas.
+           NUNCA un crossfade — el corte de escena es un evento de caricatura,
+           no un desvanecido. Las barras suben escalonadas, cubren el cambio de
+           papel, y siguen de largo hacia arriba. */
+        #root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+        }
+        .wipebar {
+          position: absolute;
+          top: 0;
+          width: 33.34%;
+          height: 100%;
+        }
+        .wipebar.b1 {
+          left: 0;
+        }
+        .wipebar.b2 {
+          left: 33.33%;
+        }
+        .wipebar.b3 {
+          left: 66.66%;
+        }
+
+        /* Transición 1 (naranja → mint), en el segundo 36. */
+        #w1a {
+          background: #141a1f;
+        }
+        #w1b {
+          background: #f5c542;
+        }
+        #w1c {
+          background: #4ecfaf;
+        }
+
+        /* Transición 2 (mint → morado), en el segundo 79. */
+        #w2a {
+          background: #141a1f;
+        }
+        #w2b {
+          background: #4fc7ee;
+        }
+        #w2c {
+          background: #9b7fe8;
+        }
+      </style>
+
+      <div id="root" data-composition-id="wipes" data-width="1080" data-height="1920">
+        <div id="w1a" class="wipebar b1" data-layout-allow-overflow></div>
+        <div id="w1b" class="wipebar b2" data-layout-allow-overflow></div>
+        <div id="w1c" class="wipebar b3" data-layout-allow-overflow></div>
+
+        <div id="w2a" class="wipebar b1" data-layout-allow-overflow></div>
+        <div id="w2b" class="wipebar b2" data-layout-allow-overflow></div>
+        <div id="w2c" class="wipebar b3" data-layout-allow-overflow></div>
+      </div>
+
+      <script>
+        window.__timelines = window.__timelines || {};
+        (function () {
+          const tl = gsap.timeline({ paused: true });
+
+          // Fuera de cuadro por default: abajo del todo.
+          tl.set(["#w1a", "#w1b", "#w1c", "#w2a", "#w2b", "#w2c"], { yPercent: 110 }, 0);
+
+          // --- Transición 1: el corte cae en el segundo 36 ---
+          // Suben escalonadas y tapan la pantalla justo antes del corte.
+          tl.to("#w1a", { yPercent: 0, duration: 0.3, ease: "power3.in" }, 35.3);
+          tl.to("#w1b", { yPercent: 0, duration: 0.3, ease: "power3.in" }, 35.4);
+          tl.to("#w1c", { yPercent: 0, duration: 0.3, ease: "power3.in" }, 35.5);
+          // Siguen de largo: salen por arriba y descubren la escena nueva.
+          tl.to("#w1a", { yPercent: -110, duration: 0.34, ease: "power3.out" }, 36.1);
+          tl.to("#w1b", { yPercent: -110, duration: 0.34, ease: "power3.out" }, 36.2);
+          tl.to("#w1c", { yPercent: -110, duration: 0.34, ease: "power3.out" }, 36.3);
+          // Se guardan abajo otra vez, ya fuera de cuadro.
+          tl.set(["#w1a", "#w1b", "#w1c"], { yPercent: 110 }, 36.9);
+
+          // --- Transición 2: el corte cae en el segundo 99 ---
+          tl.to("#w2a", { yPercent: 0, duration: 0.3, ease: "power3.in" }, 98.3);
+          tl.to("#w2b", { yPercent: 0, duration: 0.3, ease: "power3.in" }, 98.4);
+          tl.to("#w2c", { yPercent: 0, duration: 0.3, ease: "power3.in" }, 98.5);
+          tl.to("#w2a", { yPercent: -110, duration: 0.34, ease: "power3.out" }, 99.1);
+          tl.to("#w2b", { yPercent: -110, duration: 0.34, ease: "power3.out" }, 99.2);
+          tl.to("#w2c", { yPercent: -110, duration: 0.34, ease: "power3.out" }, 99.3);
+          tl.set(["#w2a", "#w2b", "#w2c"], { yPercent: 110 }, 99.9);
+
+          window.__timelines["wipes"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

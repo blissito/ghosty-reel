@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          font-family: "JetBrains Mono", monospace;
+          color: #141a1f;
+        }
+        #root .stage {
+          position: absolute;
+          inset: 0;
+          padding: 110px 80px 210px;
+          display: flex;
+          flex-direction: column;
+        }
+        #s2-kicker {
+          font-weight: 700;
+          font-size: 26px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          margin-bottom: 26px;
+        }
+        #s2-title {
+          align-self: flex-start;
+          font-family: "Archivo Black", sans-serif;
+          font-size: 92px;
+          line-height: 0.92;
+          letter-spacing: -0.03em;
+          color: #f7f0e4;
+          background: #141a1f;
+          border: 8px solid #141a1f;
+          box-shadow: 12px 12px 0 #141a1f;
+          padding: 18px 30px 24px;
+        }
+        #s2-title em {
+          font-style: normal;
+          color: #4ecfaf;
+        }
+
+        #s2-flow {
+          margin-top: 72px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        #s2-model {
+          width: 100%;
+          background: #f7f0e4;
+          border: 8px solid #141a1f;
+          box-shadow: 7px 7px 0 #141a1f;
+          padding: 34px 36px;
+          display: flex;
+          align-items: center;
+          gap: 26px;
+          font-size: 36px;
+          font-weight: 700;
+        }
+        #s2-ghosty {
+          width: 130px;
+          height: auto;
+          display: block;
+          flex: none;
+        }
+
+        #s2-arrow-wrap {
+          height: 108px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        #s2-arrow-line {
+          width: 10px;
+          height: 78px;
+          background: #141a1f;
+        }
+        #s2-arrow-head {
+          width: 0;
+          height: 0;
+          border-left: 26px solid transparent;
+          border-right: 26px solid transparent;
+          border-top: 30px solid #141a1f;
+          margin-top: -2px;
+        }
+
+        #s2-gate {
+          position: relative;
+          width: 100%;
+          background: #141a1f;
+          color: #f7f0e4;
+          border: 8px solid #141a1f;
+          box-shadow: 12px 12px 0 #141a1f;
+          padding: 44px 40px;
+        }
+        #s2-gate .g-title {
+          font-family: "Archivo Black", sans-serif;
+          font-size: 72px;
+          letter-spacing: -0.02em;
+          color: #4ecfaf;
+        }
+        /* Las dos palabras que la gente confunde, cada una señalando su parte:
+           el hook es el lugar del ciclo, el guardrail es la regla que va dentro. */
+        #root .gtag {
+          display: inline-block;
+          font-family: "JetBrains Mono", monospace;
+          font-weight: 700;
+          font-size: 25px;
+          letter-spacing: 0.04em;
+          margin-left: 18px;
+          padding: 6px 12px;
+          background: #4ecfaf;
+          color: #141a1f;
+          border: 5px solid #141a1f;
+          vertical-align: middle;
+        }
+        #root .gtag.guard {
+          background: #f5c542;
+          display: block;
+          margin: 14px 0 0;
+          width: fit-content;
+        }
+        #s2-gate .g-code {
+          font-size: 32px;
+          font-weight: 400;
+          line-height: 1.6;
+          margin-top: 18px;
+        }
+        #s2-gate .g-code s {
+          color: #e0574e;
+          text-decoration: none;
+        }
+        #s2-gate .g-code b {
+          color: #f5c542;
+        }
+        #s2-stamp {
+          position: absolute;
+          right: -26px;
+          top: -34px;
+          background: #f5c542;
+          color: #141a1f;
+          border: 7px solid #141a1f;
+          box-shadow: 8px 8px 0 #141a1f;
+          padding: 12px 20px;
+          font-family: "Archivo Black", sans-serif;
+          font-size: 30px;
+        }
+
+        #s2-teeth {
+          display: flex;
+          width: 100%;
+        }
+        #s2-teeth i {
+          flex: 1;
+          height: 34px;
+          background: #141a1f;
+          border-right: 8px solid transparent;
+        }
+        #s2-teeth i:last-child {
+          border-right: 0;
+        }
+
+        #s2-outcome {
+          display: flex;
+          gap: 26px;
+          width: 100%;
+          margin-top: 28px;
+        }
+        #s2-outcome .out {
+          flex: 1;
+          padding: 28px 24px;
+          text-align: center;
+          font-size: 30px;
+          font-weight: 700;
+          border: 8px solid #141a1f;
+          box-shadow: 7px 7px 0 #141a1f;
+        }
+        #s2-outcome .out .big {
+          font-family: "Archivo Black", sans-serif;
+          font-size: 54px;
+          display: block;
+          margin-bottom: 8px;
+        }
+        #s2-allow {
+          background: #7fc95c;
+        }
+        #s2-deny {
+          background: #e0574e;
+          color: #f7f0e4;
+        }
+
+        #s2-punch {
+          margin-top: 56px;
+          font-size: 38px;
+          font-weight: 700;
+          line-height: 1.35;
+          background: #f7f0e4;
+          border: 8px solid #141a1f;
+          box-shadow: 12px 12px 0 #141a1f;
+          padding: 30px 32px;
+        }
+        #s2-punch u {
+          text-decoration: none;
+          background: #141a1f;
+          color: #4ecfaf;
+          padding: 2px 12px;
+        }
+      </style>
+
+      <div id="root" data-composition-id="s2-la-compuerta" data-width="1080" data-height="1920">
+        <div class="stage">
+          <div id="s2-kicker">02 · el mecanismo</div>
+          <div id="s2-title">Aquí <em>no decide</em><br />el modelo</div>
+
+          <div id="s2-flow">
+            <div id="s2-model">
+              <img id="s2-ghosty" src="assets/ghosty.png" alt="Ghosty" />
+              <span>quiere correr<br /><code>rm -rf ./build</code></span>
+            </div>
+
+            <div id="s2-arrow-wrap">
+              <div id="s2-arrow-line"></div>
+              <div id="s2-arrow-head"></div>
+            </div>
+
+            <div id="s2-gate">
+              <div id="s2-stamp">SIEMPRE CORRE</div>
+              <div class="g-title">
+                PreToolUse
+                <span id="s2-tag-hook" class="gtag">← el HOOK · el lugar</span>
+              </div>
+              <div class="g-code">
+                if (cmd.match(/rm\s+-rf/)) →<br />
+                &nbsp;&nbsp;<s>block</s> &nbsp;<b>exit 2</b>
+                <span id="s2-tag-guard" class="gtag guard">↑ el GUARDRAIL · la regla</span>
+              </div>
+            </div>
+            <div id="s2-teeth">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+
+            <div id="s2-outcome">
+              <div id="s2-allow" class="out"><span class="big">✓</span>lo permitido pasa</div>
+              <div id="s2-deny" class="out"><span class="big">✕</span>lo demás, no</div>
+            </div>
+          </div>
+
+          <div id="s2-punch">Se valida <u>aunque el modelo no quiera</u>.</div>
+        </div>
+      </div>
+
+      <script>
+        window.__timelines = window.__timelines || {};
+        (function () {
+          const tl = gsap.timeline({ paused: true });
+          const POP = "back.out(1.7)";
+
+          tl.fromTo("#s2-kicker", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+          tl.fromTo(
+            "#s2-title",
+            { scaleX: 1.12, scaleY: 0.86, opacity: 0, y: -40 },
+            { scaleX: 1, scaleY: 1, opacity: 1, y: 0, duration: 0.6, ease: POP },
+            0.4
+          );
+
+          tl.fromTo(
+            "#s2-model",
+            { opacity: 0, x: -160, scaleX: 1.1, scaleY: 0.9 },
+            { opacity: 1, x: 0, scaleX: 1, scaleY: 1, duration: 0.6, ease: POP },
+            5.4
+          );
+
+          // La flecha se dibuja de arriba hacia abajo.
+          tl.fromTo("#s2-arrow-line", { scaleY: 0, transformOrigin: "top center" }, { scaleY: 1, duration: 0.45, ease: "power2.out" }, 9.4);
+          tl.fromTo("#s2-arrow-head", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.22, ease: POP }, 9.8);
+
+          // La compuerta se planta. NO hace squash: es la única figura rígida
+          // del video, y esa rigidez es el argumento de la escena.
+          tl.fromTo("#s2-gate", { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.4, ease: "power4.out" }, 10.4);
+
+          // Los dientes bajan en cascada.
+          tl.fromTo(
+            "#s2-teeth i",
+            { scaleY: 0, transformOrigin: "top center" },
+            { scaleY: 1, duration: 0.24, ease: "power2.out", stagger: 0.05 },
+            10.8
+          );
+
+          tl.fromTo(
+            "#s2-stamp",
+            { opacity: 0, rotation: 24, scale: 0.5 },
+            { opacity: 1, rotation: 8, scale: 1, duration: 0.42, ease: POP },
+            13.6
+          );
+
+          // El comando choca contra la compuerta: sacudida y rebote.
+          tl.to("#s2-model", { y: 26, duration: 0.3, ease: "power2.in" }, 22.2);
+          tl.to("#s2-model", { y: 0, duration: 0.55, ease: POP }, 22.5);
+          tl.to("#s2-gate", { x: 8, duration: 0.07, ease: "none" }, 22.5);
+          tl.to("#s2-gate", { x: -6, duration: 0.07, ease: "none" }, 22.57);
+          tl.to("#s2-gate", { x: 0, duration: 0.1, ease: "none" }, 22.64);
+
+          tl.fromTo("#s2-allow", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.42, ease: POP }, 23.4);
+          tl.fromTo("#s2-deny", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.42, ease: POP }, 23.62);
+          // El veredicto rojo pega un golpe extra: es donde cae el comando.
+          tl.to("#s2-deny", { scale: 1.06, duration: 0.16, ease: "power2.out" }, 24.1);
+          tl.to("#s2-deny", { scale: 1, duration: 0.28, ease: POP }, 24.26);
+
+          // --- Hook vs guardrail ---
+          // Tiempos medidos con `transcribe` sobre el wav (audio en 1.4 local):
+          //   wav 30.22 "el punto del ciclo ... es el hook"  → 31.6
+          //   wav 35.18 "la regla que escribes ... guardrail" → 36.6
+          //   wav 42.67 "fíjate en lo que cambió"            → 44.0
+          tl.fromTo(
+            "#s2-tag-hook",
+            { opacity: 0, x: -26, scaleX: 0.8 },
+            { opacity: 1, x: 0, scaleX: 1, duration: 0.3, ease: POP },
+            31.6
+          );
+          tl.fromTo(
+            "#s2-tag-guard",
+            { opacity: 0, y: -18, scaleX: 0.8 },
+            { opacity: 1, y: 0, scaleX: 1, duration: 0.3, ease: POP },
+            36.6
+          );
+          // "Y como son cosas distintas": las dos parpadean juntas una vez.
+          tl.to("#s2-tag-hook, #s2-tag-guard", { scale: 1.07, duration: 0.18, ease: "power2.out" }, 38.6);
+          tl.to("#s2-tag-hook, #s2-tag-guard", { scale: 1, duration: 0.3, ease: POP }, 38.8);
+          // Se retiran cuando la narración sigue de largo.
+          tl.to("#s2-tag-hook, #s2-tag-guard", { opacity: 0, duration: 0.3 }, 44);
+
+          tl.fromTo(
+            "#s2-punch",
+            { opacity: 0, y: 60, scaleY: 0.88 },
+            { opacity: 1, y: 0, scaleY: 1, duration: 0.55, ease: POP },
+            50.4
+          );
+
+          window.__timelines["s2-la-compuerta"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Hooks: el control que no depende del modelo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        background: #141a1f;
+      }
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-width="1080"
+      data-height="1920"
+      data-duration="130"
+    >
+      <!-- Pista 0: campo de color plano, nunca se detiene. -->
+      <div
+        id="slot-bg" data-composition-id="bg-field"
+        data-composition-src="compositions/bg-field.html"
+        data-start="0"
+        data-duration="130"
+        data-track-index="0"
+        data-width="1080"
+        data-height="1920"
+      ></div>
+
+      <!-- Pista 1: las tres escenas, al ras. -->
+      <div
+        id="slot-s1" data-composition-id="s1-la-apuesta"
+        data-composition-src="compositions/s1-la-apuesta.html"
+        data-start="0"
+        data-duration="36"
+        data-track-index="1"
+        data-width="1080"
+        data-height="1920"
+      ></div>
+
+      <div
+        id="slot-s2" data-composition-id="s2-la-compuerta"
+        data-composition-src="compositions/s2-la-compuerta.html"
+        data-start="36"
+        data-duration="63"
+        data-track-index="1"
+        data-width="1080"
+        data-height="1920"
+      ></div>
+
+      <div
+        id="slot-s3" data-composition-id="s3-la-primitiva"
+        data-composition-src="compositions/s3-la-primitiva.html"
+        data-start="99"
+        data-duration="31"
+        data-track-index="1"
+        data-width="1080"
+        data-height="1920"
+      ></div>
+
+      <!-- Pista 2: transiciones. Van encima de las escenas y tapan el corte. -->
+      <div
+        id="slot-wipes"
+        data-composition-id="wipes"
+        data-composition-src="compositions/wipes.html"
+        data-start="0"
+        data-duration="130"
+        data-track-index="2"
+        data-width="1080"
+        data-height="1920"
+      ></div>
+
+      <!-- Pista 3: marca fija, presente todo el video. -->
+      <div id="brand" class="clip" data-start="0" data-duration="130" data-track-index="3">
+        fixtergeek
+      </div>
+
+      <!-- Cama musical: una pista por escena, cortada en la transición. -->
+      <audio
+        id="bgm-s1"
+        src="assets/bgm-s1.mp3"
+        data-start="0"
+        data-duration="36"
+        data-track-index="11"
+        data-volume="0.13"
+      ></audio>
+      <audio
+        id="bgm-s2"
+        src="assets/bgm-s2.mp3"
+        data-start="36"
+        data-duration="63"
+        data-track-index="11"
+        data-volume="0.11"
+      ></audio>
+      <audio
+        id="bgm-s3"
+        src="assets/bgm-s3.mp3"
+        data-start="99"
+        data-duration="31"
+        data-track-index="11"
+        data-volume="0.13"
+      ></audio>
+
+      <!-- Narración. Un archivo por escena, con un respiro antes de entrar. -->
+      <audio
+        id="vo-s1"
+        src="assets/voice/s1-la-apuesta.wav"
+        data-start="1.2"
+        data-duration="33.45"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="vo-s2"
+        src="assets/voice/s2-la-compuerta.wav"
+        data-start="37.4"
+        data-duration="56.98"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="vo-s3"
+        src="assets/voice/s3-la-primitiva.wav"
+        data-start="100.4"
+        data-duration="28.24"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+    </div>
+
+    <style>
+      #brand {
+        position: absolute;
+        left: 80px;
+        bottom: 72px;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        font-size: 24px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #141a1f;
+      }
+    </style>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // La marca cambia de tinta a papel cuando el papel se vuelve oscuro.
+      // Escena 3 es morado: la tinta sigue leyéndose, así que se queda.
+      tl.to("#brand", { opacity: 0.75, duration: 0.4 }, 0.6);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

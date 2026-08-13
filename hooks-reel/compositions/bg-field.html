@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        /* Campo de color plano. Cero gradientes: el papel cambia de color en el
+           corte de escena, y tres formas sólidas con contorno derivan por los
+           márgenes sin cruzar nunca la columna de contenido. */
+        #root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+        }
+        #bg-paper {
+          position: absolute;
+          inset: 0;
+          background: #f29130;
+        }
+        .bgshape {
+          position: absolute;
+          border: 8px solid #141a1f;
+        }
+        .bgcircle {
+          border-radius: 50%;
+        }
+        /* Las formas se quedan lejos del personaje y de los bloques de texto:
+           un círculo justo detrás de Ghosty le ensucia la silueta. */
+        #bg-a {
+          width: 560px;
+          height: 560px;
+          left: -260px;
+          top: 900px;
+          background: #f5c542;
+        }
+        #bg-b {
+          width: 340px;
+          height: 340px;
+          left: 900px;
+          top: 60px;
+          background: #e0574e;
+        }
+        #bg-c {
+          width: 300px;
+          height: 300px;
+          left: 760px;
+          top: 1560px;
+          background: #4fc7ee;
+        }
+      </style>
+
+      <div id="root" data-composition-id="bg-field" data-width="1080" data-height="1920">
+        <div id="bg-paper"></div>
+        <div id="bg-a" class="bgshape bgcircle" data-layout-allow-overflow></div>
+        <div id="bg-b" class="bgshape bgcircle" data-layout-allow-overflow></div>
+        <div id="bg-c" class="bgshape bgcircle" data-layout-allow-overflow></div>
+      </div>
+
+      <script>
+        window.__timelines = window.__timelines || {};
+        (function () {
+          const tl = gsap.timeline({ paused: true });
+
+          // Cortes de escena: cambio franco de papel, al ras (0.01s).
+          tl.set("#bg-paper", { backgroundColor: "#4ECFAF" }, 36);
+          tl.set("#bg-a", { backgroundColor: "#4FC7EE" }, 36);
+          tl.set("#bg-b", { backgroundColor: "#4FC7EE" }, 36);
+          tl.set("#bg-c", { backgroundColor: "#F5C542" }, 36);
+
+          tl.set("#bg-paper", { backgroundColor: "#9B7FE8" }, 99);
+          tl.set("#bg-a", { backgroundColor: "#4FC7EE" }, 99);
+          tl.set("#bg-b", { backgroundColor: "#F5C542" }, 99);
+          tl.set("#bg-c", { backgroundColor: "#4ECFAF" }, 99);
+
+          // Deriva permanente. Ciclos CORTOS (9–13s) y amplitud generosa: con
+          // recorridos largos y lentos el movimiento existe pero no se percibe
+          // — 70px repartidos en 55s son 1.3px por segundo, o sea nada.
+          // yoyo + repeat finito (nunca repeat: -1, rompe el determinismo).
+          tl.to("#bg-a", { x: 150, y: -130, duration: 9, ease: "sine.inOut", repeat: 13, yoyo: true }, 0);
+          tl.to("#bg-b", { x: -170, y: 120, duration: 11, ease: "sine.inOut", repeat: 11, yoyo: true }, 0);
+          tl.to("#bg-c", { x: 130, y: -160, duration: 13, ease: "sine.inOut", repeat: 9, yoyo: true }, 0);
+
+          // Latido de escala desfasado: refuerza la sensación de que el campo
+          // respira, y en un círculo se lee mucho mejor que una rotación.
+          tl.to("#bg-a", { scale: 1.12, duration: 7, ease: "sine.inOut", repeat: 17, yoyo: true }, 0);
+          tl.to("#bg-b", { scale: 0.88, duration: 6, ease: "sine.inOut", repeat: 20, yoyo: true }, 1.5);
+          tl.to("#bg-c", { scale: 1.15, duration: 8, ease: "sine.inOut", repeat: 15, yoyo: true }, 3);
+
+          window.__timelines["bg-field"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>SF3 — Primitiva general</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+  body { background: var(--purple); }
+
+  .shape-a { width: 520px; height: 520px; left: -300px; bottom: 420px; background: var(--cyan); }
+  .shape-b { width: 280px; height: 280px; right: -120px; top: 200px; background: var(--yellow); }
+
+  .kicker { color: var(--paper); margin-bottom: 24px; }
+  .title { font-size: 116px; color: var(--paper); background: var(--ink); }
+  .title em { font-style: normal; color: var(--cyan); }
+
+  /* Tres snippets: el mismo hook escrito en tres frameworks. */
+  .snips { margin-top: 66px; display: flex; flex-direction: column; gap: 26px; }
+
+  .snip { background: var(--ink); padding: 0 0 24px; }
+  .snip .fw {
+    display: inline-block; font-family: 'Archivo Black', sans-serif; font-size: 26px;
+    padding: 12px 20px; border-bottom: var(--bw) solid var(--ink);
+    border-right: var(--bw) solid var(--ink);
+  }
+  .s1 .fw { background: var(--orange); }
+  .s2 .fw { background: var(--cyan); }
+  .s3 .fw { background: var(--grass); }
+
+  .snip pre {
+    font-family: 'JetBrains Mono', monospace; font-size: 27px; line-height: 1.5;
+    color: var(--paper); padding: 18px 28px 0; white-space: pre; overflow: hidden;
+  }
+  .snip .k { color: var(--purple); }   /* palabra clave */
+  .snip .f { color: var(--yellow); }   /* el punto del ciclo */
+  .snip .d { color: var(--mint); }     /* el veredicto */
+
+  .punch { margin-top: auto; font-size: 40px; font-weight: 700; line-height: 1.35; }
+  .punch u { text-decoration: none; background: var(--yellow); color: var(--ink); padding: 2px 12px; }
+  .brand { color: var(--ink); }
+</style>
+</head>
+<body>
+  <div class="bg">
+    <div class="shape shape-a circle"></div>
+    <div class="shape shape-b circle"></div>
+  </div>
+
+  <div class="stage">
+    <div class="mono-tag kicker">03 · la primitiva</div>
+    <div class="label-block title display">Un hook,<br><em>tres</em> SDKs</div>
+
+    <div class="snips">
+      <div class="snip s1 ink drop-sm">
+        <div class="fw">Claude Code</div>
+<pre><span class="f">"PreToolUse"</span>: [{ matcher: <span class="d">"Bash"</span>,
+  hooks: [{ command: <span class="d">"./guard.sh"</span> }] }]</pre>
+      </div>
+
+      <div class="snip s2 ink drop-sm">
+        <div class="fw">LangGraph</div>
+<pre><span class="k">class</span> Guard(AgentMiddleware):
+  <span class="k">def</span> <span class="f">wrap_tool_call</span>(self, req, handler):
+    <span class="k">if</span> blocked(req): <span class="k">return</span> <span class="d">Command(...)</span></pre>
+      </div>
+
+      <div class="snip s3 ink drop-sm">
+        <div class="fw">OpenAI Agents SDK</div>
+<pre><span class="k">class</span> Guard(RunHooks):
+  <span class="k">async def</span> <span class="f">on_tool_start</span>(self, ctx, agent, tool):
+    <span class="k">if</span> blocked(tool): <span class="k">raise</span> <span class="d">Tripwire()</span></pre>
+      </div>
+    </div>
+
+    <div class="punch">Sin ese punto,<br>tu seguridad es <u>la buena fe</u>. <span style="font-size:46px;line-height:1;">🤞</span></div>
+  </div>
+
+  <div class="brand">fixtergeek</div>
+</body>
+</html>
