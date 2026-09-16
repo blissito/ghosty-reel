@@ -17,6 +17,16 @@ los cuadros. La tabla de cuándo usar cada uno está en
   <a href="harness-reel/docs/harness-reel.mp4">Ver con audio (31s)</a></em>
 </p>
 
+## Instalar el skill en tu agente
+
+```sh
+npx skills add https://blissito.github.io/ghosty-reel
+```
+
+Instala `blender-ad` en Claude Code, Cursor, Codex y el resto de agentes que leen el
+formato Agent Skills. El sitio de GitHub Pages sirve `/.well-known/skills/index.json`,
+generado desde `skills/` por `scripts/build-well-known.sh` en cada push.
+
 ## Cómo funciona (ruta Blender)
 
 Los pasos 1 y 5 son iguales en las dos rutas: el guion manda y la voz fija los
