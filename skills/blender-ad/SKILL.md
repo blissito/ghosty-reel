@@ -5,6 +5,12 @@ description: Genera anuncios y motion graphics 3D con Blender headless, dirigido
 
 # Anuncios 3D con Blender headless
 
+> **Galería de animaciones:** antes de escribir cualquier efecto 2D a mano (texto cinético,
+> entradas, fondos, cortinillas), revisa el skill hermano `motion-anything` (mismo sitio):
+> 85 recetas web + 20 efectos para tarjetas + 94 clases CSS, cada una con `SKILL.md` y
+> `preview.html`. Lo que anima con CSS/WAAPI entra directo a HyperFrames; canvas/WebGL sólo
+> en grabación en tiempo real.
+
 Pipeline completo por CLI: nadie abre Blender, ni un editor de video, ni un DAW.
 Todo el stack es libre (Blender GPL, Chromium BSD, Kokoro Apache 2.0, ffmpeg).
 
