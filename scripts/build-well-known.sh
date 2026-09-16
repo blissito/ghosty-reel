@@ -13,9 +13,7 @@ for dir in skills/*/; do
 done
 echo "{\"skills\":[${entries%,}]}" | jq . > "$OUT/.well-known/skills/index.json"
 touch "$OUT/.nojekyll"
-cat > "$OUT/index.html" <<HTML
-<!doctype html><meta charset="utf-8"><title>ghosty-reel skills</title>
-<pre>npx skills add https://blissito.github.io/ghosty-reel</pre>
-<p><a href="https://github.com/blissito/ghosty-reel">github.com/blissito/ghosty-reel</a> · <a href=".well-known/skills/index.json">index.json</a></p>
-HTML
+# La página: plantilla + una tarjeta por skill, con links a sus archivos
+cards=$(jq -r '.skills[] as $s | "<div class=\"skill\"><h3>\($s.name)</h3><p>\($s.description)</p><div class=\"files\">" + ([$s.files[] | "<a href=\".well-known/skills/\($s.name)/\(.)\">\(.)</a>"] | join(" ")) + "</div></div>"' "$OUT/.well-known/skills/index.json")
+awk -v cards="$cards" '{ if ($0=="<!--SKILLS-->") print cards; else print }' scripts/pages-template.html > "$OUT/index.html"
 cat "$OUT/.well-known/skills/index.json"
