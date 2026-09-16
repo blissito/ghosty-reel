@@ -29,3 +29,5 @@ sesion1/audio/*.wav
 sesion1/out_morph/
 sesion1/out_video/
 _site/
+
+!assets/og.png
