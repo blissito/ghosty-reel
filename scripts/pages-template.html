@@ -3,57 +3,225 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ghosty-reel · skills</title>
-<meta name="description" content="Skills de video para agentes: anuncios y motion graphics generados por completo desde la terminal.">
-<meta property="og:title" content="ghosty-reel · skills para agentes">
-<meta property="og:description" content="npx skills add https://blissito.github.io/ghosty-reel">
+<title>ghosty-reel · skills de video para tu agente</title>
+<meta name="description" content="Reels, anuncios y motion graphics generados por completo desde la terminal. Se instala en Claude Code, Cursor y Codex con un comando.">
+<link rel="canonical" href="https://blissito.github.io/ghosty-reel/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ghosty-reel · skills de video para tu agente">
+<meta property="og:description" content="Guion, voz, música, render y mezcla desde la línea de comandos. npx skills add https://blissito.github.io/ghosty-reel">
+<meta property="og:url" content="https://blissito.github.io/ghosty-reel/">
+<meta property="og:image" content="https://blissito.github.io/ghosty-reel/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://blissito.github.io/ghosty-reel/og.png">
+<link rel="icon" href="https://formmy.app/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0E1317;--mint:#85DDCB;--green:#8DCF6E;--ink:#F2F5F4;--gray:#7C8A8E;--panel:#15201F}
+:root{--dark:#191a20;--metal:#4b5563;--light:#9aa0ab;--outline:#e1e3e7;--surface:#f5f6f8;--brand:#9a99ea;--brand-100:#f5f5fc;--brand-600:#8483e0;--brand-800:#161720;--white:#fff}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 -apple-system,Helvetica,Arial,sans-serif;
-  background-image:radial-gradient(var(--gray) 1.5px,transparent 1.5px);background-size:40px 40px}
-main{max-width:860px;margin:0 auto;padding:56px 16px 80px}
-h1{font-size:clamp(34px,7vw,64px);line-height:1.02;margin:0 0 12px;font-weight:900}
-h1 span{color:var(--mint)}
-.lead{color:var(--gray);font-size:19px;margin:0 0 32px}
-.cmd{display:flex;align-items:center;gap:12px;background:var(--panel);border:4px solid var(--ink);border-radius:14px;
-  box-shadow:8px 8px 0 var(--mint);padding:16px 18px;margin:0 0 44px;flex-wrap:wrap}
-.cmd code{font:600 16px/1.4 Menlo,monospace;color:var(--mint);word-break:break-all;flex:1;min-width:0}
-.cmd code b{color:var(--green);font-weight:600}
-.cmd button{font:700 15px -apple-system,Helvetica,sans-serif;background:var(--green);color:var(--bg);border:3px solid var(--ink);
-  border-radius:10px;padding:8px 14px;cursor:pointer;box-shadow:4px 4px 0 var(--ink)}
-.cmd button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
-h2{font-size:14px;letter-spacing:4px;text-transform:uppercase;color:var(--gray);margin:0 0 14px}
-.skill{background:var(--panel);border:4px solid var(--ink);border-radius:16px;box-shadow:8px 8px 0 var(--green);padding:22px;margin:0 0 28px}
-.skill h3{margin:0 0 8px;font:700 22px Menlo,monospace;color:var(--green)}
-.skill p{margin:0 0 14px}
-.files{display:flex;gap:8px;flex-wrap:wrap}
-.files-wrap summary{cursor:pointer;font:600 14px Menlo,monospace;color:var(--mint);margin-bottom:10px}
-.files-wrap[open] .files{max-height:340px;overflow:auto;padding-right:6px}
-.files a{font:600 13px Menlo,monospace;color:var(--bg);background:var(--mint);border:2px solid var(--ink);border-radius:8px;padding:3px 9px;text-decoration:none}
-.preview{display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin:44px 0 0}
-.preview img{width:200px;border:4px solid var(--ink);border-radius:14px;box-shadow:8px 8px 0 var(--mint)}
-.preview p{color:var(--gray);flex:1;min-width:220px;margin:0}
-a{color:var(--mint)}
-footer{margin-top:56px;color:var(--gray);font-size:15px}
+html{scroll-behavior:smooth}
+body{margin:0;overflow-x:hidden;background:var(--white);color:var(--dark);font:16px/1.6 Inter,-apple-system,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.heading{font-family:Poppins,Inter,sans-serif;letter-spacing:-.01em}
+a{color:var(--brand-600);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+/* ---- nav ---- */
+nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(10px);background:rgba(255,255,255,.85);border-bottom:1px solid var(--outline)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;font:700 18px Poppins,sans-serif;color:var(--dark)}
+.logo img{width:30px;height:auto}
+.logo span{color:var(--brand-600);font-weight:600}
+nav ul{list-style:none;margin:0;padding:0;display:flex;gap:22px;font-weight:500;font-size:15px}
+nav ul a{color:var(--dark)}
+nav .gh{display:inline-flex;align-items:center;gap:8px;background:var(--dark);color:#fff;border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px}
+nav .gh:hover{text-decoration:none;background:#000}
+@media(max-width:720px){nav ul{display:none}}
+/* ---- hero ---- */
+.hero{padding:72px 0 40px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:40px;align-items:center}
+.hero>div{min-width:0}
+.hero h1{font-size:clamp(38px,5.4vw,66px);line-height:1.04;margin:0 0 18px;font-weight:800}
+.hero h1 em{font-style:normal;color:var(--brand-600)}
+.hero .lead{color:var(--metal);font-size:19px;margin:0 0 28px;max-width:560px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-600);margin-bottom:18px}
+.eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--brand);display:inline-block;animation:pulse 2.4s ease-in-out 3}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.7)}}
+.cmd{display:flex;align-items:center;gap:10px;background:var(--brand-800);color:#fff;border-radius:16px;padding:14px 14px 14px 20px;box-shadow:0 20px 50px -20px rgba(25,26,32,.45);max-width:600px}
+.cmd code{font:500 15px/1.4 ui-monospace,Menlo,monospace;flex:1;min-width:0;overflow-wrap:anywhere}
+.cmd code b{color:var(--brand);font-weight:500}
+.cmd button{font:600 14px Inter,sans-serif;background:var(--brand);color:var(--dark);border:0;border-radius:10px;padding:10px 14px;cursor:pointer;white-space:nowrap;transition:transform .12s}
+.cmd button:hover{transform:translateY(-1px)}
+.agents{margin:18px 0 0;color:var(--light);font-size:14px}
+.agents b{color:var(--metal);font-weight:600}
+/* la película: el reel de verdad, corriendo en bucle */
+.film{position:relative;justify-self:center;max-width:100%}
+.film video{display:block;width:250px;aspect-ratio:9/16;object-fit:cover;border-radius:28px;border:1px solid var(--outline);box-shadow:0 30px 70px -30px rgba(25,26,32,.55);background:var(--surface)}
+.film .chip{position:absolute;left:-22px;bottom:34px;background:#fff;border:1px solid var(--outline);border-radius:12px;padding:8px 12px;font-size:12px;box-shadow:0 10px 30px -14px rgba(25,26,32,.35);animation:rise .8s cubic-bezier(.2,.9,.2,1.2) .4s both}
+.film .chip.top{left:auto;right:-26px;top:70px;bottom:auto;animation-delay:.9s}
+.film .chip b{display:block;font-family:Poppins,sans-serif;font-size:14px}
+.film .chip span{color:var(--metal)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:44px}.film{order:-1}.film video{width:200px}.film .chip{left:-4px}.film .chip.top{right:-4px}}
+/* ---- secciones ---- */
+section{padding:48px 0}
+h2{font-size:26px;margin:0 0 6px;font-weight:700}
+.sub{color:var(--metal);margin:0 0 26px;font-size:17px;max-width:640px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))}
+.card{display:flex;flex-direction:column;border:1px solid var(--outline);border-radius:18px;padding:22px;background:#fff;color:var(--dark);transition:border-color .15s,background .15s}
+a.card:hover{text-decoration:none;border-color:var(--brand);background:var(--brand-100)}
+.card.featured{grid-column:1/-1;border-color:var(--brand);background:rgba(245,245,252,.6)}
+.card .tag{display:inline-block;background:var(--surface);border-radius:999px;padding:3px 10px;font-size:11px;color:var(--metal);white-space:nowrap}
+.card .rec{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--brand-600);margin-bottom:8px}
+.card .row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.card h3{margin:0;font-size:17px;font-weight:600}
+.card p{margin:8px 0 0;color:var(--metal);font-size:14.5px;line-height:1.55}
+.card .arrow{margin-top:auto;padding-top:14px;color:var(--brand-600);font-size:14px;transition:transform .15s}
+a.card:hover .arrow{transform:translateX(4px)}
+/* skills generadas por el build */
+.skill{border:1px solid var(--outline);border-radius:18px;padding:22px;background:#fff;margin-bottom:14px}
+.skill h3{margin:0 0 6px;font:600 16px ui-monospace,Menlo,monospace;color:var(--brand-600)}
+.skill h3::before{content:"skills/";color:var(--light)}
+.skill p{margin:0 0 14px;color:var(--metal);font-size:14.5px}
+.files{display:flex;gap:6px;flex-wrap:wrap}
+.files a{font:500 12px ui-monospace,Menlo,monospace;color:var(--metal);background:var(--surface);border-radius:8px;padding:3px 9px}
+.files a:hover{background:var(--brand-100);color:var(--brand-600);text-decoration:none}
+.files-wrap summary{cursor:pointer;font:500 13px Inter,sans-serif;color:var(--brand-600);margin-bottom:10px}
+.files-wrap[open] .files{max-height:300px;overflow:auto;padding-right:6px}
+/* producciones */
+.prod{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))}
+.prod a{display:block;border:1px solid var(--outline);border-radius:18px;overflow:hidden;background:#fff;color:var(--dark)}
+.prod a:hover{text-decoration:none;border-color:var(--brand)}
+.prod .media{aspect-ratio:16/9;background:var(--surface);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.prod .media img{width:100%;height:100%;object-fit:cover;display:block}
+.prod .media.tall{background:var(--brand-800)}
+.prod .media.tall img{width:auto;height:100%}
+.prod .body{padding:16px 18px}
+.prod h3{margin:0;font-size:16px;font-weight:600}
+.prod p{margin:6px 0 0;color:var(--metal);font-size:14px}
+.prod .meta{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+/* pasos */
+.steps{counter-reset:s;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
+.steps div{position:relative;border:1px solid var(--outline);border-radius:18px;padding:22px 18px 18px;background:#fff}
+.steps div::before{counter-increment:s;content:"0" counter(s);font:700 12px Poppins,sans-serif;color:var(--brand-600);letter-spacing:.1em;display:block;margin-bottom:8px}
+.steps b{display:block;font-family:Poppins,sans-serif;font-weight:600;margin-bottom:4px}
+.steps span{color:var(--metal);font-size:14px}
+/* stack */
+.stack{display:flex;gap:8px;flex-wrap:wrap}
+.stack span{border:1px solid var(--outline);border-radius:999px;padding:6px 13px;font-size:13px;color:var(--metal)}
+.stack span b{color:var(--dark);font-weight:600}
+footer{border-top:1px solid var(--outline);padding:32px 0 56px;color:var(--metal);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
 </style>
 </head>
 <body>
-<main>
-<h1>Skills de video<br><span>para tu agente</span></h1>
-<p class="lead">Anuncios y motion graphics generados por completo desde la terminal: Blender headless, Chrome headless, Kokoro y ffmpeg. Se instala con un comando en Claude Code, Cursor, Codex y 70 agentes más.</p>
+<nav><div class="wrap">
+  <a class="logo" href="#"><img src="https://formmy.app/logo.png" alt=""> ghosty<span>-reel</span></a>
+  <ul><li><a href="#skills">Skills</a></li><li><a href="#producciones">Producciones</a></li><li><a href="#como">Cómo funciona</a></li><li><a href=".well-known/skills/index.json">index.json</a></li></ul>
+  <a class="gh" href="https://github.com/blissito/ghosty-reel">GitHub ↗</a>
+</div></nav>
 
-<div class="cmd"><code><b>$</b> npx skills add https://blissito.github.io/ghosty-reel</code><button onclick="navigator.clipboard.writeText('npx skills add https://blissito.github.io/ghosty-reel');this.textContent='Copiado ✓';setTimeout(()=>this.textContent='Copiar',1500)">Copiar</button></div>
-
-<h2>Skills</h2>
-<!--SKILLS-->
-
-<div class="preview">
-  <img src="https://raw.githubusercontent.com/blissito/ghosty-reel/main/harness-reel/docs/preview.gif" alt="Reel del harness en 9:16, diagrama trazándose solo">
-  <p>Reel generado con <code>blender-ad</code>: trazado con Grease Pencil, voz sintetizada en local, música generada. Guion, render y mezcla desde la línea de comandos.</p>
+<main class="wrap">
+<div class="hero">
+  <div>
+    <div class="eyebrow"><i></i> Formato Agent Skills · MIT</div>
+    <h1>Videos hechos por tu agente, <em>desde la terminal</em></h1>
+    <p class="lead">Guion, voz, música, efectos, render y mezcla desde la línea de comandos. Nadie abre Blender, ni un editor de video, ni un DAW. Todo el stack es libre.</p>
+    <div class="cmd"><code><b>$</b> npx skills add https://blissito.github.io/ghosty-reel</code><button onclick="navigator.clipboard.writeText('npx skills add https://blissito.github.io/ghosty-reel');this.textContent='Copiado ✓';setTimeout(()=>this.textContent='Copiar',1500)">Copiar</button></div>
+    <p class="agents">Se instala en <b>Claude Code</b>, <b>Cursor</b>, <b>Codex</b>, Gemini CLI, Windsurf y 70 agentes más.</p>
+  </div>
+  <div class="film">
+    <video src="https://raw.githubusercontent.com/blissito/ghosty-reel/main/harness-reel/docs/harness-reel.mp4" poster="harness-frame.jpg" autoplay muted loop playsinline></video>
+    <div class="chip top"><b>Blender headless</b><span>Grease Pencil, 9:16</span></div>
+    <div class="chip"><b>Voz local</b><span>Kokoro · ffmpeg mezcla</span></div>
+  </div>
 </div>
 
-<footer>Código y pipeline en <a href="https://github.com/blissito/ghosty-reel">github.com/blissito/ghosty-reel</a> · índice para el CLI: <a href=".well-known/skills/index.json">.well-known/skills/index.json</a> · formato <a href="https://agentskills.io">Agent Skills</a></footer>
+<section id="skills">
+  <h2>¿Qué camino tomar?</h2>
+  <p class="sub">Dos skills que se instalan juntos. Uno dibuja, el otro trae las recetas para animar.</p>
+  <div class="grid">
+    <a class="card featured" href="skills/blender-ad/SKILL.md" target="_blank" rel="noopener">
+      <div class="rec">Recomendado</div>
+      <div class="row"><h3>Un anuncio 3D dirigido por un JSON</h3><span class="tag">blender-ad</span></div>
+      <p>Chrome headless captura la UI real de tu app en capas, Blender headless la anima y renderiza, Kokoro pone la voz y ffmpeg mezcla. Los gotchas que costaron horas ya vienen resueltos, con un ejemplo que corre solo.</p>
+      <span class="arrow">→</span>
+    </a>
+    <a class="card" href="skills/motion-anything/SKILL.md" target="_blank" rel="noopener">
+      <div class="row"><h3>Animar sin escribir el efecto a mano</h3><span class="tag">motion-anything</span></div>
+      <p>85 recetas web, 20 efectos para tarjetas y 94 clases CSS. Texto cinético, entradas, fondos, cortinillas. Cada una con su preview.</p>
+      <span class="arrow">→</span>
+    </a>
+    <a class="card" href="https://github.com/blissito/ghosty-reel/tree/main/hooks-reel">
+      <div class="row"><h3>Un video 2D con personaje y código</h3><span class="tag">HTML + GSAP</span></div>
+      <p>Cuando el 3D no aporta: composición HTML con HyperFrames, 2 minutos en 9:16 en menos de un minuto de render.</p>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<section>
+  <h2>Lo que se instala</h2>
+  <p class="sub">Cada skill trae su <code>SKILL.md</code> y los archivos que el agente copia. Generado desde <code>skills/</code> en cada push.</p>
+  <!--SKILLS-->
+</section>
+
+<section id="producciones">
+  <h2>Producciones</h2>
+  <p class="sub">Tres piezas hechas con este pipeline. Cada carpeta trae su estado real y lo que no está versionado.</p>
+  <div class="prod">
+    <a href="https://github.com/blissito/ghosty-reel/tree/main/harness-reel">
+      <div class="media tall"><img src="harness-frame.jpg" alt="Reel del harness: diagrama trazándose solo"></div>
+      <div class="body"><h3>harness-reel</h3><p>Un diagrama que se dibuja solo con Grease Pencil, la cámara entra entre las capas.</p><div class="meta"><span class="tag">9:16</span><span class="tag">31 s</span><span class="tag">Blender</span></div></div>
+    </a>
+    <a href="https://github.com/blissito/ghosty-reel/tree/main/hooks-reel">
+      <div class="media"><img src="https://raw.githubusercontent.com/blissito/ghosty-reel/main/hooks-reel/docs/preview.png" alt="Hooks: el control que no depende del modelo"></div>
+      <div class="body"><h3>hooks-reel</h3><p>Caricatura plana con Ghosty de protagonista y código en pantalla. Subtítulos medidos con transcribe.</p><div class="meta"><span class="tag">9:16</span><span class="tag">2:10</span><span class="tag">HTML + GSAP</span></div></div>
+    </a>
+    <a href="https://github.com/blissito/ghosty-reel/blob/main/EASYBITS.md">
+      <div class="media"><svg viewBox="0 0 320 180" width="100%" height="100%" aria-hidden="true">
+        <rect width="320" height="180" fill="#0b0b0f"/>
+        <g stroke="#7c3aed" stroke-width="1" opacity=".35"><path d="M0 40h320M0 90h320M0 140h320M60 0v180M160 0v180M260 0v180"/></g>
+        <g transform="translate(160 90)">
+          <rect x="-96" y="-54" width="192" height="108" rx="10" fill="#15151d" stroke="#7c3aed" stroke-width="2"/>
+          <rect x="-84" y="-42" width="120" height="10" rx="5" fill="#2a2a38"/>
+          <rect x="-84" y="-22" width="168" height="8" rx="4" fill="#2a2a38"/>
+          <rect x="-84" y="-6" width="140" height="8" rx="4" fill="#2a2a38"/>
+          <rect x="-84" y="18" width="70" height="22" rx="11" fill="#fbbf24" style="animation:pop 2.2s ease-in-out 3;transform-origin:-49px 29px">
+            <animateTransform attributeName="transform" type="translate" values="0 0;8 -14;0 0" dur="2.2s" repeatCount="3"/>
+          </rect>
+        </g>
+      </svg></div>
+      <div class="body"><h3>EasyBits</h3><p>La UI del producto capturada en capas y despegándose en 3D. Voz sintetizada, música generada.</p><div class="meta"><span class="tag">16:9</span><span class="tag">32 s</span><span class="tag">Blender</span></div></div>
+    </a>
+  </div>
+</section>
+
+<section id="como">
+  <h2>Cómo funciona</h2>
+  <p class="sub">El guion manda y la voz fija los tiempos. Ningún número vive dentro del script de escena.</p>
+  <div class="steps">
+    <div><b>Guion y voz</b><span>Kokoro local, sin red. Las duraciones reales de esos audios fijan todo lo demás.</span></div>
+    <div><b>scene.json</b><span>Beats, posiciones y cámara. Mover un beat realinea todo.</span></div>
+    <div><b>Audio derivado</b><span>Cada efecto cae en el beat visual al que responde. La música se sintetiza desde cero.</span></div>
+    <div><b>Render sin abrir nada</b><span>Blender o HyperFrames sacan los cuadros. <code>PREVIEW=1</code> da stills en un segundo.</span></div>
+    <div><b>Mezcla y encode</b><span>Voz, música y efectos con ffmpeg, pegados a los frames.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Stack, todo libre</h2>
+  <p class="sub">Sin cuentas, sin API keys, sin servicios. La voz corre local.</p>
+  <div class="stack">
+    <span><b>Blender 5.2</b> GPL</span><span><b>Chrome headless</b> BSD</span><span><b>Kokoro-82M</b> Apache 2.0</span><span><b>ffmpeg</b> LGPL</span><span><b>GSAP</b> sin costo</span><span><b>HyperFrames</b> HTML → video</span>
+  </div>
+</section>
 </main>
+
+<footer><div class="wrap">
+  <span>Hecho por <a href="https://github.com/blissito">blissito</a> · <a href="https://fixter.org">fixter.org</a></span>
+  <span><a href=".well-known/skills/index.json">.well-known/skills/index.json</a> · formato <a href="https://agentskills.io">Agent Skills</a></span>
+</div></footer>
 </body>
 </html>

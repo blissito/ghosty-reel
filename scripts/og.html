@@ -1,0 +1,28 @@
+<!doctype html>
+<!-- Imagen OG (1200×630). Se renderiza a assets/og.png con scripts/build-og.sh -->
+<html lang="es"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;width:1200px;height:630px;overflow:hidden;background:#fff;font-family:Inter,sans-serif;color:#191a20;position:relative}
+.grid{position:absolute;inset:0;background-image:radial-gradient(#e1e3e7 1.6px,transparent 1.6px);background-size:34px 34px}
+.fade{position:absolute;inset:0;background:linear-gradient(90deg,#fff 30%,rgba(255,255,255,0) 100%)}
+.logo{position:absolute;left:72px;top:64px;display:flex;align-items:center;gap:14px;font:700 26px Poppins,sans-serif}
+.logo img{width:44px}
+.logo span{color:#8483e0;font-weight:600}
+h1{position:absolute;left:72px;top:170px;margin:0;font:800 70px/1.04 Poppins,sans-serif;letter-spacing:-.02em;width:640px}
+h1 em{font-style:normal;color:#8483e0}
+.cmd{position:absolute;left:72px;top:428px;white-space:nowrap;background:#161720;color:#fff;border-radius:18px;padding:22px 30px;font:500 22px ui-monospace,Menlo,monospace}
+.cmd b{color:#9a99ea;font-weight:500}
+.foot{position:absolute;left:72px;bottom:54px;font:600 18px Inter,sans-serif;color:#4b5563;letter-spacing:.06em;text-transform:uppercase}
+.phone{position:absolute;right:60px;top:56px;width:270px;height:480px;border-radius:40px;background:#161720;padding:12px;box-shadow:0 40px 80px -30px rgba(25,26,32,.5);transform:rotate(-6deg)}
+.phone img{width:100%;height:100%;object-fit:cover;border-radius:30px;display:block}
+.ghost{position:absolute;right:300px;top:390px;width:150px;filter:drop-shadow(0 18px 30px rgba(25,26,32,.25));transform:rotate(8deg)}
+</style></head><body>
+<div class="grid"></div><div class="fade"></div>
+<div class="logo"><img src="https://formmy.app/logo.png" alt=""> ghosty<span>-reel</span></div>
+<h1>Videos hechos por tu agente, <em>desde la terminal</em></h1>
+<div class="cmd"><b>$</b> npx skills add https://blissito.github.io/ghosty-reel</div>
+<div class="foot">Claude Code · Cursor · Codex · Agent Skills</div>
+<div class="phone"><img src="../assets/harness-frame.jpg" alt=""></div>
+<img class="ghost" src="https://formmy.app/logo.png" alt="">
+</body></html>
