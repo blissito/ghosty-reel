@@ -13,7 +13,7 @@ for dir in skills/*/; do
 done
 echo "{\"skills\":[${entries%,}]}" | jq . > "$OUT/.well-known/skills/index.json"
 touch "$OUT/.nojekyll"
-cp assets/og.png "$OUT/og.png"; cp assets/harness-frame.jpg "$OUT/harness-frame.jpg"   # meta imagen y poster del reel
+cp assets/og.png "$OUT/og.png"; cp assets/harness-frame.jpg assets/hero.mp4 assets/hero-poster.jpg "$OUT/"   # meta imagen y poster del reel
 # La página: plantilla + una tarjeta por skill, con links a sus archivos
 cards=$(jq -r '.skills[] as $s | ($s.files|length) as $n
   | "<div class=\"skill\"><h3>\($s.name)</h3><p>\($s.description)</p>"

@@ -40,7 +40,7 @@ nav .gh{display:inline-flex;align-items:center;gap:8px;background:var(--dark);co
 nav .gh:hover{text-decoration:none;background:#000}
 @media(max-width:720px){nav ul{display:none}}
 /* ---- hero ---- */
-.hero{padding:72px 0 40px;display:grid;grid-template-columns:minmax(0,1fr);max-width:760px}
+.hero{padding:72px 0 40px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:40px;align-items:center}
 .hero>div{min-width:0}
 .hero h1{font-size:clamp(38px,5.4vw,66px);line-height:1.04;margin:0 0 18px;font-weight:800}
 .hero h1 em{font-style:normal;color:var(--brand-600)}
@@ -48,8 +48,9 @@ nav .gh:hover{text-decoration:none;background:#000}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-600);margin-bottom:18px}
 .eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--brand);display:inline-block;animation:pulse 2.4s ease-in-out 3}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.7)}}
-.cmd{display:flex;align-items:center;gap:10px;background:var(--brand-800);color:#fff;border-radius:16px;padding:14px 14px 14px 20px;box-shadow:0 20px 50px -20px rgba(25,26,32,.45);max-width:600px}
-.cmd code{font:500 15px/1.4 ui-monospace,Menlo,monospace;flex:1;min-width:0;overflow-wrap:anywhere}
+.cmd{display:flex;align-items:center;gap:10px;background:var(--brand-800);color:#fff;border-radius:16px;padding:14px 14px 14px 20px;box-shadow:0 20px 50px -20px rgba(25,26,32,.45);width:fit-content;max-width:100%}
+.cmd code{font:500 14px/1.4 ui-monospace,Menlo,monospace;flex:1;min-width:0;white-space:nowrap}
+@media(max-width:820px){.cmd code{white-space:normal;overflow-wrap:anywhere}}
 .cmd code b{color:var(--brand);font-weight:500}
 .cmd button{font:600 14px Inter,sans-serif;background:var(--brand);color:var(--dark);border:0;border-radius:10px;padding:10px 14px;cursor:pointer;white-space:nowrap;transition:transform .12s}
 .cmd button:hover{transform:translateY(-1px)}
@@ -63,7 +64,15 @@ nav .gh:hover{text-decoration:none;background:#000}
 .film .chip b{display:block;font-family:Poppins,sans-serif;font-size:14px}
 .film .chip span{color:var(--metal)}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@media(max-width:820px){.hero{padding-top:44px}}
+@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:44px}.film{order:-1}.film video{width:200px}.film .chip{left:-4px}.film .chip.top{right:-4px}}
+/* la película: un short real de la sesión 5, corriendo en bucle */
+.film{position:relative;justify-self:center;max-width:100%}
+.film video{display:block;width:250px;aspect-ratio:9/16;object-fit:cover;border-radius:28px;border:1px solid var(--outline);box-shadow:0 30px 70px -30px rgba(25,26,32,.55);background:var(--surface)}
+.film .chip{position:absolute;left:-22px;bottom:34px;background:#fff;border:1px solid var(--outline);border-radius:12px;padding:8px 12px;font-size:12px;box-shadow:0 10px 30px -14px rgba(25,26,32,.35);animation:rise .8s cubic-bezier(.2,.9,.2,1.2) .4s both}
+.film .chip.top{left:auto;right:-26px;top:70px;bottom:auto;animation-delay:.9s}
+.film .chip b{display:block;font-family:Poppins,sans-serif;font-size:14px}
+.film .chip span{color:var(--metal)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 /* ---- secciones ---- */
 section{padding:48px 0}
 h2{font-size:26px;margin:0 0 6px;font-weight:700}
@@ -130,6 +139,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
     <p class="lead">Guion, voz, música, efectos, render y mezcla desde la línea de comandos. Nadie abre Blender, ni un editor de video, ni un DAW. Todo el stack es libre.</p>
     <div class="cmd"><code><b>$</b> npx skills add https://blissito.github.io/ghosty-reel</code><button onclick="navigator.clipboard.writeText('npx skills add https://blissito.github.io/ghosty-reel');this.textContent='Copiado ✓';setTimeout(()=>this.textContent='Copiar',1500)">Copiar</button></div>
     <p class="agents">Se instala en <b>Claude Code</b>, <b>Cursor</b>, <b>Codex</b>, Gemini CLI, Windsurf y 70 agentes más.</p>
+  </div>
+  <div class="film">
+    <video src="hero.mp4" poster="hero-poster.jpg" autoplay muted loop playsinline></video>
+    <div class="chip top"><b>HTML + GSAP</b><span>HyperFrames, 9:16</span></div>
+    <div class="chip"><b>Voz y SFX</b><span>mezclados con ffmpeg</span></div>
   </div>
 </div>
 
