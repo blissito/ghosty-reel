@@ -80,7 +80,12 @@ h2{font-size:26px;margin:0 0 6px;font-weight:700}
 .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))}
 .card{display:flex;flex-direction:column;border:1px solid var(--outline);border-radius:18px;padding:22px;background:#fff;color:var(--dark);transition:border-color .15s,background .15s}
 a.card:hover{text-decoration:none;border-color:var(--brand);background:var(--brand-100)}
-.card.featured{grid-column:1/-1;border-color:var(--brand);background:rgba(245,245,252,.6)}
+.card.featured{border-color:var(--brand);background:rgba(245,245,252,.6)}
+/* tarjetas sin link: más discretas */
+.grid.quiet{margin-top:14px;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))}
+.card.quiet{padding:16px 18px;background:transparent;border-style:dashed;color:var(--metal)}
+.card.quiet h3{font-size:15px;font-weight:500;color:var(--metal)}
+.card.quiet p{font-size:13.5px;margin-top:6px}
 .card .tag{display:inline-block;background:var(--surface);border-radius:999px;padding:3px 10px;font-size:11px;color:var(--metal);white-space:nowrap}
 .card .rec{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--brand-600);margin-bottom:8px}
 .card .row{display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -149,29 +154,30 @@ footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
 
 <section id="skills">
   <h2>¿Qué camino tomar?</h2>
-  <p class="sub">Tres skills que se instalan juntos. Uno dibuja, dos traen las recetas para animar.</p>
+  <p class="sub">Dos cosas que puedes abrir ahora mismo y dos skills que se instalan con el comando de arriba.</p>
   <div class="grid">
-    <a class="card featured" href="skills/blender-ad/SKILL.md" target="_blank" rel="noopener">
-      <div class="rec">Recomendado</div>
-      <div class="row"><h3>Un anuncio 3D dirigido por un JSON</h3><span class="tag">blender-ad</span></div>
-      <p>Chrome headless captura la UI real de tu app en capas, Blender headless la anima y renderiza, Kokoro pone la voz y ffmpeg mezcla. Los gotchas que costaron horas ya vienen resueltos, con un ejemplo que corre solo.</p>
-      <span class="arrow">→</span>
-    </a>
-    <a class="card" href="skills/motion-anything/SKILL.md" target="_blank" rel="noopener">
-      <div class="row"><h3>Animar sin escribir el efecto a mano</h3><span class="tag">motion-anything</span></div>
-      <p>85 recetas web, 20 efectos para tarjetas y 94 clases CSS. Texto cinético, entradas, fondos, cortinillas. Cada una con su preview.</p>
-      <span class="arrow">→</span>
-    </a>
-    <a class="card" href="motion-lab/">
+    <a class="card featured" href="motion-lab/">
+      <div class="rec">Galería</div>
       <div class="row"><h3>Mecánicas de motion graphics medidas</h3><span class="tag">motion-lab</span></div>
       <p>15 recetas HyperFrames + GSAP sacadas de replicar un video real cuadro a cuadro: ventana retro, lista inclinada, partículas que colapsan, malla de barril, cubos isométricos, karaoke por palabra. Parametrizadas y con preview en video.</p>
       <span class="arrow">→</span>
     </a>
-    <a class="card" href="https://github.com/blissito/ghosty-reel/tree/main/hooks-reel">
+    <a class="card featured" href="https://github.com/blissito/ghosty-reel/tree/main/hooks-reel">
+      <div class="rec">Ejemplo completo</div>
       <div class="row"><h3>Un video 2D con personaje y código</h3><span class="tag">HTML + GSAP</span></div>
       <p>Cuando el 3D no aporta: composición HTML con HyperFrames, 2 minutos en 9:16 en menos de un minuto de render.</p>
       <span class="arrow">→</span>
     </a>
+  </div>
+  <div class="grid quiet">
+    <div class="card quiet">
+      <div class="row"><h3>Un anuncio 3D dirigido por un JSON</h3><span class="tag">blender-ad</span></div>
+      <p>Chrome headless captura la UI real de tu app en capas, Blender headless la anima y renderiza, Kokoro pone la voz y ffmpeg mezcla. Se instala con el comando de arriba.</p>
+    </div>
+    <div class="card quiet">
+      <div class="row"><h3>Animar sin escribir el efecto a mano</h3><span class="tag">motion-anything</span></div>
+      <p>85 recetas web, 20 efectos para tarjetas y 94 clases CSS. Texto cinético, entradas, fondos, cortinillas. Se instala con el comando de arriba.</p>
+    </div>
   </div>
 </section>
 
