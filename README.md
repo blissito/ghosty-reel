@@ -23,8 +23,8 @@ los cuadros. La tabla de cuándo usar cada uno está en
 npx skills add https://blissito.github.io/ghosty-reel
 ```
 
-Instala `blender-ad` en Claude Code, Cursor, Codex y el resto de agentes que leen el
-formato Agent Skills. El sitio de GitHub Pages sirve `/.well-known/skills/index.json`,
+Instala `blender-ad`, `motion-anything` y `motion-lab` en Claude Code, Cursor, Codex y el
+resto de agentes que leen el formato Agent Skills. El sitio de GitHub Pages sirve `/.well-known/skills/index.json`,
 generado desde `skills/` por `scripts/build-well-known.sh` en cada push.
 
 ## Cómo funciona (ruta Blender)
@@ -90,6 +90,8 @@ Sin cuentas, sin API keys, sin servicios. La voz corre local.
 | Si quieres… | Ve a |
 | --- | --- |
 | Entender el pipeline de Blender de punta a punta | [`skills/blender-ad`](./skills/blender-ad) — los gotchas que costaron horas, con un ejemplo que corre solo |
+| Copiar una mecánica de motion graphics ya medida (ventana retro, lista inclinada, partículas, malla de barril, cubos isométricos, karaoke por palabra…) | [`skills/motion-lab`](./skills/motion-lab) — 15 recetas HyperFrames + GSAP parametrizadas; galería con previews en [blissito.github.io/ghosty-reel/motion-lab](https://blissito.github.io/ghosty-reel/motion-lab/) |
+| Animar texto, entradas o fondos sin escribir el efecto | [`skills/motion-anything`](./skills/motion-anything) — 85 recetas web, 20 de tarjetas y 94 clases CSS (Apache-2.0) |
 | Hacer un video 2D con tipografía y personaje | [`hooks-reel`](./hooks-reel) — cómo replicarlo, qué falta generar y por qué |
 | Copiar una dirección de arte ya resuelta | [`hooks-reel/frame.md`](./hooks-reel/frame.md) — paleta, tipografía, reglas de composición y motion |
 | Sincronizar animación con narración | [`hooks-reel/README.md`](./hooks-reel#las-tres-cosas-que-cuesta-descubrir-solo) — medir con `transcribe`, nunca estimar |
