@@ -126,11 +126,13 @@ a.card:hover .arrow{transform:translateX(4px)}
 .stack span b{color:var(--dark);font-weight:600}
 footer{border-top:1px solid var(--outline);padding:32px 0 56px;color:var(--metal);font-size:14px}
 footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+nav ul a:hover,nav ul a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
 nav .logo,nav ul a,nav .gh{white-space:nowrap}
 nav .logo,nav .gh{flex:none}
+nav ul{margin-left:auto;margin-right:12px} /* el menú va pegado al botón: mismo lugar en todas las páginas */
 @media(max-width:1060px){nav .sub{display:none}}
 @media(max-width:1060px){nav ul{gap:14px;font-size:14px}}
-@media(max-width:720px){nav .wrap{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:10px;row-gap:8px}nav ul{order:3;width:100%;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}nav ul::-webkit-scrollbar{display:none}}
+@media(max-width:720px){nav .wrap{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:10px;row-gap:8px}nav ul{order:3;width:100%;margin:0;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}nav ul::-webkit-scrollbar{display:none}}
 </style>
 </head>
 <body>

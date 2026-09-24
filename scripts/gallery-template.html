@@ -26,7 +26,6 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;height:6
 .logo span{color:var(--brand-600);font-weight:600}
 nav ul{list-style:none;margin:0;padding:0;display:flex;gap:22px;font-weight:500;font-size:15px}
 nav ul a{color:var(--dark)}
-nav ul a.on{color:var(--brand-600,#8483e0);font-weight:600}
 nav .gh{display:inline-flex;align-items:center;gap:8px;background:var(--dark);color:#fff;border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px}
 .hero{padding:56px 0 24px}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-600);margin-bottom:14px}
@@ -52,11 +51,13 @@ section{padding:36px 0 64px}
 .tile p{margin:6px 0 0;color:var(--metal);font-size:14px;line-height:1.5}
 footer{border-top:1px solid var(--outline);padding:32px 0 56px;color:var(--metal);font-size:14px}
 footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+nav ul a:hover,nav ul a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
 nav .logo,nav ul a,nav .gh{white-space:nowrap}
 nav .logo,nav .gh{flex:none}
+nav ul{margin-left:auto;margin-right:12px} /* el menú va pegado al botón: mismo lugar en todas las páginas */
 @media(max-width:1060px){nav .sub{display:none}}
 @media(max-width:1060px){nav ul{gap:14px;font-size:14px}}
-@media(max-width:720px){nav .wrap{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:10px;row-gap:8px}nav ul{order:3;width:100%;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}nav ul::-webkit-scrollbar{display:none}}
+@media(max-width:720px){nav .wrap{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:10px;row-gap:8px}nav ul{order:3;width:100%;margin:0;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}nav ul::-webkit-scrollbar{display:none}}
 </style>
 </head>
 <body>
