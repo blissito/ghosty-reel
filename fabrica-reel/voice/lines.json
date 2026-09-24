@@ -1,0 +1,817 @@
+[
+ {
+  "scene": "tablero",
+  "text": "Este es un pedido real en la Fábrica Agéntica de Gósti: pruebas nuevas para una agenda.",
+  "file": "voice/00-tablero.wav",
+  "dur": 4.907,
+  "words": [
+   {
+    "w": "Este",
+    "s": 0.04,
+    "e": 0.27
+   },
+   {
+    "w": "es",
+    "s": 0.27,
+    "e": 0.41
+   },
+   {
+    "w": "un",
+    "s": 0.41,
+    "e": 0.55
+   },
+   {
+    "w": "pedido",
+    "s": 0.55,
+    "e": 0.96
+   },
+   {
+    "w": "real",
+    "s": 0.96,
+    "e": 1.26
+   },
+   {
+    "w": "en",
+    "s": 1.26,
+    "e": 1.38
+   },
+   {
+    "w": "la",
+    "s": 1.38,
+    "e": 1.5
+   },
+   {
+    "w": "fábrica",
+    "s": 1.61,
+    "e": 1.96
+   },
+   {
+    "w": "agéntica",
+    "s": 1.96,
+    "e": 2.39
+   },
+   {
+    "w": "de",
+    "s": 2.46,
+    "e": 2.6
+   },
+   {
+    "w": "Gosti,",
+    "s": 2.6,
+    "e": 3.08
+   },
+   {
+    "w": "pruebas",
+    "s": 3.25,
+    "e": 3.52
+   },
+   {
+    "w": "nuevas",
+    "s": 3.52,
+    "e": 3.87
+   },
+   {
+    "w": "para",
+    "s": 3.89,
+    "e": 4.05
+   },
+   {
+    "w": "una",
+    "s": 4.14,
+    "e": 4.34
+   },
+   {
+    "w": "agenda.",
+    "s": 4.34,
+    "e": 4.76
+   }
+  ]
+ },
+ {
+  "scene": "plan",
+  "text": "Primero, arroba plan lee tu repositorio sin tocar nada, y escribe el plan: la historia, el brif técnico y los riesgos.",
+  "file": "voice/01-plan.wav",
+  "dur": 6.891,
+  "words": [
+   {
+    "w": "Primero,",
+    "s": 0.05,
+    "e": 0.51
+   },
+   {
+    "w": "arroba",
+    "s": 0.51,
+    "e": 0.78
+   },
+   {
+    "w": "plan",
+    "s": 0.88,
+    "e": 1.07
+   },
+   {
+    "w": "lee",
+    "s": 1.07,
+    "e": 1.24
+   },
+   {
+    "w": "tu",
+    "s": 1.24,
+    "e": 1.26
+   },
+   {
+    "w": "repositorio",
+    "s": 1.35,
+    "e": 2.06
+   },
+   {
+    "w": "sin",
+    "s": 2.06,
+    "e": 2.26
+   },
+   {
+    "w": "tocar",
+    "s": 2.34,
+    "e": 2.61
+   },
+   {
+    "w": "nada",
+    "s": 2.63,
+    "e": 2.92
+   },
+   {
+    "w": "y",
+    "s": 2.92,
+    "e": 3.24
+   },
+   {
+    "w": "escribe",
+    "s": 3.24,
+    "e": 3.62
+   },
+   {
+    "w": "el",
+    "s": 3.62,
+    "e": 3.72
+   },
+   {
+    "w": "plan,",
+    "s": 3.83,
+    "e": 4.07
+   },
+   {
+    "w": "la",
+    "s": 4.07,
+    "e": 4.14
+   },
+   {
+    "w": "historia,",
+    "s": 4.38,
+    "e": 4.92
+   },
+   {
+    "w": "el",
+    "s": 4.92,
+    "e": 5.05
+   },
+   {
+    "w": "brief",
+    "s": 5.05,
+    "e": 5.38
+   },
+   {
+    "w": "técnico",
+    "s": 5.38,
+    "e": 5.73
+   },
+   {
+    "w": "y",
+    "s": 5.82,
+    "e": 5.88
+   },
+   {
+    "w": "los",
+    "s": 5.88,
+    "e": 6.07
+   },
+   {
+    "w": "riesgos.",
+    "s": 6.07,
+    "e": 6.72
+   }
+  ]
+ },
+ {
+  "scene": "firma",
+  "text": "Nada se construye hasta que tú lo apruebas, desde el chat o desde guatsap.",
+  "file": "voice/02-firma.wav",
+  "dur": 4.117,
+  "words": [
+   {
+    "w": "Nada",
+    "s": 0.03,
+    "e": 0.26
+   },
+   {
+    "w": "se",
+    "s": 0.26,
+    "e": 0.38
+   },
+   {
+    "w": "construye",
+    "s": 0.39,
+    "e": 0.97
+   },
+   {
+    "w": "hasta",
+    "s": 0.97,
+    "e": 1.29
+   },
+   {
+    "w": "que",
+    "s": 1.29,
+    "e": 1.46
+   },
+   {
+    "w": "tú",
+    "s": 1.55,
+    "e": 1.61
+   },
+   {
+    "w": "lo",
+    "s": 1.61,
+    "e": 1.74
+   },
+   {
+    "w": "apruebas",
+    "s": 1.74,
+    "e": 2.29
+   },
+   {
+    "w": "desde",
+    "s": 2.29,
+    "e": 2.7
+   },
+   {
+    "w": "el",
+    "s": 2.7,
+    "e": 2.86
+   },
+   {
+    "w": "chat",
+    "s": 2.86,
+    "e": 3.05
+   },
+   {
+    "w": "o",
+    "s": 3.21,
+    "e": 3.28
+   },
+   {
+    "w": "desde",
+    "s": 3.28,
+    "e": 3.5
+   },
+   {
+    "w": "WhatsApp.",
+    "s": 3.5,
+    "e": 3.99
+   }
+  ]
+ },
+ {
+  "scene": "aBuild",
+  "text": "Con tu firma, el pedido pasa a construcción.",
+  "file": "voice/03-aBuild.wav",
+  "dur": 2.645,
+  "words": [
+   {
+    "w": "Con",
+    "s": 0.05,
+    "e": 0.16
+   },
+   {
+    "w": "tu",
+    "s": 0.24,
+    "e": 0.3
+   },
+   {
+    "w": "firma,",
+    "s": 0.3,
+    "e": 0.72
+   },
+   {
+    "w": "el",
+    "s": 0.72,
+    "e": 0.87
+   },
+   {
+    "w": "pedido",
+    "s": 0.87,
+    "e": 1.31
+   },
+   {
+    "w": "pasa",
+    "s": 1.31,
+    "e": 1.61
+   },
+   {
+    "w": "a",
+    "s": 1.61,
+    "e": 1.68
+   },
+   {
+    "w": "construcción.",
+    "s": 1.68,
+    "e": 2.6
+   }
+  ]
+ },
+ {
+  "scene": "sandbox",
+  "text": "Luego, arroba bild trabaja en su propia computadora aislada: abre una rama, escribe diez pruebas y las corre hasta que pasan.",
+  "file": "voice/04-sandbox.wav",
+  "dur": 7.253,
+  "words": [
+   {
+    "w": "Luego,",
+    "s": 0.03,
+    "e": 0.4
+   },
+   {
+    "w": "ArrobaBuild",
+    "s": 0.4,
+    "e": 0.95
+   },
+   {
+    "w": "trabaja",
+    "s": 1.07,
+    "e": 1.4
+   },
+   {
+    "w": "en",
+    "s": 1.41,
+    "e": 1.51
+   },
+   {
+    "w": "su",
+    "s": 1.51,
+    "e": 1.62
+   },
+   {
+    "w": "propia",
+    "s": 1.62,
+    "e": 1.96
+   },
+   {
+    "w": "computadora",
+    "s": 1.96,
+    "e": 2.59
+   },
+   {
+    "w": "aislada,",
+    "s": 2.6,
+    "e": 3.19
+   },
+   {
+    "w": "abre",
+    "s": 3.19,
+    "e": 3.23
+   },
+   {
+    "w": "una",
+    "s": 3.63,
+    "e": 3.81
+   },
+   {
+    "w": "rama,",
+    "s": 3.81,
+    "e": 4.34
+   },
+   {
+    "w": "escribe",
+    "s": 4.34,
+    "e": 4.79
+   },
+   {
+    "w": "10",
+    "s": 4.79,
+    "e": 5.17
+   },
+   {
+    "w": "pruebas",
+    "s": 5.3,
+    "e": 5.66
+   },
+   {
+    "w": "y",
+    "s": 5.66,
+    "e": 5.72
+   },
+   {
+    "w": "las",
+    "s": 5.72,
+    "e": 5.89
+   },
+   {
+    "w": "corre",
+    "s": 5.9,
+    "e": 6.2
+   },
+   {
+    "w": "hasta",
+    "s": 6.2,
+    "e": 6.46
+   },
+   {
+    "w": "que",
+    "s": 6.52,
+    "e": 6.68
+   },
+   {
+    "w": "pasan.",
+    "s": 6.68,
+    "e": 7.18
+   }
+  ]
+ },
+ {
+  "scene": "check",
+  "text": "Después, arroba chek revisa el trabajo contra el plan. Nunca edita: si falta algo, se lo regresa a bild. Esta vez lo aprobó a la primera.",
+  "file": "voice/05-check.wav",
+  "dur": 8.128,
+  "words": [
+   {
+    "w": "Después,",
+    "s": 0.03,
+    "e": 0.54
+   },
+   {
+    "w": "ArrobaCheck",
+    "s": 0.54,
+    "e": 1.09
+   },
+   {
+    "w": "revisa",
+    "s": 1.21,
+    "e": 1.54
+   },
+   {
+    "w": "el",
+    "s": 1.56,
+    "e": 1.68
+   },
+   {
+    "w": "trabajo",
+    "s": 1.68,
+    "e": 2.12
+   },
+   {
+    "w": "contra",
+    "s": 2.12,
+    "e": 2.55
+   },
+   {
+    "w": "el",
+    "s": 2.55,
+    "e": 2.69
+   },
+   {
+    "w": "plan,",
+    "s": 2.69,
+    "e": 3.18
+   },
+   {
+    "w": "nunca",
+    "s": 3.2,
+    "e": 3.48
+   },
+   {
+    "w": "edita,",
+    "s": 3.48,
+    "e": 3.9
+   },
+   {
+    "w": "si",
+    "s": 3.9,
+    "e": 3.94
+   },
+   {
+    "w": "falta",
+    "s": 4.15,
+    "e": 4.64
+   },
+   {
+    "w": "algo",
+    "s": 4.64,
+    "e": 4.96
+   },
+   {
+    "w": "se",
+    "s": 4.96,
+    "e": 5.09
+   },
+   {
+    "w": "lo",
+    "s": 5.1,
+    "e": 5.24
+   },
+   {
+    "w": "regresa",
+    "s": 5.27,
+    "e": 5.72
+   },
+   {
+    "w": "a",
+    "s": 5.74,
+    "e": 5.8
+   },
+   {
+    "w": "Build,",
+    "s": 5.8,
+    "e": 6.29
+   },
+   {
+    "w": "esta",
+    "s": 6.29,
+    "e": 6.57
+   },
+   {
+    "w": "vez",
+    "s": 6.57,
+    "e": 6.78
+   },
+   {
+    "w": "lo",
+    "s": 6.78,
+    "e": 6.92
+   },
+   {
+    "w": "aprobó",
+    "s": 6.92,
+    "e": 7.34
+   },
+   {
+    "w": "a",
+    "s": 7.34,
+    "e": 7.4
+   },
+   {
+    "w": "la",
+    "s": 7.48,
+    "e": 7.55
+   },
+   {
+    "w": "primera.",
+    "s": 7.55,
+    "e": 8.06
+   }
+  ]
+ },
+ {
+  "scene": "aPR",
+  "text": "Todo listo para ti.",
+  "file": "voice/06-aPR.wav",
+  "dur": 1.323,
+  "words": [
+   {
+    "w": "Todo",
+    "s": 0.07,
+    "e": 0.31
+   },
+   {
+    "w": "listo",
+    "s": 0.31,
+    "e": 0.69
+   },
+   {
+    "w": "para",
+    "s": 0.69,
+    "e": 0.98
+   },
+   {
+    "w": "ti.",
+    "s": 1.08,
+    "e": 1.18
+   }
+  ]
+ },
+ {
+  "scene": "veredicto",
+  "text": "Te llega el pul ricuést con el dif, las pruebas, el si ai en verde y una prívíu para probarlo. La segunda firma también es tuya.",
+  "file": "voice/07-veredicto.wav",
+  "dur": 7.424,
+  "words": [
+   {
+    "w": "Te",
+    "s": 0.05,
+    "e": 0.12
+   },
+   {
+    "w": "llega",
+    "s": 0.12,
+    "e": 0.42
+   },
+   {
+    "w": "el",
+    "s": 0.42,
+    "e": 0.5
+   },
+   {
+    "w": "pull",
+    "s": 0.62,
+    "e": 0.78
+   },
+   {
+    "w": "request",
+    "s": 0.78,
+    "e": 1.14
+   },
+   {
+    "w": "con",
+    "s": 1.27,
+    "e": 1.38
+   },
+   {
+    "w": "el",
+    "s": 1.38,
+    "e": 1.49
+   },
+   {
+    "w": "DIF,",
+    "s": 1.57,
+    "e": 1.71
+   },
+   {
+    "w": "las",
+    "s": 1.96,
+    "e": 2.03
+   },
+   {
+    "w": "pruebas,",
+    "s": 2.03,
+    "e": 2.66
+   },
+   {
+    "w": "el",
+    "s": 2.66,
+    "e": 2.82
+   },
+   {
+    "w": "CI",
+    "s": 2.82,
+    "e": 2.98
+   },
+   {
+    "w": "en",
+    "s": 2.98,
+    "e": 3.14
+   },
+   {
+    "w": "verde",
+    "s": 3.14,
+    "e": 3.58
+   },
+   {
+    "w": "y",
+    "s": 3.58,
+    "e": 3.63
+   },
+   {
+    "w": "una",
+    "s": 3.63,
+    "e": 3.8
+   },
+   {
+    "w": "preview",
+    "s": 3.8,
+    "e": 4.2
+   },
+   {
+    "w": "para",
+    "s": 4.2,
+    "e": 4.43
+   },
+   {
+    "w": "probarlo.",
+    "s": 4.43,
+    "e": 5.05
+   },
+   {
+    "w": "La",
+    "s": 5.05,
+    "e": 5.55
+   },
+   {
+    "w": "segunda",
+    "s": 5.55,
+    "e": 5.74
+   },
+   {
+    "w": "firma",
+    "s": 5.74,
+    "e": 6
+   },
+   {
+    "w": "también",
+    "s": 6.11,
+    "e": 6.62
+   },
+   {
+    "w": "es",
+    "s": 6.62,
+    "e": 6.64
+   },
+   {
+    "w": "tuya.",
+    "s": 6.77,
+    "e": 7.21
+   }
+  ]
+ },
+ {
+  "scene": "listo",
+  "text": "Siete minutos, de tu firma al pi ar revisado.",
+  "file": "voice/08-listo.wav",
+  "dur": 2.688,
+  "words": [
+   {
+    "w": "7",
+    "s": 0.03,
+    "e": 0.24
+   },
+   {
+    "w": "minutos",
+    "s": 0.24,
+    "e": 0.77
+   },
+   {
+    "w": "de",
+    "s": 0.85,
+    "e": 0.96
+   },
+   {
+    "w": "tu",
+    "s": 1.03,
+    "e": 1.11
+   },
+   {
+    "w": "firma",
+    "s": 1.23,
+    "e": 1.53
+   },
+   {
+    "w": "al",
+    "s": 1.53,
+    "e": 1.6
+   },
+   {
+    "w": "PIA",
+    "s": 1.73,
+    "e": 1.93
+   },
+   {
+    "w": "revisado.",
+    "s": 1.93,
+    "e": 2.64
+   }
+  ]
+ },
+ {
+  "scene": "cta",
+  "text": "Pide tu primer pi ar en fáctori, punto gósti, punto estudio.",
+  "file": "voice/09-cta.wav",
+  "dur": 3.584,
+  "words": [
+   {
+    "w": "Pide",
+    "s": 0.05,
+    "e": 0.32
+   },
+   {
+    "w": "tu",
+    "s": 0.33,
+    "e": 0.5
+   },
+   {
+    "w": "primer",
+    "s": 0.5,
+    "e": 1.01
+   },
+   {
+    "w": "PR",
+    "s": 1.01,
+    "e": 1.18
+   },
+   {
+    "w": "en",
+    "s": 1.18,
+    "e": 1.23
+   },
+   {
+    "w": "factory.ghosti.studio.",
+    "s": 1.35,
+    "e": 3.52
+   }
+  ]
+ }
+]

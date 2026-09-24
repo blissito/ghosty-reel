@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es"><head><meta charset="UTF-8" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="base.css" />
+<style>
+  /* el hilo real, al fondo y tenue: da contexto sin competir */
+  .thread { position: absolute; left: 96px; top: 190px; width: 1728px; height: 820px; background: var(--white); border: 2px solid var(--outline); border-radius: 44px; box-shadow: var(--soft); overflow: hidden; }
+  .msg { position: absolute; left: 56px; display: flex; gap: 20px; align-items: flex-start; }
+  .msg .ava { width: 64px; height: 64px; }
+  .msg .ava img { width: 78px; }
+  .mh { display: flex; gap: 12px; align-items: baseline; font-size: 24px; }
+  .mh b { font-size: 26px; }
+  .mh .time { color: var(--iron); font-size: 20px; }
+  .bub { margin-top: 8px; border-radius: 20px; padding: 16px 22px; font-size: 24px; background: var(--surface); color: var(--metal); }
+  /* VerdictCard a escala: barra esmeralda a la izquierda, dl de filas, botones con borde */
+  .verdict { position: absolute; left: 136px; top: 470px; width: 1040px; display: flex; background: var(--white); border: 2px solid var(--outline); border-radius: 22px; box-shadow: 0 30px 70px rgba(33, 22, 76, .16); overflow: hidden; }
+  .verdict .lb { width: 10px; background: var(--emerald); flex: none; }
+  .verdict .in { padding: 34px 40px 32px; flex: 1; }
+  .verdict .tt { font-size: 36px; font-weight: 600; }
+  .verdict .tt span { font-family: "JetBrains Mono"; font-size: 26px; font-weight: 400; color: var(--iron); margin-left: 12px; }
+  .verdict dl { display: grid; grid-template-columns: auto 1fr; gap: 12px 40px; margin-top: 24px; font-size: 26px; }
+  .verdict dt { color: var(--iron); }
+  .verdict dd { color: var(--dark); }
+  .verdict .btns { display: flex; gap: 16px; margin-top: 30px; }
+  .btn { border-radius: 14px; border: 2px solid; padding: 12px 24px; font-size: 24px; font-weight: 600; background: var(--white); }
+  .caption { position: absolute; left: 1250px; top: 520px; width: 520px; }
+  .caption .big { font-family: "Poppins"; font-weight: 600; font-size: 58px; line-height: 1.08; }
+  .caption .big em { font-style: normal; color: var(--brand600); }
+  .caption p { font-size: 26px; color: var(--metal); margin-top: 22px; line-height: 1.4; }
+  .hand { position: absolute; left: 640px; top: 772px; width: 110px; }
+</style></head>
+<body>
+  <div class="dots"></div>
+  <div class="hud-title">tú apruebas el PR<i></i></div>
+  <div class="hud-ring" style="--p: 84%"><div class="ring"><b><i></i></b></div><span>6 · PR</span></div>
+
+  <div class="thread">
+    <div class="msg" style="top: 60px; opacity: .55">
+      <div class="ava" style="background: var(--dark); color: #fff; font-weight: 700; font-size: 22px">TÚ</div>
+      <div><div class="mh"><b>Tú</b></div><div class="bub" style="background: #fff; border: 2px solid var(--outline)">🏭 Pedido #2 · Agrega pruebas de vitest para las funciones de la agenda…</div></div>
+    </div>
+    <div class="msg" style="top: 200px">
+      <div class="ava"><img src="../assets/ghosty.svg" style="width: 44px" /></div>
+      <div><div class="mh"><b>Ghosty</b><span class="tagA">agente</span></div></div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="lb"></div>
+    <div class="in">
+      <div class="tt">✅ Listo para tu revisión<span>PR #34</span></div>
+      <dl>
+        <dt>Cambios</dt><dd class="mono">1 archivo · 10 pruebas nuevas</dd>
+        <dt>CI</dt><dd style="color: #059669; font-weight: 600">✓ 4 de 4 en verde</dd>
+        <dt>Revisión</dt><dd>contra el plan v1 · <b>0 vueltas</b></dd>
+      </dl>
+      <div class="btns">
+        <span class="btn" style="border-color: var(--brand500); color: var(--brand600)">Ver preview ↗</span>
+        <span class="btn" style="border-color: var(--outline); color: var(--dark)">Ver PR ↗</span>
+        <span class="btn" style="border-color: #059669; color: #047857; box-shadow: 0 0 0 8px rgba(16, 185, 129, .15)">Mezclar</span>
+      </div>
+    </div>
+  </div>
+
+  <svg class="hand" viewBox="0 0 90 110"><path d="M30 8 q10 -8 20 0 v44 l20 4 q14 4 12 20 l-6 26 q-2 8 -10 8 h-34 q-8 0 -12 -8 l-16 -30 q-4 -10 6 -12 q6 0 10 6 l10 12 z" fill="#fff" stroke="#191a20" stroke-width="5" stroke-linejoin="round" /></svg>
+
+  <div class="caption">
+    <div class="big">La segunda firma <em>es tuya</em></div>
+    <p>Llega con el diff, las pruebas y el visto bueno de @check. Tú decides si entra.</p>
+  </div>
+</body></html>

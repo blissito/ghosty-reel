@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es"><head><meta charset="UTF-8" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="base.css" />
+<style>
+  .board { position: absolute; left: 96px; top: 190px; width: 1728px; height: 820px; background: var(--white); border: 2px solid var(--outline); border-radius: 44px; box-shadow: var(--soft); overflow: hidden; }
+  .bTop { height: 96px; border-bottom: 2px solid var(--outline); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: var(--surface3); }
+  .bTop .ch { font-weight: 700; font-size: 32px; }
+  .bTop .ch span { color: var(--brand600); }
+  .bTop .st { font-size: 20px; color: var(--iron); display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+  .bTop .st i { width: 12px; height: 12px; border-radius: 50%; background: var(--grass); }
+  .stack { display: flex; }
+  .stack .ava { width: 56px; height: 56px; margin-left: -12px; }
+  .stack .ava img { width: 68px; }
+  .cols { position: absolute; left: 32px; right: 32px; top: 124px; bottom: 32px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+  .col { background: var(--surface); border-radius: 28px; padding: 20px 18px; position: relative; }
+  .col h4 { display: flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 600; color: var(--metal); }
+  .col h4 i { width: 12px; height: 12px; border-radius: 50%; }
+  .col h4 em { margin-left: auto; font-style: normal; font-size: 18px; color: var(--iron); background: var(--white); border-radius: 999px; padding: 2px 12px; }
+  .ghost { margin-top: 18px; height: 130px; border: 2px dashed var(--outline); border-radius: 20px; }
+  .card { margin-top: 18px; background: var(--white); border: 2px solid var(--brand300); border-radius: 22px; padding: 20px 20px 18px; box-shadow: 0 16px 40px rgba(132, 131, 224, .22); position: relative; }
+  .card .t { font-weight: 700; font-size: 22px; display: flex; align-items: center; gap: 8px; }
+  .card p { font-size: 18px; line-height: 1.4; color: var(--metal); margin-top: 10px; }
+  .card .ft { display: flex; align-items: center; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 2px solid var(--outline); font-size: 18px; font-weight: 600; }
+  .card .ft .ava { width: 40px; height: 40px; border-width: 2px; }
+  .card .ft .ava img { width: 48px; }
+  .card .glow { position: absolute; inset: -10px; border-radius: 30px; border: 3px solid var(--brand500); opacity: .5; }
+  .spark { position: absolute; width: 26px; height: 26px; }
+</style></head>
+<body>
+  <div class="dots"></div>
+  <div class="hud-title">un pedido cruza la fábrica<i></i></div>
+  <div class="hud-ring" style="--p: 8%"><div class="ring"><b><i></i></b></div><span>1 · pedido</span></div>
+
+  <div class="board">
+    <div class="bTop">
+      <div><div class="ch"><span>#</span> fabrica · tablero</div><div class="st"><i></i>La fábrica está trabajando</div></div>
+      <div class="stack">
+        <div class="ava"><img src="../assets/ghosty.svg" style="width: 40px" /></div>
+        <div class="ava"><img src="../assets/factory-plan.svg" /></div>
+        <div class="ava"><img src="../assets/factory-build.svg" /></div>
+        <div class="ava"><img src="../assets/factory-check.svg" /></div>
+      </div>
+    </div>
+    <div class="cols">
+      <div class="col"><h4><i style="background: var(--bird)"></i>plan<em>1</em></h4>
+        <div class="card"><div class="glow"></div>
+          <div class="t">🏭 Pedido #2</div>
+          <p>Agrega pruebas de vitest para las funciones de la agenda que arman la grilla de horarios.</p>
+          <div class="ft"><div class="ava"><img src="../assets/factory-plan.svg" /></div>@plan</div>
+        </div>
+      </div>
+      <div class="col"><h4><i style="background: var(--brand500)"></i>esperando aprobación<em>0</em></h4><div class="ghost"></div></div>
+      <div class="col"><h4><i style="background: var(--grass)"></i>build<em>0</em></h4><div class="ghost"></div></div>
+      <div class="col"><h4><i style="background: var(--salmon)"></i>check<em>0</em></h4><div class="ghost"></div></div>
+      <div class="col"><h4><i style="background: var(--cloud)"></i>PR<em>0</em></h4><div class="ghost"></div></div>
+      <div class="col"><h4><i style="background: var(--dark)"></i>listo<em>0</em></h4><div class="ghost"></div></div>
+    </div>
+  </div>
+
+  <!-- anotación a mano -->
+  <div class="note" style="left: 470px; top: 690px; font-size: 44px; transform: rotate(-4deg)">tu pedido</div>
+  <svg class="abs" style="left: 380px; top: 610px" width="110" height="100" viewBox="0 0 110 100" fill="none" stroke="#b6b6ba" stroke-width="3" stroke-linecap="round"><path d="M100 80 C 60 80, 40 50, 18 16" /><path d="M10 26 L 17 14 L 30 18" stroke-linejoin="round" /></svg>
+  <!-- destellos -->
+  <svg class="spark" style="left: 360px; top: 318px" viewBox="0 0 20 20"><path d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z" fill="#9a99ea" /></svg>
+  <svg class="spark" style="left: 110px; top: 560px; width: 18px" viewBox="0 0 20 20"><path d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z" fill="#edc75a" /></svg>
+</body></html>

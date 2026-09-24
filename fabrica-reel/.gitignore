@@ -1,0 +1,12 @@
+# regenerables: ./gen-voice.py · node score.mjs · python3 synth.py bed.wav bed && python3 synth.py sfx.wav sfx · npm run render -- --low-memory-mode -o renders/mudo.mp4 · ./mix.sh
+voice/*.wav
+voice/tr-*/
+score.gen.js
+score.gen.json
+bed.wav
+sfx.wav
+renders/
+snapshots/
+render.log
+*.wav
+transcript.json

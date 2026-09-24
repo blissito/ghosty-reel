@@ -79,6 +79,9 @@ en segundos y saca 2 minutos en 9:16 en menos de un minuto de render. Lo mueve
 - **[partitura-reel](./partitura-reel)** — 9:16, 37s, Ghosty Factory. Una partitura mueve la
   animación y el sintetizador; cada objeto toca su nota en el mismo cuadro. HTML + GSAP.
   **La ruta por defecto desde el 24 sep 2026.**
+- **[fabrica-reel](./fabrica-reel)**: 9:16, 70 s, con narración. Un pedido real de Ghosty Factory cruza el
+  tablero; la voz marca el tiempo y cada efecto cae en la palabra que lo nombra. Estilo oficial de la marca y
+  sprites de gpt-image-2. Su README trae las reglas que salieron de los errores.
 
 ## Stack — todo libre
 
@@ -98,6 +101,7 @@ Sin cuentas, sin API keys, sin servicios. La voz corre local.
 | Hacer un video 2D con tipografía y personaje | [`hooks-reel`](./hooks-reel) — cómo replicarlo, qué falta generar y por qué |
 | Copiar una dirección de arte ya resuelta | [`hooks-reel/frame.md`](./hooks-reel/frame.md) — paleta, tipografía, reglas de composición y motion |
 | Que la imagen y la música vayan a la nota, sin alinear a mano | [`partitura-reel`](./partitura-reel) — una partitura, dos salidas (GSAP + sintetizador numpy), verificada cuadro por cuadro |
+| Narración + partitura, y las reglas de sonido e imagen que costaron (qué no hacer) | [`fabrica-reel`](./fabrica-reel#lo-que-aprendimos-y-cómo-lo-pagamos) |
 | Sincronizar animación con narración | [`hooks-reel/README.md`](./hooks-reel#las-tres-cosas-que-cuesta-descubrir-solo) — medir con `transcribe`, nunca estimar |
 | Escribir un guion que el TTS no mastique | [`hooks-reel/SCRIPT.md`](./hooks-reel/SCRIPT.md) — anglicismos escritos fonéticos |
 

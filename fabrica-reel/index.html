@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="score.gen.js"></script>
+    <style>
+      /* Estilo oficial de ghosty.studio (app/app.css, FactoryThread.tsx, PlanCard.tsx, VerdictCard.tsx) a escala vertical */
+      :root {
+        --dark: #191a20; --metal: #4b5563; --iron: #81838e; --light: #b6b6ba;
+        --surface: #f2f5f9; --surface3: #f6f6fa; --outline: #e1e3e7; --white: #ffffff;
+        --brand100: #f5f5fc; --brand300: #aeadef; --brand500: #9a99ea; --brand600: #8483e0;
+        --bird: #edc75a; --grass: #7fbe60; --salmon: #e4ae8e; --cloud: #8ad7c9; --danger: #ed695f; --emerald: #10b981;
+        --soft: 0 12px 40px rgba(33, 22, 76, .09); --softer: 0 4px 18px rgba(33, 22, 76, .07);
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--surface); font-family: "Inter", sans-serif; color: var(--dark); }
+      .abs { position: absolute; }
+      .mono { font-family: "JetBrains Mono", monospace; }
+      .dots { position: absolute; left: -40px; top: -40px; width: 1160px; height: 2000px; background-image: radial-gradient(circle, #dde2ea 2px, transparent 2.5px); background-size: 40px 40px; }
+      .scene { position: absolute; inset: 0; display: none; }
+      #s-tablero { display: block; }
+      .tagA { border-radius: 10px; background: var(--brand100); color: var(--brand600); font-size: 22px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 4px 12px; }
+      .ava { border-radius: 50%; border: 3px solid var(--dark); background: var(--surface); display: grid; place-items: center; overflow: hidden; flex: none; }
+      .note { position: absolute; font-family: "Caveat"; font-weight: 500; color: rgba(75, 85, 99, .85); line-height: 1; white-space: nowrap; }
+
+      /* HUD: título por escena (ya escrito desde que abre) y anillo de etapa */
+      #hudTitle { position: absolute; left: 72px; top: 262px; font-family: "Poppins"; font-weight: 600; font-size: 52px; line-height: 1.12; z-index: 40; }
+      #hudTitle i { display: block; width: 110px; height: 6px; border-radius: 3px; background: var(--brand500); margin-top: 12px; }
+      #hudRing { position: absolute; right: 60px; top: 250px; width: 150px; text-align: center; z-index: 40; }
+      #hudRing .ring { --p: 0%; width: 90px; height: 90px; margin: 0 auto; border-radius: 50%; background: conic-gradient(var(--brand500) var(--p), var(--outline) 0); display: grid; place-items: center; }
+      #hudRing .ring b { width: 72px; height: 72px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; }
+      #hudRing .ring b i { width: 18px; height: 18px; border-radius: 5px; background: var(--danger); }
+      #hudRing span { display: block; margin-top: 12px; font-weight: 600; font-size: 26px; color: var(--metal); }
+
+      /* riel de etapas (franja inferior): la tarjeta del pedido avanza por los seis pasos del tablero */
+      #rail { position: absolute; left: 60px; top: 1500px; width: 960px; height: 150px; background: var(--white); border: 2px solid var(--outline); border-radius: 40px; box-shadow: var(--softer); z-index: 40; }
+      #rail .line { position: absolute; left: 90px; right: 90px; top: 56px; height: 4px; background: var(--outline); border-radius: 2px; }
+      #rail .fill { position: absolute; left: 90px; top: 56px; height: 4px; width: 0; background: var(--brand500); border-radius: 2px; }
+      #rail .st { position: absolute; top: 44px; width: 150px; margin-left: -75px; text-align: center; }
+      #rail .st i { display: block; width: 28px; height: 28px; margin: 0 auto; border-radius: 50%; background: var(--white); border: 3px solid var(--outline); }
+      #rail .st span { display: block; margin-top: 12px; font-size: 21px; font-weight: 600; color: var(--iron); white-space: nowrap; }
+      #rail .chip { position: absolute; top: 34px; left: 90px; width: 48px; height: 48px; margin-left: -24px; border-radius: 14px; background: var(--white); border: 3px solid var(--brand500); box-shadow: 0 8px 20px rgba(132,131,224,.3); display: grid; place-items: center; font-size: 24px; }
+      #url { position: absolute; left: 0; width: 1080px; top: 1700px; text-align: center; font-family: "JetBrains Mono"; font-weight: 500; font-size: 30px; color: var(--brand600); z-index: 40; }
+
+      /* ===== tablero ===== */
+      #board { position: absolute; left: 60px; top: 450px; width: 860px; height: 940px; background: var(--white); border: 2px solid var(--outline); border-radius: 48px; box-shadow: var(--soft); overflow: hidden; transform-origin: 0 0; }
+      .bTop { height: 120px; border-bottom: 2px solid var(--outline); background: var(--surface3); display: flex; align-items: center; justify-content: space-between; padding: 0 36px; }
+      .bTop .ch { font-weight: 700; font-size: 38px; } .bTop .ch span { color: var(--brand600); }
+      .bTop .stt { font-size: 24px; color: var(--iron); display: flex; gap: 10px; align-items: center; margin-top: 4px; } .bTop .stt i { width: 13px; height: 13px; border-radius: 50%; background: var(--grass); }
+      .stack { display: flex; } .stack .ava { width: 60px; height: 60px; margin-left: -14px; } .stack .ava img { width: 72px; }
+      .bgrid { position: absolute; left: 28px; right: 28px; top: 148px; bottom: 28px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 20px; }
+      .col { background: var(--surface); border-radius: 30px; padding: 20px; position: relative; }
+      .col h4 { display: flex; align-items: center; gap: 12px; font-size: 26px; font-weight: 600; color: var(--metal); white-space: nowrap; }
+      .col h4 i { width: 14px; height: 14px; border-radius: 50%; flex: none; }
+      .col h4 em { margin-left: auto; font-style: normal; font-size: 22px; color: var(--iron); background: var(--white); border-radius: 999px; padding: 2px 14px; }
+      .slot { position: absolute; left: 20px; right: 20px; top: 66px; bottom: 20px; border: 2px dashed var(--outline); border-radius: 22px; }
+      #card { position: absolute; width: 356px; background: var(--white); border: 2px solid var(--brand300); border-radius: 22px; padding: 16px 18px; box-shadow: 0 16px 40px rgba(132,131,224,.26); z-index: 5; }
+      #card .glow { position: absolute; inset: -9px; border-radius: 29px; border: 3px solid var(--brand500); opacity: 0; }
+      #card .t { font-weight: 700; font-size: 25px; display: flex; justify-content: space-between; align-items: center; }
+      #card .t em { font-style: normal; font-size: 18px; font-weight: 600; border-radius: 999px; padding: 3px 12px; background: var(--brand100); color: var(--brand600); }
+      #card p { font-size: 20px; line-height: 1.35; color: var(--metal); margin-top: 8px; }
+      #card .ft { display: flex; gap: 10px; align-items: center; margin-top: 10px; font-size: 20px; font-weight: 600; }
+      #card .ft .ava { width: 38px; height: 38px; border-width: 2px; } #card .ft .ava img { width: 46px; }
+
+      /* ===== @plan ===== */
+      .who { position: absolute; left: 72px; top: 460px; display: flex; gap: 26px; align-items: center; }
+      .who .ava { width: 128px; height: 128px; border-width: 4px; } .who .ava img { width: 156px; }
+      .who h3 { font-family: "Poppins"; font-weight: 600; font-size: 58px; line-height: 1; }
+      .who .h { display: flex; gap: 12px; align-items: center; margin-top: 10px; font-size: 28px; font-weight: 600; color: var(--metal); }
+      .files { position: absolute; left: 60px; top: 650px; width: 400px; height: 740px; background: var(--white); border: 2px solid var(--outline); border-radius: 36px; box-shadow: var(--soft); padding: 26px 22px; }
+      .files .hd { font-family: "JetBrains Mono"; font-size: 24px; font-weight: 700; color: var(--metal); margin-bottom: 16px; }
+      .frow { display: flex; align-items: center; gap: 14px; height: 64px; border-radius: 16px; padding: 0 14px; position: relative; }
+      .frow .ico { width: 26px; height: 32px; border: 3px solid var(--light); border-radius: 6px; flex: none; }
+      .frow .bar { height: 12px; border-radius: 6px; background: var(--outline); }
+      .frow .hl { position: absolute; inset: 0; border-radius: 16px; background: rgba(237,199,90,.25); opacity: 0; }
+      .lens { position: absolute; left: 400px; top: 690px; width: 78px; height: 78px; z-index: 6; }
+      .planDoc { position: absolute; left: 490px; top: 650px; width: 430px; height: 740px; border: 4px solid var(--dark); border-radius: 32px; background: rgba(237,199,90,.2); padding: 30px 28px; }
+      .planDoc .at { font-size: 24px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+      .prow { margin-top: 34px; }
+      .prow b { display: block; font-size: 28px; font-weight: 600; margin-bottom: 14px; }
+      .prow .ln { height: 12px; border-radius: 6px; background: rgba(25,26,32,.14); margin-top: 12px; transform-origin: 0 50%; transform: scaleX(0); }
+
+      /* ===== firma ===== */
+      .approve { position: absolute; left: 60px; top: 560px; width: 860px; border: 4px solid var(--dark); border-radius: 40px; background: rgba(237,199,90,.2); padding: 44px 44px 40px; }
+      .approve .at { font-size: 28px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+      .approve .rw { display: flex; gap: 24px; align-items: center; height: 92px; border-top: 2px solid rgba(25,26,32,.08); font-size: 32px; }
+      .approve .rw:first-of-type { margin-top: 20px; }
+      .approve .rw b { width: 260px; font-weight: 600; }
+      .approve .rw i { height: 14px; border-radius: 7px; background: rgba(25,26,32,.14); }
+      .abtns { display: flex; gap: 18px; margin-top: 30px; height: 84px; align-items: center; }
+      .pill { display: inline-flex; align-items: center; border-radius: 999px; font-weight: 700; font-size: 32px; padding: 18px 36px; }
+      .hint { font-size: 26px; color: var(--iron); margin-top: 26px; }
+      .hand { position: absolute; width: 120px; z-index: 60; } /* encima del riel (40) */
+
+      /* ===== sandbox ===== */
+      .box { position: absolute; left: 60px; top: 670px; width: 860px; height: 620px; border: 3px dashed var(--brand300); border-radius: 48px; background: rgba(245,245,252,.7); }
+      .box .lbl { position: absolute; left: 40px; top: -26px; background: var(--surface); padding: 4px 16px; font-weight: 600; font-size: 28px; color: var(--brand600); display: flex; gap: 10px; align-items: center; }
+      .box .lbl i { width: 16px; height: 16px; border-radius: 4px; background: var(--brand500); }
+      .corner { position: absolute; width: 36px; height: 36px; border: 4px solid var(--brand500); }
+      .term { position: absolute; left: 34px; top: 56px; right: 34px; bottom: 34px; background: var(--dark); border-radius: 28px; box-shadow: 0 24px 60px rgba(25,26,32,.28); overflow: hidden; }
+      .term .bar { height: 62px; background: #24252d; display: flex; align-items: center; gap: 12px; padding: 0 24px; }
+      .term .bar i { width: 16px; height: 16px; border-radius: 50%; } .term .bar span { margin-left: 12px; font-size: 22px; color: #8e909c; font-family: "JetBrains Mono"; }
+      .tl { font-family: "JetBrains Mono"; font-size: 27px; line-height: 43px; color: #d9dbe4; padding-left: 30px; white-space: pre; display: none; }
+      .tl:first-of-type { margin-top: 22px; }
+      .p { color: var(--brand500); } .g { color: #9ed57f; } .d { color: #6f7280; } .w { color: #fff; font-weight: 700; }
+      .cursor { display: inline-block; width: 14px; height: 30px; background: #d9dbe4; vertical-align: -5px; margin-left: 4px; }
+      .count { position: absolute; left: 60px; top: 1318px; display: inline-flex; gap: 16px; align-items: center; background: var(--white); border: 2px solid var(--outline); box-shadow: var(--softer); border-radius: 999px; padding: 16px 32px; font-weight: 700; font-size: 34px; opacity: 0; }
+      .count b { width: 48px; height: 48px; border-radius: 50%; background: var(--grass); color: #fff; display: grid; place-items: center; font-size: 26px; }
+
+      /* ===== check ===== */
+      .diff { position: absolute; left: 60px; top: 650px; width: 410px; height: 470px; background: var(--white); border: 2px solid var(--outline); border-radius: 32px; box-shadow: var(--soft); padding: 24px; overflow: hidden; }
+      .diff .hd { font-family: "JetBrains Mono"; font-size: 22px; font-weight: 700; color: var(--metal); margin-bottom: 14px; }
+      .dl { height: 30px; border-radius: 6px; margin-top: 8px; display: flex; align-items: center; gap: 10px; padding-left: 10px; background: rgba(127,190,96,.14); }
+      .dl b { color: #3f8a3a; font-family: "JetBrains Mono"; font-size: 20px; } .dl i { height: 10px; border-radius: 5px; background: rgba(63,138,58,.4); }
+      .pdoc { position: absolute; left: 510px; top: 650px; width: 410px; height: 470px; border: 4px solid var(--dark); border-radius: 32px; background: rgba(237,199,90,.16); padding: 26px; }
+      .pdoc .at { font-size: 22px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+      .pr2 { display: flex; align-items: center; gap: 14px; height: 110px; border-top: 2px solid rgba(25,26,32,.08); font-size: 28px; font-weight: 600; }
+      .pr2:first-of-type { margin-top: 18px; }
+      .tick { width: 50px; height: 50px; margin-left: auto; border-radius: 50%; border: 3px solid var(--outline); background: var(--white); display: grid; place-items: center; color: #fff; font-size: 28px; font-weight: 800; }
+      #links { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
+      .ciRow { position: absolute; left: 60px; top: 1170px; width: 860px; display: flex; align-items: center; gap: 18px; }
+      .ciRow .lbl { font-family: "JetBrains Mono"; font-weight: 700; font-size: 26px; color: var(--iron); width: 60px; }
+      .ciBox { width: 150px; height: 90px; border-radius: 24px; border: 2px solid var(--outline); background: var(--white); box-shadow: var(--softer); display: grid; place-items: center; font-weight: 800; font-size: 26px; color: var(--light); }
+      .zero { position: absolute; left: 60px; top: 1300px; opacity: 0; }
+
+      /* ===== veredicto ===== */
+      .big { position: absolute; left: 72px; top: 470px; width: 900px; font-family: "Poppins"; font-weight: 600; font-size: 74px; line-height: 1.06; }
+      .big em { font-style: normal; color: var(--brand600); }
+      .sub { position: absolute; left: 72px; top: 650px; width: 820px; font-size: 32px; line-height: 1.4; color: var(--metal); }
+      .whoG { position: absolute; left: 60px; top: 790px; display: flex; gap: 16px; align-items: center; font-size: 30px; }
+      .whoG .ava { width: 70px; height: 70px; } .whoG .ava img { width: 50px; }
+      .verdict { position: absolute; left: 60px; top: 880px; width: 860px; display: flex; background: var(--white); border: 2px solid var(--outline); border-radius: 24px; box-shadow: 0 30px 70px rgba(33,22,76,.16); overflow: hidden; }
+      .verdict .lb { width: 12px; background: var(--emerald); flex: none; }
+      .verdict .in { padding: 34px 36px; flex: 1; }
+      .verdict .tt { font-size: 38px; font-weight: 600; }
+      .verdict .tt span { display: block; font-family: "JetBrains Mono"; font-size: 28px; font-weight: 400; color: var(--iron); margin-top: 6px; }
+      .vr { display: flex; gap: 30px; font-size: 29px; margin-top: 14px; visibility: hidden; }
+      .vr dt { color: var(--iron); width: 150px; }
+      .vbtns { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 30px; visibility: hidden; }
+      .btn { border-radius: 16px; border: 2px solid; padding: 14px 26px; font-size: 28px; font-weight: 600; background: var(--white); }
+      .done { position: absolute; left: 60px; top: 1300px; width: 860px; display: flex; gap: 18px; align-items: center; visibility: hidden; }
+      .done .bub { border-radius: 24px; padding: 20px 28px; font-size: 30px; font-weight: 600; background: rgba(127,190,96,.16); }
+      .confetti { position: absolute; z-index: 31; visibility: hidden; }
+
+      /* ===== listo ===== */
+      .stat { position: absolute; left: 60px; top: 460px; width: 860px; text-align: left; z-index: 8; }
+
+      /* ===== CTA ===== */
+      .ctaG { position: absolute; left: 400px; top: 430px; width: 280px; }
+      .ctaV { position: absolute; left: 0; width: 1080px; top: 820px; text-align: center; font-family: "Poppins"; font-weight: 600; font-size: 70px; visibility: hidden; }
+      .ctaU { position: absolute; left: 0; width: 1080px; top: 950px; text-align: center; visibility: hidden; }
+      .ctaU span { display: inline-block; border-radius: 999px; background: var(--brand500); padding: 30px 56px; font-family: "JetBrains Mono"; font-weight: 700; font-size: 50px; color: var(--dark); box-shadow: 0 20px 50px rgba(132,131,224,.35); }
+      .ctaS { position: absolute; left: 0; width: 1080px; top: 1150px; text-align: center; font-size: 30px; color: var(--metal); line-height: 1.45; visibility: hidden; }
+      .ctaW { position: absolute; left: 400px; top: 1290px; width: 280px; }
+
+      /* ===== cortinilla: tres tarjetas redondeadas que suben y tapan todo; la pastilla del rol sella el corte ===== */
+      .panel { position: absolute; left: -60px; width: 1200px; height: 2200px; border-radius: 120px; z-index: 90; visibility: hidden; }
+      #seal { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; display: grid; place-items: center; z-index: 95; visibility: hidden; }
+      #seal .gp { display: inline-flex; align-items: center; gap: 30px; border-radius: 999px; background: var(--white); box-shadow: var(--soft); padding: 26px 60px 26px 26px; }
+      #seal .gp .ava { width: 150px; height: 150px; border-width: 4px; } #seal .gp .ava img { width: 180px; }
+      #seal .gt { font-family: "Poppins"; font-weight: 600; font-size: 96px; line-height: 1; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920" data-duration="69.875">
+      <div class="dots" id="dots"></div>
+      <div id="hudTitle"><span id="hudT">un pedido cruza<br />la fábrica</span><i></i></div>
+      <div id="hudRing"><div class="ring" id="ring"><b><i></i></b></div><span id="hudS">1 · pedido</span></div>
+
+      <!-- tablero: la misma pieza en las escenas tablero / aBuild / aPR / listo -->
+      <div class="scene" id="s-tablero">
+        <div id="board">
+          <div class="bTop"><div><div class="ch"><span>#</span> fabrica</div><div class="stt"><i></i>La fábrica está trabajando</div></div>
+            <div class="stack"><div class="ava"><img src="assets/ghosty.svg" style="width: 42px" /></div><div class="ava"><img src="assets/factory-plan.svg" /></div><div class="ava"><img src="assets/factory-build.svg" /></div><div class="ava"><img src="assets/factory-check.svg" /></div></div></div>
+          <div class="bgrid">
+            <div class="col" data-k="0"><h4><i style="background: var(--bird)"></i>plan<em class="n">1</em></h4><div class="slot"></div></div>
+            <div class="col" data-k="1"><h4><i style="background: var(--brand500)"></i>esperando aprob.<em class="n">0</em></h4><div class="slot"></div></div>
+            <div class="col" data-k="2"><h4><i style="background: var(--grass)"></i>build<em class="n">0</em></h4><div class="slot"></div></div>
+            <div class="col" data-k="3"><h4><i style="background: var(--salmon)"></i>check<em class="n">0</em></h4><div class="slot"></div></div>
+            <div class="col" data-k="4"><h4><i style="background: var(--cloud)"></i>PR<em class="n">0</em></h4><div class="slot"></div></div>
+            <div class="col" data-k="5"><h4><i style="background: var(--dark)"></i>listo<em class="n">0</em></h4><div class="slot"></div></div>
+          </div>
+          <div id="card"><div class="glow"></div>
+            <div class="t">🏭 Pedido #2<em id="cardSt">plan</em></div>
+            <p>Agrega pruebas de vitest para la grilla de la agenda.</p>
+            <div class="ft"><div class="ava"><img id="cardAva" src="assets/factory-plan.svg" /></div><span id="cardWho">@plan</span></div>
+          </div>
+        </div>
+        <div class="note" id="noteT" style="left: 330px; top: 1418px; font-size: 50px; transform: rotate(-3deg)">tu pedido entra aquí</div>
+        <div class="stat" id="stat" style="visibility: hidden"></div>
+        <img id="spark" class="abs" src="assets/chispa.png" style="width: 70px; visibility: hidden; z-index: 20" />
+      </div>
+
+      <!-- @plan lee el repo -->
+      <div class="scene" id="s-plan">
+        <div class="who"><div class="ava"><img src="assets/factory-plan.svg" /></div><div><h3>Plan</h3><div class="h">@plan <span class="tagA">agente</span></div></div></div>
+        <div class="files" id="files"><div class="hd">app/agenda/</div></div>
+        <img class="lens" id="lens" src="assets/lupa.png" style="width: 118px; height: auto" />
+        <div class="planDoc"><div class="at">✋ Plan <span id="planOk" style="float:right;visibility:hidden;background:var(--grass);color:#fff;border-radius:999px;padding:4px 14px;font-size:20px;letter-spacing:0">✓ listo</span></div>
+          <div class="prow"><b>Historia</b><div class="ln" style="width: 94%"></div><div class="ln" style="width: 70%"></div></div>
+          <div class="prow"><b>Brief técnico</b><div class="ln" style="width: 90%"></div><div class="ln" style="width: 84%"></div><div class="ln" style="width: 52%"></div></div>
+          <div class="prow"><b>Riesgos</b><div class="ln" style="width: 80%"></div><div class="ln" style="width: 44%"></div></div>
+        </div>
+        <div class="note" style="left: 70px; top: 1410px; font-size: 46px">sólo lee, no toca nada</div>
+      </div>
+
+      <!-- tú firmas el plan -->
+      <div class="scene" id="s-firma">
+        <div class="approve">
+          <div class="at">✋ Plan · necesita tu firma</div>
+          <div class="rw"><b>Historia</b><i style="width: 360px"></i></div>
+          <div class="rw"><b>Brief técnico</b><i style="width: 300px"></i></div>
+          <div class="rw"><b>Riesgos</b><i style="width: 240px"></i></div>
+          <div class="abtns" id="abtns"><span class="pill" id="btnA" style="border: 4px solid var(--dark); background: var(--white)">Aprobar</span><span class="pill" style="border: 2px solid var(--outline); background: var(--white); color: var(--metal); font-weight: 600">Pedir cambios</span></div>
+          <div class="abtns" id="adone" style="display: none"><span class="pill" style="background: var(--grass); color: #fff">✅ Aprobado por ti</span></div>
+          <div class="hint">o contesta «✅» en el hilo, o por WhatsApp</div>
+        </div>
+        <div class="note" style="left: 150px; top: 1250px; font-size: 54px; transform: rotate(-2deg)">Nada se construye sin tu ✅</div>
+        <img id="stampImg" class="abs" src="assets/sello.png" style="left: 700px; top: 470px; width: 170px; z-index: 20" />
+        <img id="okBadge" class="abs" src="assets/palomita.png" style="left: 760px; top: 600px; width: 120px; z-index: 19; visibility: hidden" />
+        <svg class="hand" id="hand1" viewBox="0 0 90 110" style="left: 700px; top: 1960px"><path d="M30 8 q10 -8 20 0 v44 l20 4 q14 4 12 20 l-6 26 q-2 8 -10 8 h-34 q-8 0 -12 -8 l-16 -30 q-4 -10 6 -12 q6 0 10 6 l10 12 z" fill="#fff" stroke="#191a20" stroke-width="5" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- @build en su sandbox -->
+      <div class="scene" id="s-sandbox">
+        <div class="who"><div class="ava"><img src="assets/factory-build.svg" /></div><div><h3>Build</h3><div class="h">@build <span class="tagA">agente</span></div></div></div>
+        <div class="box">
+          <div class="lbl"><i></i>su propia computadora</div>
+          <div class="corner" style="left: -6px; top: -6px; border-right: 0; border-bottom: 0; border-radius: 14px 0 0 0"></div>
+          <div class="corner" style="right: -6px; top: -6px; border-left: 0; border-bottom: 0; border-radius: 0 14px 0 0"></div>
+          <div class="corner" style="left: -6px; bottom: -6px; border-right: 0; border-top: 0; border-radius: 0 0 0 14px"></div>
+          <div class="corner" style="right: -6px; bottom: -6px; border-left: 0; border-top: 0; border-radius: 0 0 14px 0"></div>
+          <div class="term"><div class="bar"><i style="background: #ed695f"></i><i style="background: #edc75a"></i><i style="background: #7fbe60"></i><span>agenda · sandbox</span></div>
+            <div class="tl" id="tlc" style="display: block"><span class="p">$</span><span class="cursor" id="cur0"></span></div>
+            <div class="tl" id="tl0"><span class="p">$</span> git checkout -b agenda-pruebas</div>
+            <div class="tl" id="tl1"><span class="d">Switched to a new branch</span></div>
+            <div class="tl" id="tl2"><span class="p">$</span> npx vitest run</div>
+            <div class="tl" id="tl3"> <span class="w" id="gchk">·</span> grilla.test.ts <span class="d">(10)</span></div>
+            <div class="tl" id="tl4"> <span class="w">Test Files</span>  <span class="g">1 passed</span></div>
+            <div class="tl" id="tl5">      <span class="w">Tests</span>  <span class="g">10 passed</span></div>
+            <div class="tl" id="tl6"><span class="p">$</span> gh pr create --draft<span class="cursor" id="cur"></span></div>
+          </div>
+        </div>
+        <div class="count" id="count"><b>✓</b>10 pruebas nuevas</div>
+        <img id="boxImg" class="abs" src="assets/cajaAbierta.png" style="left: 760px; top: 440px; width: 200px; z-index: 5" />
+        <img id="gearA" class="abs" src="assets/engrane.png" style="left: 830px; top: 1200px; width: 130px; z-index: 6" />
+        <img id="gearB" class="abs" src="assets/engraneChico.png" style="left: 770px; top: 1268px; width: 86px; z-index: 6" />
+      </div>
+
+      <!-- @check revisa contra el plan -->
+      <div class="scene" id="s-check">
+        <div class="who"><div class="ava"><img src="assets/factory-check.svg" /></div><div><h3>Check</h3><div class="h">@check <span class="tagA">agente</span></div></div></div>
+        <div class="diff"><div class="hd">grilla.test.ts</div>
+          <div class="dl"><b>+</b><i style="width: 250px"></i></div><div class="dl"><b>+</b><i style="width: 180px"></i></div><div class="dl"><b>+</b><i style="width: 290px"></i></div>
+          <div class="dl"><b>+</b><i style="width: 210px"></i></div><div class="dl"><b>+</b><i style="width: 270px"></i></div><div class="dl"><b>+</b><i style="width: 150px"></i></div>
+          <div class="dl"><b>+</b><i style="width: 240px"></i></div><div class="dl"><b>+</b><i style="width: 300px"></i></div><div class="dl"><b>+</b><i style="width: 190px"></i></div>
+          <div class="dl"><b>+</b><i style="width: 260px"></i></div><div class="dl"><b>+</b><i style="width: 220px"></i></div>
+        </div>
+        <div class="pdoc"><div class="at">Plan v1</div>
+          <div class="pr2" id="pr0">Historia<span class="tick" id="tk0"></span></div>
+          <div class="pr2" id="pr1">Brief técnico<span class="tick" id="tk1"></span></div>
+          <div class="pr2" id="pr2">Riesgos<span class="tick" id="tk2"></span></div>
+        </div>
+        <svg id="links" viewBox="0 0 1080 1920"><g id="linkG" fill="none" stroke="#9a99ea" stroke-width="4" stroke-linecap="round"></g></svg>
+        <div class="note" style="left: 520px; top: 590px; font-size: 44px">nunca edita</div>
+        <img class="abs" src="assets/portapapeles.png" style="left: 850px; top: 560px; width: 110px; transform: rotate(8deg); z-index: 5" />
+        <div class="ciRow"><span class="lbl">CI</span><div class="ciBox" id="ci0">·</div><div class="ciBox" id="ci1">·</div><div class="ciBox" id="ci2">·</div><div class="ciBox" id="ci3">·</div></div>
+        <div class="zero" id="zero"><span class="pill" style="background: var(--grass); color: #fff">0 vueltas · aprobado a la primera</span></div>
+      </div>
+
+      <!-- tú apruebas el PR -->
+      <div class="scene" id="s-veredicto">
+        <div class="big">La segunda firma <em>es tuya</em></div>
+        <div class="sub">Llega con el diff, las pruebas y el visto bueno de @check.</div>
+        <div class="whoG"><div class="ava"><img src="assets/ghosty.svg" /></div><b>Ghosty</b><span class="tagA">agente</span></div>
+        <div class="verdict" id="verdict"><div class="lb" id="vlb"></div><div class="in">
+          <div class="tt">✅ Listo para tu revisión<span>PR #34</span></div>
+          <dl><div class="vr" id="vr0"><dt>Cambios</dt><dd class="mono">1 archivo · 10 pruebas</dd></div>
+          <div class="vr" id="vr1"><dt>CI</dt><dd style="color: #059669; font-weight: 600">✓ 4 de 4 en verde</dd></div>
+          <div class="vr" id="vr2"><dt>Revisión</dt><dd>plan v1 · <b>0 vueltas</b></dd></div></dl>
+          <div class="vbtns" id="vbtns"><span class="btn" id="btnP" style="border-color: var(--brand500); color: var(--brand600)">Ver preview ↗</span><span class="btn" style="border-color: var(--outline)">Ver PR ↗</span><span class="btn" id="btnM" style="border-color: #059669; color: #047857">Mezclar</span></div>
+        </div></div>
+        <div class="done" id="done"><div class="ava" style="width: 70px; height: 70px"><img src="assets/ghosty.svg" style="width: 50px" /></div><div class="bub">🎉 Pedido terminado: el PR se mezcló.</div></div>
+        <svg class="hand" id="hand2" viewBox="0 0 90 110" style="left: 760px; top: 1960px"><path d="M30 8 q10 -8 20 0 v44 l20 4 q14 4 12 20 l-6 26 q-2 8 -10 8 h-34 q-8 0 -12 -8 l-16 -30 q-4 -10 6 -12 q6 0 10 6 l10 12 z" fill="#fff" stroke="#191a20" stroke-width="5" stroke-linejoin="round" /></svg>
+        <div id="confetti"></div>
+      </div>
+
+      <!-- CTA -->
+      <div class="scene" id="s-cta">
+        <img class="ctaG" id="ctaG" src="assets/ghosty.svg" />
+        <div class="ctaV" id="ctaV">Pide tu primer PR en</div>
+        <div class="ctaU" id="ctaU"><span>factory.ghosty.studio</span></div>
+        <div class="ctaS" id="ctaS">¿La quieres montar tú? Taller en<br /><b style="font-weight: 600">fixtergeek.com/software-factory</b></div>
+        <img class="ctaW" id="ctaW" src="assets/ghosty-wordmark.svg" style="visibility: hidden" />
+      </div>
+
+      <!-- riel y URL (todas las escenas) -->
+      <div id="rail"><div class="line"></div><div class="fill" id="rfill"></div><div class="chip" id="rchip">🏭</div></div>
+      <div id="url">factory.ghosty.studio</div>
+
+      <div id="wipe"></div>
+      <div id="seal"><div class="gp"><div class="ava" id="sealAva"><img id="sealImg" src="assets/factory-plan.svg" /></div><span class="gt" id="sealT">@plan</span></div></div>
+    </div>
+
+    <script>
+      const SC = window.SCORE, T = SC.T;
+      const $ = (s) => document.querySelector(s), $$ = (s) => [...document.querySelectorAll(s)];
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const S = Object.fromEntries(SC.scenes.map((s) => [s.id, s]));
+      const pop = (el, t, from = 0.9) => { tl.set(el, { visibility: "visible", opacity: 1 }, t); tl.fromTo(el, { scale: from, y: 14 }, { scale: 1, y: 0, duration: 0.24, ease: "back.out(1.6)", immediateRender: false }, t); };
+
+      // fondo: la retícula recorre un módulo en todo el video (bucle finito)
+      tl.fromTo("#dots", { x: 0, y: 0 }, { x: 40, y: 40, duration: SC.duration, ease: "none" }, 0);
+
+      // ---- escenas: qué div se ve, título y etapa ----
+      const DIV = { tablero: "s-tablero", plan: "s-plan", firma: "s-firma", aBuild: "s-tablero", sandbox: "s-sandbox", check: "s-check", aPR: "s-tablero", veredicto: "s-veredicto", listo: "s-tablero", cta: "s-cta" };
+      const TITLE = { tablero: "un pedido cruza<br>la fábrica", plan: "@plan lee<br>el repo", firma: "tú apruebas<br>el plan", aBuild: "pasa a build", sandbox: "@build en<br>su sandbox", check: "@check revisa<br>contra el plan", aPR: "pasa a PR", veredicto: "tú apruebas<br>el PR", listo: "el PR<br>ya está en main", cta: "" };
+      const STAGE = ["1 · pedido", "2 · plan", "3 · build", "4 · check", "5 · PR", "6 · listo"];
+      const STAGE_BY = { tablero: 0, plan: 1, firma: 1, aBuild: 2, sandbox: 2, check: 3, aPR: 4, veredicto: 4, listo: 5, cta: 5 };
+      SC.scenes.forEach((s, i) => {
+        if (i > 0) {
+          const prev = SC.scenes[i - 1];
+          if (DIV[prev.id] !== DIV[s.id]) { tl.set("#" + DIV[prev.id], { display: "none" }, s.t0); tl.set("#" + DIV[s.id], { display: "block" }, s.t0); }
+          tl.set("#hudT", { innerHTML: TITLE[s.id] }, s.t0);
+          tl.set("#hudS", { textContent: STAGE[STAGE_BY[s.id]] }, s.t0);
+          tl.set("#hudTitle", { visibility: s.id === "cta" ? "hidden" : "visible" }, s.t0);
+          tl.set("#hudRing", { visibility: s.id === "cta" ? "hidden" : "visible" }, s.t0);
+        }
+      });
+      tl.to("#ring", { "--p": "100%", duration: S.listo.t1, ease: "none" }, 0);
+
+      // ---- riel: seis paradas; la ficha avanza con la etapa ----
+      const RX = (k) => 90 + k * (780 / 5);
+      ["plan", "esperando", "build", "check", "PR", "listo"].forEach((n, k) => {
+        const d = document.createElement("div"); d.className = "st"; d.style.left = RX(k) + "px"; d.innerHTML = `<i id="rd${k}"></i><span id="rl${k}">${n}</span>`; $("#rail").appendChild(d);
+      });
+      const railTo = (k, t) => {
+        tl.to("#rchip", { left: RX(k), duration: 0.5, ease: "back.out(1.4)" }, t);
+        tl.to("#rfill", { width: RX(k) - 90, duration: 0.5, ease: "power2.out" }, t);
+        for (let j = 0; j <= k; j++) { tl.set(`#rd${j}`, { background: "#9a99ea", borderColor: "#9a99ea" }, t + 0.3); tl.set(`#rl${j}`, { color: "#191a20" }, t + 0.3); }
+      };
+      tl.set("#rd0", { background: "#9a99ea", borderColor: "#9a99ea" }, 0); tl.set("#rl0", { color: "#191a20" }, 0);
+      railTo(1, S.firma.t0 + 0.3); railTo(2, T.hopBuild); railTo(3, S.check.t0); railTo(4, T.hopPR); railTo(5, T.hopListo);
+
+      // ---- tablero: la tarjeta viaja entre columnas (posición medida del grid) ----
+      const colPos = (k) => { const c = $(`.col[data-k="${k}"]`); return { x: 28 + c.offsetLeft + 20, y: 148 + c.offsetTop + 66 }; };
+      const card = $("#card");
+      const p0 = colPos(0); gsap.set(card, { left: 0, top: 0 }); tl.set(card, { x: p0.x, y: p0.y }, 0);
+      const hop = (k, t, st, who, ava) => {
+        const p = colPos(k), mid = { x: (gsap.getProperty(card, "x") + p.x) / 2 };
+        tl.to(card, { scale: 1.07, rotation: k % 2 ? 2 : -2, boxShadow: "0 30px 60px rgba(132,131,224,.4)", duration: 0.15, ease: "power2.out" }, t);
+        tl.to(card, { x: p.x, y: p.y, duration: 0.5, ease: "power2.inOut" }, t + 0.1);
+        tl.to(card, { scale: 1, rotation: 0, boxShadow: "0 16px 40px rgba(132,131,224,.26)", duration: 0.25, ease: "back.out(2.5)" }, t + 0.55);
+        tl.set("#cardSt", { textContent: st }, t + 0.3); tl.set("#cardWho", { textContent: who }, t + 0.3); tl.set("#cardAva", { attr: { src: ava } }, t + 0.3);
+        tl.set(`.col[data-k="${k}"] .n`, { textContent: "1" }, t + 0.6);
+        // chispa del atlas en la esquina de la tarjeta al aterrizar (60+… = posición del tablero en pantalla)
+        const bx = 60 + p.x + 330, by = 450 + p.y - 20;
+        tl.set("#spark", { visibility: "visible", left: bx, top: by, scale: 0.2, rotation: 0, opacity: 1 }, t + 0.5);
+        tl.to("#spark", { scale: 1, rotation: 90, duration: 0.3, ease: "back.out(2.5)" }, t + 0.5);
+        tl.to("#spark", { scale: 0, opacity: 0, duration: 0.3, ease: "power2.in" }, t + 0.9);
+        return p;
+      };
+      // columnas intermedias por las que ya pasó quedan en 0; la de origen vuelve a 0
+      tl.set(card.querySelector(".glow"), { opacity: 0 }, 0);
+      tl.to(card.querySelector(".glow"), { opacity: 0.6, duration: 0.25, yoyo: true, repeat: 3, ease: "sine.inOut" }, T.cardGlow);
+      // escena 1: la cámara entra a la tarjeta (zoom del tablero alrededor de la tarjeta)
+      tl.to(card, { scale: 1.05, boxShadow: "0 26px 60px rgba(132,131,224,.38)", duration: 0.35, ease: "back.out(2)" }, T.cardGlow);
+      tl.to(card, { scale: 1, boxShadow: "0 16px 40px rgba(132,131,224,.26)", duration: 0.4, ease: "sine.inOut" }, T.cardGlow + 1.1);
+      tl.set("#noteT", { visibility: "hidden" }, S.aBuild.t0);
+      // escena aBuild: plan → esperando → build (ya aprobado)
+      tl.set(`.col[data-k="0"] .n`, { textContent: "0" }, T.hopBuild);
+      hop(2, T.hopBuild, "build", "@build", "assets/factory-build.svg");
+      // check (sucede fuera del tablero) y luego PR
+      const p3 = colPos(3); tl.set(card, { x: p3.x, y: p3.y }, S.aPR.t0); tl.set(`.col[data-k="2"] .n`, { textContent: "0" }, S.aPR.t0); tl.set(`.col[data-k="3"] .n`, { textContent: "1" }, S.aPR.t0);
+      tl.set("#cardSt", { textContent: "check" }, S.aPR.t0); tl.set("#cardWho", { textContent: "@check" }, S.aPR.t0); tl.set("#cardAva", { attr: { src: "assets/factory-check.svg" } }, S.aPR.t0);
+      tl.set(`.col[data-k="3"] .n`, { textContent: "0" }, T.hopPR);
+      hop(4, T.hopPR, "PR", "Ghosty", "assets/ghosty.svg");
+      tl.set(`.col[data-k="4"] .n`, { textContent: "0" }, T.hopListo);
+      hop(5, T.hopListo, "listo ✓", "PR #34 mezclado", "assets/ghosty.svg");
+      tl.set(card, { borderColor: "#7fbe60" }, T.hopListo + 0.6);
+      // listo: el dato encima del tablero
+      $("#stat").innerHTML = `<div style="display:inline-flex;align-items:baseline;gap:16px;background:#fff;border:2px solid var(--outline);border-radius:36px;box-shadow:var(--soft);padding:26px 40px"><span id="cnt" style="font-family:Poppins;font-weight:600;font-size:120px;line-height:1">0</span><span style="font-family:Poppins;font-weight:600;font-size:60px">min</span><span style="font-size:30px;color:var(--metal);margin-left:10px">de tu firma<br>al PR revisado</span></div>`;
+      tl.set("#stat", { visibility: "hidden" }, 0);
+      tl.to("#board", { scale: 0.82, x: 128, y: 215, duration: 0.5, ease: "power2.inOut" }, S.listo.t0 + 0.1);
+      pop("#stat", T.count[0] - 0.3);
+      T.count.forEach((c, i) => { tl.set("#cnt", { textContent: String(i + 1) }, c); tl.fromTo("#cnt", { scale: 1.12 }, { scale: 1, duration: 0.12, immediateRender: false }, c); });
+
+      // ---- @plan: los archivos se iluminan uno por uno y la lupa los recorre; el plan se escribe ----
+      const files = $("#files");
+      [260, 200, 300, 230, 180, 280, 210, 250, 160, 240].forEach((w, i) => {
+        const r = document.createElement("div"); r.className = "frow"; r.innerHTML = `<div class="hl"></div><div class="ico"></div><div class="bar" style="width:${w * 0.9}px"></div>`; files.appendChild(r);
+      });
+      const rows = $$("#files .frow");
+      T.files.forEach((ft, i) => {
+        const r = rows[i];
+        tl.to(r.querySelector(".hl"), { opacity: 1, duration: 0.08 }, ft); tl.to(r.querySelector(".hl"), { opacity: 0.35, duration: 0.3 }, ft + 0.12);
+        tl.set(r.querySelector(".bar"), { background: "#191a20" }, ft); tl.set(r.querySelector(".ico"), { borderColor: "#191a20" }, ft);
+        tl.to("#lens", { y: 16 + i * 64 - 40, duration: 0.12, ease: "sine.inOut" }, ft - 0.12);
+      });
+      tl.to("#lens", { x: 60, y: 520, rotation: 20, duration: 0.5, ease: "sine.inOut" }, T.files[7] + 0.15);
+      const lns = $$(".planDoc .ln");
+      T.planRows.forEach((pt, i) => { const mine = $$(".planDoc .prow")[i].querySelectorAll(".ln"); mine.forEach((l, j) => tl.to(l, { scaleX: 1, duration: 0.25, ease: "power2.out" }, pt + j * 0.12)); });
+      tl.fromTo(".planDoc", { boxShadow: "0 0 0 0 rgba(237,199,90,0)" }, { boxShadow: "0 0 0 14px rgba(237,199,90,.35)", duration: 0.2, yoyo: true, repeat: 1, immediateRender: false }, T.planDone);
+      tl.set("#planOk", { visibility: "visible" }, T.planDone); tl.fromTo("#planOk", { scale: 0.5 }, { scale: 1, duration: 0.25, ease: "back.out(2.5)", immediateRender: false }, T.planDone);
+
+      // ---- firma: la mano llega en silencio y aprieta «Aprobar» ----
+      const aimHand = (hand, target, scene, t0, t1) => {
+        const sc = document.getElementById(scene), prev = sc.style.display; sc.style.display = "block";
+        const b = $(target).getBoundingClientRect(), h = $(hand); sc.style.display = prev;
+        const dx = b.left + b.width / 2 - (parseFloat(h.style.left) + 40), dy = b.top + b.height * 0.55 - parseFloat(h.style.top);
+        tl.fromTo(hand, { x: 0, y: 0 }, { x: dx, y: dy, duration: t1 - t0, ease: "power2.inOut", immediateRender: false }, t0);
+        tl.to(hand, { scale: 0.88, duration: 0.07 }, t1); tl.to(hand, { scale: 1, duration: 0.14 }, t1 + 0.07);
+      };
+      tl.set("#hand1", { visibility: "hidden" }, 0); tl.set("#hand1", { visibility: "visible" }, T.handIn);
+      aimHand("#hand1", "#btnA", "s-firma", T.handIn, T.approve);
+      tl.to("#btnA", { scale: 0.92, backgroundColor: "#edc75a", duration: 0.07 }, T.approve);
+      tl.set("#abtns", { display: "none" }, T.approve + 0.12); tl.set("#adone", { display: "flex" }, T.approve + 0.12);
+      tl.fromTo("#adone .pill", { scale: 0.7 }, { scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false }, T.approve + 0.12);
+      tl.to("#hand1", { y: "+=1100", opacity: 0, duration: 0.5, ease: "power2.in" }, T.approve + 0.3);
+      tl.set("#stampImg", { y: -700, rotation: -8 }, 0);
+      tl.to("#stampImg", { y: 0, rotation: 0, duration: 0.18, ease: "power3.in" }, T.stamp - 0.18);
+      tl.to("#stampImg", { scaleY: 0.86, scaleX: 1.08, duration: 0.06, yoyo: true, repeat: 1 }, T.stamp);
+      tl.set("#okBadge", { visibility: "visible" }, T.stamp);
+      tl.fromTo("#okBadge", { scale: 0.3 }, { scale: 1, duration: 0.3, ease: "back.out(2.5)", immediateRender: false }, T.stamp);
+      tl.to("#stampImg", { y: -800, rotation: 10, duration: 0.45, ease: "power2.in" }, T.stamp + 0.35);
+
+      // ---- sandbox: la terminal se escribe renglón por renglón ----
+      T.term.forEach((tt, i) => tl.set(`#tl${i}`, { display: "block" }, tt));
+      tl.to("#cur0", { opacity: 0, duration: 0.3, repeat: Math.floor((T.term[0] - S.sandbox.t0) / 0.3) - 1, yoyo: true, ease: "steps(1)" }, S.sandbox.t0);
+      tl.set("#tlc", { display: "none" }, T.term[0]);
+      tl.set("#gchk", { textContent: "✓", color: "#9ed57f" }, T.tests);
+      tl.to("#cur", { opacity: 0, duration: 0.25, repeat: 7, yoyo: true, ease: "steps(1)" }, T.term[6]);
+      tl.set("#boxImg", { attr: { src: "assets/cajaCerrada.png" }, width: 170, left: 775, top: 460 }, T.boxClose + 0.25);
+      tl.fromTo("#boxImg", { scaleY: 0.8, scaleX: 1.12 }, { scaleY: 1, scaleX: 1, duration: 0.3, ease: "back.out(2.5)", immediateRender: false }, T.boxClose + 0.25);
+      tl.to("#gearA", { rotation: 360 * 1.5, duration: T.gearsOff - T.gearsOn, ease: "power1.inOut" }, T.gearsOn);
+      tl.to("#gearB", { rotation: -360 * 2.25, duration: T.gearsOff - T.gearsOn, ease: "power1.inOut" }, T.gearsOn);
+      tl.set("#count", { opacity: 1 }, T.pill); tl.fromTo("#count", { scale: 0.7 }, { scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false }, T.pill);
+
+      // ---- check: cada renglón del plan se une con el diff y se palomea ----
+      const linkG = $("#linkG");
+      T.ticks.forEach((tt, i) => {
+        const y0 = 776 + i * 116, y1 = 779 + i * 110;
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", `M 470 ${y0} C 500 ${y0}, 500 ${y1}, 530 ${y1}`); linkG.appendChild(path);
+        // la línea se traza del diff al renglón del plan y llega justo cuando se palomea
+        tl.set(path, { attr: { "stroke-dasharray": 120, "stroke-dashoffset": 120 } }, 0);
+        tl.to(path, { attr: { "stroke-dashoffset": 0 }, duration: 0.3, ease: "power2.out" }, tt - 0.3);
+        tl.set(`#tk${i}`, { borderColor: "transparent", background: "transparent", innerHTML: '<img src="assets/palomita.png" style="width:60px;margin:-8px">' }, tt);
+        tl.fromTo(`#tk${i}`, { scale: 1.4 }, { scale: 1, duration: 0.2, ease: "back.out(2)", immediateRender: false }, tt);
+      });
+      T.ci.forEach((ct, i) => { tl.set(`#ci${i}`, { backgroundColor: "rgba(127,190,96,.15)", borderColor: "rgba(127,190,96,.6)", color: "#3f8a3a", textContent: "✓" }, ct); tl.fromTo(`#ci${i}`, { y: -16 }, { y: 0, duration: 0.18, ease: "power3.in", immediateRender: false }, ct - 0.18); });
+      tl.set("#zero", { opacity: 1 }, T.zero); tl.fromTo("#zero", { scale: 0.7 }, { scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false }, T.zero);
+
+      // ---- veredicto: filas, silencio, «Mezclar» ----
+      T.vrows.forEach((vt, i) => pop(`#vr${i}`, vt));
+      pop("#vbtns", T.vbtns);
+      // la voz dice «preview»: el botón se ilumina
+      tl.to("#btnP", { backgroundColor: "#f5f5fc", boxShadow: "0 0 0 10px rgba(154,153,234,.28)", scale: 1.08, duration: 0.2, ease: "back.out(2)" }, T.preview);
+      tl.to("#btnP", { backgroundColor: "#ffffff", boxShadow: "0 0 0 0 rgba(154,153,234,0)", scale: 1, duration: 0.4, ease: "sine.inOut" }, T.preview + 0.9);
+      tl.set("#hand2", { visibility: "hidden" }, 0); tl.set("#hand2", { visibility: "visible" }, T.handIn2);
+      aimHand("#hand2", "#btnM", "s-veredicto", T.handIn2, T.merge);
+      tl.set("#btnM", { textContent: "Mezclando…" }, T.merge);
+      tl.set("#btnM", { textContent: "Mezclado ✓", backgroundColor: "#059669", color: "#fff" }, T.merged);
+      tl.set("#vlb", { backgroundColor: "#8b5cf6" }, T.merged);
+      tl.to("#hand2", { y: "+=1100", opacity: 0, duration: 0.5, ease: "power2.in" }, T.merge + 0.3);
+      pop("#done", T.merged + 0.1);
+      const CC = ["#9a99ea", "#edc75a", "#7fbe60", "#e4ae8e", "#8ad7c9"];
+      for (let i = 0; i < 56; i++) {
+        const c = document.createElement("img"); c.className = "confetti"; c.src = `assets/${["chispa", "flamita", "serpentina", "punto"][i % 4]}.png`; c.style.width = [44, 40, 36, 30][i % 4] + "px"; c.style.height = "auto"; c.style.left = "760px"; c.style.top = "1230px"; $("#confetti").appendChild(c);
+        const r1 = (Math.sin(i * 12.9898) * 43758.5453) % 1, r2 = (Math.sin(i * 78.233) * 12345.678) % 1;
+        const a = -Math.PI / 2 + (Math.abs(r1) - 0.5) * 2.4, v = 300 + Math.abs(r2) * 520;
+        tl.set(c, { visibility: "visible" }, T.merged);
+        tl.fromTo(c, { x: 0, rotation: 0 }, { x: Math.cos(a) * v, rotation: (Math.abs(r2) - 0.5) * 900, duration: 1.4, ease: "power2.out", immediateRender: false }, T.merged);
+        tl.fromTo(c, { y: 0 }, { y: Math.sin(a) * v * 0.9, duration: 0.35, ease: "power2.out", immediateRender: false }, T.merged);
+        tl.to(c, { y: "+=900", duration: 1.05, ease: "power2.in" }, T.merged + 0.35);
+        tl.set(c, { visibility: "hidden" }, T.merged + 1.4);
+      }
+
+      // ---- CTA ----
+      tl.fromTo("#ctaG", { y: 0 }, { y: -26, duration: 0.5, yoyo: true, repeat: 11, ease: "sine.inOut", immediateRender: false }, S.cta.t0 + 0.2);
+      pop("#ctaV", T.ctaVerb); pop("#ctaU", T.ctaUrl, 0.8); pop("#ctaS", T.ctaSmall); pop("#ctaW", T.ctaSmall + 0.3);
+      tl.set("#url", { visibility: "hidden" }, S.cta.t0);
+
+      // ---- cortinillas: tres tarjetas suben (blanco, brand-100, lila) y la pastilla del rol sella el corte ----
+      const GL = {
+        plan: ["assets/factory-plan.svg", "@plan"], build: ["assets/factory-build.svg", "@build"], check: ["assets/factory-check.svg", "@check"],
+        ghosty: ["assets/ghosty.svg", "Ghosty"], firma: [null, "✋ tu firma"], tablero: [null, "# fabrica"],
+      };
+      const wipe = $("#wipe");
+      SC.scenes.slice(1).forEach((s) => {
+        const t = s.t0, [src, txt] = GL[s.glyph];
+        ["#ffffff", "#f5f5fc", "#aeadef"].forEach((col, k) => {
+          const p = document.createElement("div"); p.className = "panel"; p.style.background = col; p.style.boxShadow = "0 -20px 60px rgba(33,22,76,.12)"; wipe.appendChild(p);
+          tl.set(p, { visibility: "visible", y: 2000 }, t - 0.42 + k * 0.05);
+          tl.to(p, { y: -140, duration: 0.36, ease: "power3.out" }, t - 0.42 + k * 0.05);
+          tl.to(p, { y: -2400, duration: 0.34, ease: "power3.in" }, t + 0.2 + (2 - k) * 0.04);
+          tl.set(p, { visibility: "hidden" }, t + 0.6);
+        });
+        tl.set("#sealImg", { attr: { src: src || "assets/ghosty.svg" } }, t - 0.12);
+        tl.set("#sealAva", { display: src ? "grid" : "none" }, t - 0.12);
+        tl.set("#sealT", { textContent: txt }, t - 0.12);
+        tl.set("#seal", { visibility: "visible" }, t - 0.12);
+        tl.fromTo("#seal .gp", { scale: 0.5, opacity: 1 }, { scale: 1, duration: 0.22, ease: "back.out(2)", immediateRender: false }, t - 0.12);
+        tl.to("#seal .gp", { scale: 0.4, opacity: 0, duration: 0.16, ease: "power2.in" }, t + 0.22);
+        tl.set("#seal", { visibility: "hidden" }, t + 0.4);
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

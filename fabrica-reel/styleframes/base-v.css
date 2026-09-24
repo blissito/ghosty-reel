@@ -1,0 +1,8 @@
+/* vertical 1080×1920: zona segura TikTok = y 240–1400; la columna x 930–1080 entre y 880–1400 queda libre */
+@import url("base.css");
+html, body { width: 1080px; height: 1920px; }
+.hud-title { left: 72px; top: 262px; font-size: 52px; }
+.hud-title i { width: 110px; height: 6px; }
+.hud-ring { right: 60px; top: 250px; width: 150px; }
+.hud-ring .ring { width: 90px; height: 90px; } .hud-ring .ring b { width: 72px; height: 72px; }
+.hud-ring span { font-size: 26px; }

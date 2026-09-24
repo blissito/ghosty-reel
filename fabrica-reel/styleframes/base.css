@@ -1,0 +1,30 @@
+/* Estilo oficial de ghosty.studio (app/app.css, FactoryThread.tsx, VerdictCard.tsx) a escala de video 1920×1080 */
+:root {
+  --dark: #191a20; --metal: #4b5563; --iron: #81838e; --light: #b6b6ba;
+  --surface: #f2f5f9; --surface3: #f6f6fa; --outline: #e1e3e7; --white: #ffffff;
+  --brand100: #f5f5fc; --brand300: #aeadef; --brand500: #9a99ea; --brand600: #8483e0;
+  --bird: #edc75a; --grass: #7fbe60; --salmon: #e4ae8e; --cloud: #8ad7c9; --danger: #ed695f;
+  --emerald: #10b981; --violet: #8b5cf6;
+  --soft: 0 12px 40px rgba(33, 22, 76, .09);
+  --softer: 0 4px 18px rgba(33, 22, 76, .07);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--surface); font-family: "Inter", sans-serif; color: var(--dark); }
+.poppins { font-family: "Poppins", sans-serif; }
+.mono { font-family: "JetBrains Mono", monospace; }
+.hand { font-family: "Caveat", cursive; }
+.abs { position: absolute; }
+/* retícula de puntos, apenas visible */
+.dots { position: absolute; inset: 0; background-image: radial-gradient(circle, #dfe3ea 2px, transparent 2.5px); background-size: 40px 40px; }
+/* HUD: título que se escribe + anillo de etapa */
+.hud-title { position: absolute; left: 96px; top: 70px; font-family: "Poppins"; font-weight: 600; font-size: 40px; }
+.hud-title i { display: block; width: 90px; height: 5px; border-radius: 3px; background: var(--brand500); margin-top: 10px; }
+.hud-ring { position: absolute; right: 96px; top: 56px; width: 180px; text-align: center; }
+.hud-ring .ring { width: 84px; height: 84px; margin: 0 auto; border-radius: 50%; background: conic-gradient(var(--brand500) var(--p), var(--outline) 0); display: grid; place-items: center; }
+.hud-ring .ring b { width: 68px; height: 68px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; }
+.hud-ring .ring b i { width: 18px; height: 18px; border-radius: 5px; background: var(--danger); }
+.hud-ring span { display: block; margin-top: 12px; font-weight: 600; font-size: 24px; color: var(--metal); }
+.pill { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; font-weight: 600; }
+.tagA { border-radius: 10px; background: var(--brand100); color: var(--brand600); font-size: 18px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 4px 12px; }
+.ava { border-radius: 50%; border: 3px solid var(--dark); background: var(--surface); display: grid; place-items: center; overflow: hidden; flex: none; }
+.note { position: absolute; font-family: "Caveat"; font-weight: 500; color: rgba(75, 85, 99, .85); line-height: 1; }

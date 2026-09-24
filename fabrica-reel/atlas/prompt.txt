@@ -1,0 +1,7 @@
+A single sprite sheet on a fully TRANSPARENT background: 12 separate objects in a clean 4-column by 3-row grid, each centered in its own cell with generous empty space; nothing touches or overlaps. No text, no letters, no numbers, no faces, no ground shadows.
+
+Art style (identical everywhere): modern friendly SaaS product illustration, flat shapes with soft rounded corners, a confident dark ink outline (#191a20) of even medium weight, one soft tone of shading per shape (no gradients, no glow, no texture), a single small white highlight. Palette strictly: lilac #9a99ea and #8483e0, pale lilac #f5f5fc, yellow #edc75a, green #7fbe60, salmon #e4ae8e, mint #8ad7c9, light grey #e1e3e7, white, dark ink #191a20.
+
+Row 1: 1) a magnifying glass, lilac rim, tilted; 2) a rubber stamp with a round lilac handle, side view; 3) a clipboard with a blank sheet and a lilac clip; 4) a small green check-mark badge (circle with a white check).
+Row 2: 5) an open cardboard-style box in pale lilac with its lid open (seen from the front-top); 6) the same box CLOSED with the lid on; 7) a gear cog, lilac; 8) a smaller gear cog, yellow.
+Row 3: 9) a four-pointed sparkle star, yellow; 10) a small lilac flame shape (like a candle flame, simple, no face); 11) a green paper confetti ribbon curl; 12) a salmon round confetti dot with highlight.
