@@ -24,6 +24,10 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;height:6
 .logo{display:flex;align-items:center;gap:10px;font:700 18px Poppins,sans-serif;color:var(--dark)}
 .logo img{width:30px;height:auto}
 .logo span{color:var(--brand-600);font-weight:600}
+nav ul{list-style:none;margin:0;padding:0;display:flex;gap:22px;font-weight:500;font-size:15px}
+nav ul a{color:var(--dark)}
+nav ul a.on{color:var(--brand-600,#8483e0);font-weight:600}
+@media(max-width:720px){nav ul{display:none}}
 nav .gh{display:inline-flex;align-items:center;gap:8px;background:var(--dark);color:#fff;border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px}
 .hero{padding:56px 0 24px}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-600);margin-bottom:14px}
@@ -54,6 +58,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
 <body>
 <nav><div class="wrap">
   <a class="logo" href="../"><img src="https://formmy.app/logo.png" alt=""> ghosty<span>-reel</span> <span style="color:var(--light);font-weight:500">/ motion-lab</span></a>
+  <ul><li><a href="../#skills">Skills</a></li><li><a class="on" href="./">Galería</a></li><li><a href="../#producciones">Producciones</a></li><li><a href="../#como">Cómo funciona</a></li><li><a href="../.well-known/skills/index.json">index.json</a></li></ul>
   <a class="gh" href="https://github.com/blissito/ghosty-reel/tree/main/skills/motion-lab">GitHub ↗</a>
 </div></nav>
 <main class="wrap">
