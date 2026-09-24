@@ -127,12 +127,14 @@ a.card:hover .arrow{transform:translateX(4px)}
 footer{border-top:1px solid var(--outline);padding:32px 0 56px;color:var(--metal);font-size:14px}
 footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
 nav ul a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+nav ul a{position:relative}
+nav ul a.on::after{content:"";position:absolute;left:50%;bottom:-9px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--brand)} /* página actual: un punto lila, distinto del subrayado del hover */
 nav .logo,nav ul a,nav .gh{white-space:nowrap}
 nav .logo,nav .gh{flex:none}
 nav ul{margin-left:auto;margin-right:12px} /* el menú va pegado al botón: mismo lugar en todas las páginas */
 @media(max-width:1060px){nav .sub{display:none}}
 @media(max-width:1060px){nav ul{gap:14px;font-size:14px}}
-@media(max-width:720px){nav .wrap{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:10px;row-gap:8px}nav ul{order:3;width:100%;margin:0;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}nav ul::-webkit-scrollbar{display:none}}
+@media(max-width:720px){nav .wrap{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:10px;row-gap:8px}nav ul{order:3;width:100%;margin:0;overflow-x:auto;scrollbar-width:none;padding-bottom:12px}nav ul::-webkit-scrollbar{display:none}}
 </style>
 </head>
 <body>
@@ -263,5 +265,18 @@ nav ul{margin-left:auto;margin-right:12px} /* el menú va pegado al botón: mism
   <span>Hecho por <a href="https://github.com/blissito">blissito</a> · <a href="https://fixter.org">fixter.org</a></span>
   <span><a href=".well-known/skills/index.json">.well-known/skills/index.json</a> · formato <a href="https://agentskills.io">Agent Skills</a></span>
 </div></footer>
+<script>
+/* el punto lila marca la sección en la que estás (Skills, Producciones, Cómo funciona) */
+(function () {
+  var links = [].slice.call(document.querySelectorAll('nav ul a[href^="#"]'));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute("href")); }).filter(Boolean);
+  function update() {
+    var y = window.scrollY + 120, cur = null;
+    secs.forEach(function (s) { if (s.offsetTop <= y) cur = s; });
+    links.forEach(function (a) { a.classList.toggle("on", !!cur && a.getAttribute("href") === "#" + cur.id); });
+  }
+  window.addEventListener("scroll", update, { passive: true }); update();
+})();
+</script>
 </body>
 </html>
