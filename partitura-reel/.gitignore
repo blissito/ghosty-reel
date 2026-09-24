@@ -1,0 +1,9 @@
+# regenerables: node score.mjs, python3 synth.py, ./gen-voice.sh, npm run render
+score.gen.js
+score.gen.json
+music.wav
+voice/
+renders/
+snapshots/
+verif/
+render.log

@@ -146,16 +146,22 @@ footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
     <p class="agents">Se instala en <b>Claude Code</b>, <b>Cursor</b>, <b>Codex</b>, Gemini CLI, Windsurf y 70 agentes más.</p>
   </div>
   <div class="film">
-    <video src="hero.mp4" poster="hero-poster.jpg" autoplay muted loop playsinline></video>
-    <div class="chip top"><b>HTML + GSAP</b><span>HyperFrames, 9:16</span></div>
-    <div class="chip"><b>Voz y SFX</b><span>mezclados con ffmpeg</span></div>
+    <video id="heroVid" src="partitura.mp4" poster="partitura-poster.jpg" autoplay muted loop playsinline></video>
+    <div class="chip top"><b>Partitura</b><span>una nota por objeto</span></div>
+    <button class="chip" style="cursor:pointer;border:0;text-align:left;font:inherit" onclick="const v=document.getElementById('heroVid');v.muted=!v.muted;if(!v.muted){v.currentTime=0;v.play()}this.querySelector('b').textContent=v.muted?'🔈 Escúchalo':'🔊 Con sonido'"><b>🔈 Escúchalo</b><span>la música la tocan los agentes</span></button>
   </div>
 </div>
 
 <section id="skills">
   <h2>¿Qué camino tomar?</h2>
-  <p class="sub">Dos cosas que puedes abrir ahora mismo y dos skills que se instalan con el comando de arriba.</p>
+  <p class="sub">Tres cosas que puedes abrir ahora mismo y dos skills que se instalan con el comando de arriba.</p>
   <div class="grid">
+    <a class="card featured" href="https://github.com/blissito/ghosty-reel/tree/main/partitura-reel">
+      <div class="rec">La ruta de ahora</div>
+      <div class="row"><h3>Imagen y música a la nota</h3><span class="tag">partitura-reel</span></div>
+      <p>Una partitura escribe cada evento en tiempos musicales; de ahí salen la animación GSAP y un sintetizador en numpy. Cada objeto toca su nota en el mismo cuadro: 5 ms de desfase medido sobre el MP4 final.</p>
+      <span class="arrow">→</span>
+    </a>
     <a class="card featured" href="motion-lab/">
       <div class="rec">Galería</div>
       <div class="row"><h3>Mecánicas de motion graphics medidas</h3><span class="tag">motion-lab</span></div>
@@ -189,8 +195,12 @@ footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
 
 <section id="producciones">
   <h2>Producciones</h2>
-  <p class="sub">Tres piezas hechas con este pipeline. Cada carpeta trae su estado real y lo que no está versionado.</p>
+  <p class="sub">Cuatro piezas hechas con este pipeline. Cada carpeta trae su estado real y lo que no está versionado.</p>
   <div class="prod">
+    <a href="https://github.com/blissito/ghosty-reel/tree/main/partitura-reel">
+      <div class="media tall"><img src="partitura-poster.jpg" alt="Ghosty Factory: @build con 10 pruebas en verde"></div>
+      <div class="body"><h3>partitura-reel</h3><p>Ghosty Factory contado por sus agentes: cada rol tiene su instrumento y los únicos silencios son tus dos aprobaciones.</p><div class="meta"><span class="tag">9:16</span><span class="tag">37 s</span><span class="tag">HTML + GSAP</span></div></div>
+    </a>
     <a href="https://github.com/blissito/ghosty-reel/tree/main/harness-reel">
       <div class="media tall"><img src="harness-frame.jpg" alt="Reel del harness: diagrama trazándose solo"></div>
       <div class="body"><h3>harness-reel</h3><p>Un diagrama que se dibuja solo con Grease Pencil, la cámara entra entre las capas.</p><div class="meta"><span class="tag">9:16</span><span class="tag">31 s</span><span class="tag">Blender</span></div></div>
@@ -220,13 +230,13 @@ footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
 
 <section id="como">
   <h2>Cómo funciona</h2>
-  <p class="sub">El guion manda y la voz fija los tiempos. Ningún número vive dentro del script de escena.</p>
+  <p class="sub">Una partitura manda sobre la imagen y el sonido. Ningún tiempo vive dentro de la animación.</p>
   <div class="steps">
-    <div><b>Guion y voz</b><span>Kokoro local, sin red. Las duraciones reales de esos audios fijan todo lo demás.</span></div>
-    <div><b>scene.json</b><span>Beats, posiciones y cámara. Mover un beat realinea todo.</span></div>
-    <div><b>Audio derivado</b><span>Cada efecto cae en el beat visual al que responde. La música se sintetiza desde cero.</span></div>
-    <div><b>Render sin abrir nada</b><span>Blender o HyperFrames sacan los cuadros. <code>PREVIEW=1</code> da stills en un segundo.</span></div>
-    <div><b>Mezcla y encode</b><span>Voz, música y efectos con ffmpeg, pegados a los frames.</span></div>
+    <div><b>score.mjs</b><span>Escenas y eventos en dieciseisavos a 120 BPM: qué aparece, qué instrumento y qué nota.</span></div>
+    <div><b>Animación</b><span>Cada evento se vuelve un tween de GSAP en su tiempo exacto. HyperFrames renderiza cuadro por cuadro.</span></div>
+    <div><b>Sintetizador</b><span>La misma partitura se toca en numpy: un instrumento por rol, sin modelos ni catálogo.</span></div>
+    <div><b>Voz donde hace falta</b><span>Kokoro local; se mide con transcribe y su primera palabra cae en un tiempo de la partitura.</span></div>
+    <div><b>Mezcla y verificación</b><span>ffmpeg con sidechain, y un script que mide la sincronía sobre el MP4 entregado.</span></div>
   </div>
 </section>
 

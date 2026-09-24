@@ -76,6 +76,9 @@ en segundos y saca 2 minutos en 9:16 en menos de un minuto de render. Lo mueve
 - **[harness-reel](./harness-reel)** — 9:16, 31s, Grease Pencil. Blender.
 - **[hooks-reel](./hooks-reel)** — 9:16, 2:10, caricatura plana con personaje y
   código en pantalla. HTML + GSAP.
+- **[partitura-reel](./partitura-reel)** — 9:16, 37s, Ghosty Factory. Una partitura mueve la
+  animación y el sintetizador; cada objeto toca su nota en el mismo cuadro. HTML + GSAP.
+  **La ruta por defecto desde el 24 sep 2026.**
 
 ## Stack — todo libre
 
@@ -94,6 +97,7 @@ Sin cuentas, sin API keys, sin servicios. La voz corre local.
 | Animar texto, entradas o fondos sin escribir el efecto | [`skills/motion-anything`](./skills/motion-anything) — 85 recetas web, 20 de tarjetas y 94 clases CSS (Apache-2.0) |
 | Hacer un video 2D con tipografía y personaje | [`hooks-reel`](./hooks-reel) — cómo replicarlo, qué falta generar y por qué |
 | Copiar una dirección de arte ya resuelta | [`hooks-reel/frame.md`](./hooks-reel/frame.md) — paleta, tipografía, reglas de composición y motion |
+| Que la imagen y la música vayan a la nota, sin alinear a mano | [`partitura-reel`](./partitura-reel) — una partitura, dos salidas (GSAP + sintetizador numpy), verificada cuadro por cuadro |
 | Sincronizar animación con narración | [`hooks-reel/README.md`](./hooks-reel#las-tres-cosas-que-cuesta-descubrir-solo) — medir con `transcribe`, nunca estimar |
 | Escribir un guion que el TTS no mastique | [`hooks-reel/SCRIPT.md`](./hooks-reel/SCRIPT.md) — anglicismos escritos fonéticos |
 

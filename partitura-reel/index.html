@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800;900&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="score.gen.js"></script>
+    <style>
+      /* paleta de ghosty.studio (app/app.css) */
+      :root {
+        --dark: #191a20; --metal: #4b5563; --iron: #81838e; --surface: #f2f5f9; --outline: #e1e3e7;
+        --brand: #9a99ea; --plan: #edc75a; --build: #7fbe60; --check: #e4ae8e; --danger: #ed695f; --cloud: #8ad7c9;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--surface); }
+      body { font-family: "Inter", sans-serif; color: var(--dark); }
+      .pop { font-family: "Poppins", sans-serif; }
+      .mono { font-family: "JetBrains Mono", monospace; }
+      .abs { position: absolute; }
+
+      /* ---- pieles: hilo (claro, rayas diagonales) y caja (oscura, retícula) ---- */
+      #skinThread, #skinBox { position: absolute; inset: 0; overflow: hidden; }
+      #skinThread { background: var(--surface); }
+      #skinThread .stripes { position: absolute; left: -400px; top: -400px; width: 1880px; height: 2720px;
+        background: repeating-linear-gradient(-35deg, var(--surface) 0 90px, var(--outline) 90px 180px); }
+      #skinBox { background: var(--dark); visibility: hidden; }
+      #skinBox .grid { position: absolute; left: -80px; top: -560px; width: 1240px; height: 2560px;
+        background-image: linear-gradient(rgba(129,131,142,.28) 2px, transparent 2px), linear-gradient(90deg, rgba(129,131,142,.28) 2px, transparent 2px);
+        background-size: 80px 80px; }
+
+      /* ---- piezas neo-brutalistas ---- */
+      .card { position: absolute; background: #fff; border: 5px solid var(--dark); border-radius: 28px; box-shadow: 12px 12px 0 var(--dark); }
+      .onDark .card, .card.onDark { box-shadow: 12px 12px 0 #000000; border-color: #0b0c10; }
+      .btn { display: inline-block; border: 4px solid var(--dark); border-radius: 18px; padding: 14px 26px; font-weight: 700; font-size: 30px; background: #fff; box-shadow: 6px 6px 0 var(--dark); }
+      .bar { display: inline-block; height: 18px; border-radius: 9px; background: var(--outline); vertical-align: middle; }
+
+      .scene { position: absolute; inset: 0; display: none; }
+      #s0 { display: block; }
+
+      /* cabecera de rol (zona segura: y ≥ 260) */
+      .head { position: absolute; left: 60px; top: 270px; width: 860px; display: flex; gap: 26px; align-items: center; }
+      .head img { width: 128px; height: 128px; flex: none; }
+      .head .who { font-family: "Poppins", sans-serif; font-weight: 900; font-size: 64px; line-height: 1; }
+      .head .what { font-size: 30px; line-height: 1.25; margin-top: 8px; font-weight: 600; }
+      .onDark .head .what { color: var(--surface); }
+
+      /* ---- hilo #fabrica ---- */
+      .chan { position: absolute; left: 60px; top: 300px; width: 860px; height: 1060px; }
+      .chanTop { height: 96px; border-bottom: 5px solid var(--dark); display: flex; align-items: center; padding: 0 34px; gap: 18px; font-family: "Poppins"; font-weight: 800; font-size: 40px; }
+      .chanTop .hash { color: var(--brand); }
+      .msg { position: absolute; left: 34px; width: 792px; display: flex; gap: 20px; }
+      .ava { width: 84px; height: 84px; border-radius: 50%; border: 4px solid var(--dark); flex: none; display: grid; place-items: center; font-family: "Poppins"; font-weight: 800; font-size: 36px; background: var(--check); }
+      .ava img { width: 84px; height: 84px; }
+      .who2 { font-weight: 700; font-size: 28px; margin-bottom: 10px; }
+      .runCard { border: 4px solid var(--dark); border-radius: 22px; padding: 22px 26px; background: var(--surface); box-shadow: 6px 6px 0 var(--dark); }
+      .runCard .t { font-family: "Poppins"; font-weight: 800; font-size: 34px; margin-bottom: 10px; }
+      .runCard .ask { font-size: 29px; line-height: 1.35; }
+      .composer { position: absolute; left: 34px; bottom: 34px; width: 792px; height: 110px; border: 4px solid var(--dark); border-radius: 22px; background: #fff; display: flex; align-items: center; padding: 0 28px; font-size: 34px; }
+      .composer .ph { color: var(--iron); }
+      .composer .ch { display: none; color: var(--dark); font-weight: 700; }
+      .composer .caret { width: 4px; height: 44px; background: var(--dark); margin-left: 4px; }
+      .composer .send { position: absolute; right: 18px; top: 16px; width: 70px; height: 70px; border-radius: 16px; background: var(--brand); border: 4px solid var(--dark); display: grid; place-items: center; font-size: 34px; font-weight: 800; }
+      .mention { display: inline-block; background: var(--plan); border: 4px solid var(--dark); border-radius: 14px; padding: 6px 16px; font-weight: 700; font-size: 32px; }
+      .dots { display: inline-flex; gap: 10px; margin-left: 8px; }
+      .dots i { width: 16px; height: 16px; border-radius: 50%; background: var(--dark); display: block; }
+
+      /* ---- @plan: árbol del repo + tarjeta del plan ---- */
+      .tree { position: absolute; left: 60px; top: 470px; width: 860px; height: 490px; padding: 28px 34px; }
+      .frow { position: absolute; left: 26px; width: 800px; height: 30px; border-radius: 10px; display: flex; align-items: center; gap: 16px; padding-left: 10px; }
+      .frow .ico { width: 22px; height: 26px; border: 4px solid var(--dark); border-radius: 4px; background: #fff; flex: none; }
+      .frow .ico.dir { background: var(--outline); width: 30px; height: 22px; }
+      .frow .hl { position: absolute; left: 0; top: 0; bottom: 0; background: var(--plan); border-radius: 10px; width: 0; z-index: -1; }
+      .scan { position: absolute; left: 20px; width: 814px; height: 36px; border: 4px solid var(--dark); border-radius: 12px; }
+      .planCard { position: absolute; left: 60px; width: 860px; padding: 30px 36px; }
+      .planCard .pt { font-family: "Poppins"; font-weight: 800; font-size: 44px; margin-bottom: 18px; }
+      .prow { display: flex; align-items: center; gap: 18px; height: 70px; border-top: 4px solid var(--outline); }
+      .prow b { font-size: 30px; width: 240px; flex: none; }
+      .prow .tick { width: 50px; height: 50px; border-radius: 50%; border: 4px solid var(--dark); display: grid; place-items: center; font-weight: 900; font-size: 30px; background: #fff; flex: none; }
+
+      /* ---- @build: computadora ---- */
+      .pc { position: absolute; left: 60px; top: 480px; width: 860px; height: 820px; }
+      .pcScreen { position: absolute; left: 40px; top: 40px; width: 780px; height: 620px; border: 5px solid var(--dark); border-radius: 18px; background: var(--surface); overflow: hidden; }
+      .pcFoot { position: absolute; left: 330px; top: 700px; width: 200px; height: 70px; background: var(--metal); border: 5px solid #0b0c10; border-radius: 0 0 16px 16px; }
+      .branchSvg { position: absolute; left: 0; top: 0; }
+      .trow { position: absolute; left: 36px; width: 708px; height: 34px; display: flex; align-items: center; gap: 16px; }
+      .trow .dot { width: 30px; height: 30px; border-radius: 50%; border: 4px solid var(--dark); background: var(--danger); flex: none; display: grid; place-items: center; font-size: 18px; font-weight: 900; color: var(--dark); }
+      .fileTab { position: absolute; left: 36px; top: 196px; font-size: 26px; font-weight: 700; }
+      .chip { position: absolute; border: 4px solid var(--dark); border-radius: 16px; padding: 10px 20px; font-weight: 700; font-size: 30px; background: #fff; box-shadow: 6px 6px 0 #000; }
+
+      /* ---- @check ---- */
+      .ciRow { position: absolute; left: 60px; width: 860px; display: flex; gap: 22px; }
+      .ciBox { width: 196px; height: 150px; border: 5px solid #0b0c10; border-radius: 22px; background: var(--metal); display: grid; place-items: center; font-size: 64px; font-weight: 900; color: var(--dark); box-shadow: 8px 8px 0 #000; }
+      .stampBox { position: absolute; border: 10px solid var(--check); color: var(--check); border-radius: 26px; font-family: "Poppins"; font-weight: 900; text-align: center; }
+
+      /* ---- veredicto ---- */
+      .vrow { display: flex; justify-content: space-between; align-items: center; height: 76px; border-top: 4px solid var(--outline); font-size: 28px; }
+      .vrow span:first-child { color: var(--iron); font-weight: 600; }
+      .vrow span:last-child { font-weight: 700; }
+      .hand { position: absolute; width: 90px; height: 110px; z-index: 30; }
+      .confetti { position: absolute; width: 22px; height: 34px; border: 3px solid var(--dark); border-radius: 4px; z-index: 31; }
+
+      /* ---- cortinilla ---- */
+      #wipe { position: absolute; inset: 0; z-index: 100; pointer-events: none; }
+      .slab { position: absolute; left: -360px; width: 1800px; height: 460px; border: 8px solid var(--dark); visibility: hidden; }
+      #glyph { position: absolute; left: 0; top: 760px; width: 1080px; height: 400px; display: grid; place-items: center; z-index: 101; visibility: hidden; }
+      #glyph .g { font-family: "Poppins"; font-weight: 900; font-size: 210px; line-height: 1; color: var(--dark); background: var(--surface); border: 10px solid var(--dark); border-radius: 44px; padding: 20px 56px 34px; box-shadow: 18px 18px 0 var(--dark); white-space: nowrap; }
+      
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920" data-duration="37">
+      <div id="skinThread"><div class="stripes"></div></div>
+      <div id="skinBox"><div class="grid"></div></div>
+
+      <!-- s0: hilo #fabrica, compás 0 -->
+      <div class="scene" id="s0">
+        <div class="card chan">
+          <div class="chanTop"><span class="hash">#</span>fabrica</div>
+          <div class="msg" style="top: 140px">
+            <div class="ava">T</div>
+            <div style="flex: 1">
+              <div class="who2">Tú</div>
+              <div class="runCard">
+                <div class="t">🏭 Pedido #2</div>
+                <div class="ask">Agrega pruebas de vitest para las funciones de la agenda que arman la grilla de horarios. Sólo pruebas nuevas: no toques el código de la app.</div>
+              </div>
+            </div>
+          </div>
+          <div class="msg" id="s0reply" style="top: 560px; visibility: hidden">
+            <div class="ava" style="background: #fff">T</div>
+            <div><div class="who2">Tú</div><span class="mention">@plan</span></div>
+          </div>
+          <div class="msg" id="s0ack" style="top: 740px; visibility: hidden">
+            <div class="ava" style="background: #fff; border: none"><img src="assets/factory-plan.svg" /></div>
+            <div><div class="who2">@plan</div><span class="dots"><i></i><i></i><i></i></span></div>
+          </div>
+          <div class="composer"><span class="ph" id="ph">Escribe en #fabrica</span><span class="ch">@</span><span class="ch">p</span><span class="ch">l</span><span class="ch">a</span><span class="ch">n</span><span class="caret"></span><div class="send">↑</div></div>
+        </div>
+      </div>
+
+      <!-- s1: @plan lee el repo, compases 1–2 -->
+      <div class="scene onDark" id="s1">
+        <div class="head"><img src="assets/factory-plan.svg" /><div><div class="who" style="color: var(--plan)">@plan</div><div class="what">Lee tu repo y escribe el plan: la historia, el brief técnico y los riesgos.</div></div></div>
+        <div class="card tree" id="tree"><div class="scan" id="scan"></div></div>
+        <div class="card planCard" id="planCard1" style="top: 1000px">
+          <div class="pt">✋ Plan</div>
+          <div class="prow" id="pr0"><b>Historia</b><span class="bar" style="width: 420px"></span></div>
+          <div class="prow" id="pr1"><b>Brief técnico</b><span class="bar" style="width: 360px"></span></div>
+          <div class="prow" id="pr2"><b>Riesgos</b><span class="bar" style="width: 300px"></span></div>
+        </div>
+      </div>
+
+      <!-- s2: firma del plan, compás 3 -->
+      <div class="scene" id="s2">
+        <div class="card planCard" style="top: 360px; padding-bottom: 36px">
+          <div class="pt">✋ Plan</div>
+          <div class="prow"><b>Historia</b><span class="bar" style="width: 420px"></span></div>
+          <div class="prow"><b>Brief técnico</b><span class="bar" style="width: 360px"></span></div>
+          <div class="prow"><b>Riesgos</b><span class="bar" style="width: 300px"></span></div>
+          <div style="display: flex; gap: 22px; margin-top: 26px"><span class="btn" id="btnApprove" style="background: var(--build)">Aprobar</span><span class="btn">Pedir cambios</span></div>
+          <div style="margin-top: 22px; font-size: 26px; color: var(--iron)">o contesta «✅» / «cambios: …» en el hilo</div>
+        </div>
+        <div class="msg" id="s2reply" style="top: 1010px; left: 94px; visibility: hidden">
+          <div class="ava">T</div>
+          <div><div class="who2">Tú</div><span class="runCard" style="display: inline-block; font-size: 56px; padding: 8px 24px">✅</span></div>
+        </div>
+        <div class="stampBox" id="stamp1" style="left: 150px; top: 1180px; width: 720px; height: 150px; line-height: 128px; font-size: 64px; color: var(--dark); border-color: var(--dark); background: var(--build); opacity: 0">✅ Aprobado por ti</div>
+      </div>
+
+      <!-- s3: @build en su propia computadora, compases 4–6 -->
+      <div class="scene onDark" id="s3">
+        <div class="head"><img src="assets/factory-build.svg" /><div><div class="who" style="color: var(--build)">@build</div><div class="what">Escribe el código y sus pruebas en su propia computadora aislada.</div></div></div>
+        <div class="pc">
+          <div class="pcScreen" id="screen">
+            <svg class="branchSvg" width="780" height="180" viewBox="0 0 780 180">
+              <line x1="30" y1="60" x2="750" y2="60" stroke="#81838e" stroke-width="8" stroke-linecap="round" />
+              <text x="30" y="34" font-family="JetBrains Mono" font-size="24" font-weight="700" fill="#81838e">main</text>
+              <path id="branchPath" d="M 110 60 C 170 60 170 130 230 130 L 700 130" fill="none" stroke="#7fbe60" stroke-width="10" stroke-linecap="round" />
+              <g id="commits"></g>
+            </svg>
+            <div class="fileTab mono">1 archivo · 10 pruebas nuevas</div>
+            <div id="tests"></div>
+          </div>
+          <div class="pcFoot"></div>
+          <div class="chip" id="draftChip" style="left: 470px; top: 600px; opacity: 0">PR en borrador</div>
+        </div>
+      </div>
+
+      <!-- s4: @check revisa contra el plan, compases 7–8 -->
+      <div class="scene onDark" id="s4">
+        <div class="head"><img src="assets/factory-check.svg" /><div><div class="who" style="color: var(--check)">@check</div><div class="what">Revisa lo construido contra el plan. Nunca edita.</div></div></div>
+        <div class="card planCard" style="top: 480px">
+          <div class="pt">Plan v1</div>
+          <div class="prow"><b>Historia</b><span class="bar" style="width: 400px"></span><span class="tick" id="ck0"></span></div>
+          <div class="prow"><b>Brief técnico</b><span class="bar" style="width: 400px"></span><span class="tick" id="ck1"></span></div>
+          <div class="prow"><b>Riesgos</b><span class="bar" style="width: 400px"></span><span class="tick" id="ck2"></span></div>
+        </div>
+        <div class="abs mono" style="left: 60px; top: 880px; font-size: 30px; color: var(--surface); font-weight: 700">CI</div>
+        <div class="ciRow" style="top: 930px"><div class="ciBox" id="ci0"></div><div class="ciBox" id="ci1"></div><div class="ciBox" id="ci2"></div><div class="ciBox" id="ci3"></div></div>
+        <div class="abs mono" id="ciLabel" style="left: 60px; top: 1110px; font-size: 30px; color: var(--build); font-weight: 700; opacity: 0">4 de 4 checks del CI en verde</div>
+        <div class="stampBox" id="stamp2" style="left: 160px; top: 1190px; width: 600px; height: 150px; line-height: 130px; font-size: 76px; opacity: 0">0 vueltas</div>
+      </div>
+
+      <!-- s5: veredicto y Mezclar, compases 9–10 -->
+      <div class="scene" id="s5">
+        <div class="card runCard" id="endRun" style="left: 60px; top: 300px; width: 860px; padding: 26px 32px">
+          <div class="t" id="endRunT">🏭 Pedido #2</div>
+          <div class="ask" id="endRunA" style="font-size: 26px">Agrega pruebas de vitest para las funciones de la agenda que arman la grilla de horarios…</div>
+        </div>
+        <div class="card" id="verdict" style="left: 60px; top: 560px; width: 860px; padding: 30px 36px">
+          <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 18px">
+            <img src="assets/ghosty.svg" style="width: 76px" />
+            <div><div class="pop" style="font-weight: 800; font-size: 38px; line-height: 1.1">✅ Listo para tu revisión</div><div class="mono" style="font-size: 26px; color: var(--iron)">PR #34</div></div>
+          </div>
+          <div class="vrow" id="vr0" style="visibility: hidden"><span>Cambios</span><span>1 archivo · 10 pruebas</span></div>
+          <div class="vrow" id="vr1" style="visibility: hidden"><span>CI</span><span style="color: #3f7f24">✓ en verde</span></div>
+          <div class="vrow" id="vr2" style="visibility: hidden"><span>Revisión contra el plan v1</span><span>0 vueltas</span></div>
+          <div id="vbtns" style="display: flex; gap: 18px; margin-top: 24px; visibility: hidden"><span class="btn" style="font-size: 26px">Ver preview ↗</span><span class="btn" style="font-size: 26px">Ver PR ↗</span><span class="btn" id="btnMerge" style="font-size: 26px; background: var(--brand)">Mezclar</span></div>
+        </div>
+        <svg class="hand" id="hand" viewBox="0 0 90 110" style="left: 420px; top: 1300px">
+          <path d="M30 8 q10 -8 20 0 v44 l20 4 q14 4 12 20 l-6 26 q-2 8 -10 8 h-34 q-8 0 -12 -8 l-16 -30 q-4 -10 6 -12 q6 0 10 6 l10 12 z" fill="#fff" stroke="#191a20" stroke-width="6" stroke-linejoin="round" />
+        </svg>
+        <div id="confetti"></div>
+      </div>
+
+      <!-- s6: el dato, compás 11 -->
+      <div class="scene" id="s6">
+        <div class="card" style="left: 60px; top: 420px; width: 860px; height: 820px; display: grid; place-items: center; text-align: center">
+          <div>
+            <div class="pop" style="font-weight: 900; font-size: 330px; line-height: 1"><span id="countN">0</span><span style="font-size: 150px"> min</span></div>
+            <div style="font-size: 46px; font-weight: 700; margin-top: 20px">de tu firma al PR revisado</div>
+            <div style="font-size: 30px; color: var(--iron); margin-top: 26px">Pedido real · 24 de septiembre de 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- s7: CTA, compases 12–13 -->
+      <div class="scene" id="s7">
+        <div class="card runCard" style="left: 60px; top: 300px; width: 860px; padding: 24px 30px">
+          <div class="t" style="margin: 0">🎉 Pedido terminado: el PR se mezcló.</div>
+        </div>
+        <img src="assets/ghosty.svg" class="abs" id="ctaGhost" style="left: 380px; top: 500px; width: 320px" />
+        <div class="abs pop" id="ctaVerb" style="left: 60px; top: 900px; width: 860px; text-align: center; font-weight: 800; font-size: 64px">Pide tu primer PR en</div>
+        <div class="abs" id="ctaUrl" style="left: 60px; top: 1000px; width: 860px; text-align: center"><span class="btn mono" style="font-size: 52px; padding: 18px 30px; background: var(--brand)">factory.ghosty.studio</span></div>
+        <div class="abs" id="ctaSmall" style="left: 60px; top: 1200px; width: 860px; text-align: center; font-size: 26px; color: var(--metal)">¿La quieres montar tú? Taller en<br />fixtergeek.com/software-factory</div>
+        <img src="assets/ghosty-wordmark.svg" class="abs" style="left: 380px; top: 1290px; width: 320px" />
+      </div>
+
+      <!-- cortinilla -->
+      <div id="wipe"></div>
+      <div id="glyph"><span class="g" id="glyphT">@plan</span><span class="g" id="glyphI" style="display: none; padding: 30px 60px"><img src="assets/ghosty.svg" style="width: 200px; display: block" /></span></div>
+    </div>
+
+    <script>
+      // Todo lo que pasa en pantalla sale de window.SCORE (generado por score.mjs):
+      // cada evento visual arranca exactamente en su tiempo de partitura.
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => [...document.querySelectorAll(s)];
+      const SC = window.SCORE;
+      const T = {}; // id → tiempo
+      SC.events.forEach((e) => { if (e.id) T[e.id] = e.t; });
+
+      // PRNG determinista para largos de barras y confeti
+      function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+      const rnd = mulberry32(7);
+
+      // pop estándar: aparece en t (visible en ese mismo cuadro) con rebote corto
+      const pop = (el, t, from = 0.6) => {
+        tl.set(el, { visibility: "visible", opacity: 1 }, t);
+        tl.fromTo(el, { scale: from }, { scale: 1, duration: 0.18, ease: "back.out(2.2)", immediateRender: false }, t);
+      };
+
+      // ---- fondos: bucles finitos (un solo recorrido en todo el video) ----
+      tl.fromTo("#skinThread .stripes", { x: 0 }, { x: -440, duration: SC.duration, ease: "none" }, 0);
+      tl.fromTo("#skinBox .grid", { y: 0 }, { y: 80 * 6, duration: SC.duration, ease: "none" }, 0);
+
+      // ---- escenas por corte ----
+      const SCENE_AT = SC.scenes.map((s) => [s.t, s.id, s.skin]);
+      SCENE_AT.forEach(([t, id, skin], i) => {
+        if (i > 0) {
+          tl.set("#" + SCENE_AT[i - 1][1], { display: "none" }, t);
+          tl.set("#" + id, { display: "block" }, t);
+          tl.set("#skinThread", { visibility: skin === "thread" ? "visible" : "hidden" }, t);
+          tl.set("#skinBox", { visibility: skin === "box" ? "visible" : "hidden" }, t);
+        }
+      });
+      const SCENE_T = Object.fromEntries(SC.scenes.map((s) => [s.id, s.t]));
+
+      // ---- s0: se teclea @plan, se manda, @plan contesta ----
+      const chars = $$(".composer .ch");
+      chars.forEach((c, i) => {
+        tl.set(c, { display: "inline" }, T[`type:${i}`]);
+        if (i === 0) tl.set("#ph", { display: "none" }, T["type:0"]);
+      });
+      tl.set(chars, { display: "none" }, T.send);
+      tl.set("#ph", { display: "inline" }, T.send);
+      pop("#s0reply", T.send, 0.8);
+      pop("#s0ack", T.planAck, 0.8);
+      $$("#s0ack .dots i").forEach((d, i) => tl.fromTo(d, { y: 0 }, { y: -10, duration: 0.125, yoyo: true, repeat: 3, ease: "sine.inOut", immediateRender: false }, T.planAck + 0.25 + i * 0.06));
+
+      // ---- s1: 12 archivos, uno por dieciseisavo ----
+      const tree = $("#tree");
+      const FILES = [[0, 1], [1, 1], [2, 0], [2, 0], [2, 0], [1, 1], [2, 0], [2, 0], [1, 0], [0, 1], [1, 0], [1, 0]]; // [nivel, esCarpeta]
+      FILES.forEach(([lvl, dir], i) => {
+        const r = document.createElement("div");
+        r.className = "frow";
+        r.style.top = 30 + i * 34 + "px";
+        r.style.paddingLeft = 10 + lvl * 44 + "px";
+        r.innerHTML = `<div class="hl"></div><div class="ico${dir ? " dir" : ""}"></div><span class="bar" style="width:${120 + Math.round(rnd() * 260)}px;background:#c9ccd3"></span>`;
+        tree.appendChild(r);
+        const t = T[`file:${i}`];
+        tl.set(r.querySelector(".hl"), { width: 800 }, t);
+        tl.set(r.querySelector(".bar"), { background: "#191a20" }, t);
+        tl.set("#scan", { y: 30 + i * 34 - 3 }, t);
+      });
+      tl.set("#scan", { y: 27 }, 0);
+      tl.set("#planCard1", { visibility: "hidden" }, 0);
+      tl.set("#planCard1 .prow", { visibility: "hidden" }, 0);
+      pop("#planCard1", T["planRow:0"] - 0.25, 0.9);
+      tl.set("#planCard1 .prow", { visibility: "hidden" }, T["planRow:0"] - 0.25);
+      [0, 1, 2].forEach((i) => pop(`#pr${i}`, T[`planRow:${i}`], 0.85));
+
+      // ---- s2: silencio, luego ✅ y sello ----
+      tl.set("#s2reply", { visibility: "hidden" }, 0);
+      pop("#s2reply", T.approve, 0.7);
+      tl.fromTo("#stamp1", { opacity: 0, scale: 1.8, rotation: -12 }, { opacity: 1, scale: 1, rotation: -6, duration: 0.14, ease: "power3.in", immediateRender: false }, T.approve);
+      tl.to("#btnApprove", { y: 6, x: 6, boxShadow: "0px 0px 0 #191a20", duration: 0.06 }, T.approve);
+
+      // ---- s3: rama con 4 commits, 10 pruebas rojas que pasan a verde ----
+      const bp = $("#branchPath");
+      const L = bp.getTotalLength();
+      tl.set(bp, { strokeDasharray: L, strokeDashoffset: L }, 0);
+      const commitsG = $("#commits");
+      [0, 1, 2, 3].forEach((i) => {
+        const t = T[`commit:${i}`];
+        const x = 290 + i * 130;
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("cx", x); c.setAttribute("cy", 130); c.setAttribute("r", 20);
+        c.setAttribute("fill", "#7fbe60"); c.setAttribute("stroke", "#191a20"); c.setAttribute("stroke-width", 7);
+        commitsG.appendChild(c);
+        tl.set(c, { visibility: "hidden" }, 0);
+        tl.set(c, { visibility: "visible" }, t);
+        tl.fromTo(c, { scale: 0.3 }, { scale: 1, svgOrigin: `${x} 130`, duration: 0.16, ease: "back.out(2.5)", immediateRender: false }, t);
+        // la rama avanza hasta el commit
+        const frac = (x - 110 + 60) / 650;
+        tl.to(bp, { strokeDashoffset: L * (1 - Math.min(1, frac)), duration: 0.2, ease: "power2.out" }, t - 0.2 + 0.001);
+      });
+      const tests = $("#tests");
+      for (let i = 0; i < 10; i++) {
+        const r = document.createElement("div");
+        r.className = "trow";
+        r.style.top = 250 + i * 36 + "px";
+        r.innerHTML = `<div class="dot"></div><span class="bar mono" style="width:${200 + Math.round(rnd() * 360)}px;background:#c9ccd3"></span>`;
+        tests.appendChild(r);
+        tl.set(r, { visibility: "hidden" }, 0);
+        pop(r, T[`test:${i}`], 0.8);
+        const d = r.querySelector(".dot");
+        tl.set(d, { background: "#7fbe60", textContent: "✓" }, T[`pass:${i}`]);
+        tl.fromTo(d, { scale: 1.5 }, { scale: 1, duration: 0.12, ease: "power2.out", immediateRender: false }, T[`pass:${i}`]);
+      }
+      tl.set("#draftChip", { opacity: 0 }, 0);
+      tl.fromTo("#draftChip", { opacity: 1, scale: 0.5, rotation: 0 }, { scale: 1, rotation: -4, duration: 0.2, ease: "back.out(2)", immediateRender: false }, T.draftPR);
+
+      // ---- s4: palomea el plan, 4 checks de CI, 0 vueltas ----
+      [0, 1, 2].forEach((i) => {
+        const t = T[`tick:${i}`];
+        tl.set(`#ck${i}`, { background: "#e4ae8e", textContent: "✓" }, t);
+        tl.fromTo(`#ck${i}`, { scale: 1.6 }, { scale: 1, duration: 0.14, ease: "back.out(2)", immediateRender: false }, t);
+      });
+      [0, 1, 2, 3].forEach((i) => {
+        const t = T[`ci:${i}`];
+        tl.set(`#ci${i}`, { background: "#7fbe60", textContent: "✓" }, t);
+        tl.fromTo(`#ci${i}`, { y: -26 }, { y: 0, duration: 0.14, ease: "power3.in", immediateRender: false }, t - 0.14);
+      });
+      tl.set("#ciLabel", { opacity: 1 }, T["ci:3"]);
+      tl.fromTo("#stamp2", { opacity: 0, scale: 1.8, rotation: -14 }, { opacity: 1, scale: 1, rotation: -5, duration: 0.14, ease: "power3.in", immediateRender: false }, T.zeroLoops - 0.14);
+
+      // ---- s5: el veredicto; silencio; Mezclar ----
+      ["rowChanges", "rowCI", "rowReview"].forEach((k, i) => pop(`#vr${i}`, T[k], 0.9));
+      pop("#vbtns", T.buttons, 0.85);
+      tl.set("#hand", { visibility: "hidden" }, 0);
+      const handIn = T.tapMerge - 1.0;
+      tl.set("#hand", { visibility: "visible" }, handIn);
+      // la mano llega a «Mezclar» y lo aprieta en el tiempo exacto
+      const mergeX = 720, mergeY = 1040;
+      tl.fromTo("#hand", { x: 0, y: 0 }, { x: mergeX - 420, y: mergeY - 1300, duration: T.tapMerge - handIn, ease: "power2.inOut", immediateRender: false }, handIn);
+      tl.to("#hand", { scale: 0.86, duration: 0.06 }, T.tapMerge);
+      tl.to("#hand", { scale: 1, duration: 0.12 }, T.tapMerge + 0.06);
+      tl.set("#btnMerge", { textContent: "Mezclando…", x: 6, y: 6, boxShadow: "0px 0px 0 #191a20" }, T.tapMerge);
+      // se mezcló: la tarjeta del pedido (la del arranque) se transforma y cae confeti
+      tl.set("#endRunT", { textContent: "🎉 Pedido terminado: el PR se mezcló." }, T.merged);
+      tl.set("#endRunA", { display: "none" }, T.merged);
+      tl.set("#endRun", { background: "#7fbe60" }, T.merged);
+      tl.fromTo("#endRun", { scale: 1.08 }, { scale: 1, duration: 0.2, ease: "back.out(2)", immediateRender: false }, T.merged);
+      tl.set("#btnMerge", { textContent: "Mezclado ✓", background: "#7fbe60" }, T.merged);
+      const conf = $("#confetti");
+      const CC = ["#edc75a", "#7fbe60", "#e4ae8e", "#9a99ea", "#8ad7c9"];
+      for (let i = 0; i < 60; i++) {
+        const c = document.createElement("div");
+        c.className = "confetti";
+        c.style.background = CC[i % CC.length];
+        c.style.left = "480px"; c.style.top = "380px";
+        conf.appendChild(c);
+        const ang = -Math.PI / 2 + (rnd() - 0.5) * 2.6;
+        const v = 300 + rnd() * 500;
+        tl.set(c, { visibility: "hidden" }, 0);
+        tl.set(c, { visibility: "visible" }, T.merged);
+        const dx = Math.cos(ang) * v, dy = Math.sin(ang) * v * 0.8;
+        tl.fromTo(c, { x: 0, rotation: 0 }, { x: dx, rotation: (rnd() - 0.5) * 900, duration: 1.2, ease: "power2.out", immediateRender: false }, T.merged);
+        tl.fromTo(c, { y: 0 }, { y: dy, duration: 0.3, ease: "power2.out", immediateRender: false }, T.merged);
+        tl.to(c, { y: dy + 1300, duration: 0.9, ease: "power2.in" }, T.merged + 0.3);
+        tl.set(c, { visibility: "hidden" }, T.merged + 1.2);
+      }
+
+      // ---- s6: cuenta 1→7 ----
+      for (let i = 1; i <= 7; i++) {
+        tl.set("#countN", { textContent: String(i) }, T[`count:${i}`]);
+        tl.fromTo("#countN", { scale: 1.15 }, { scale: 1, duration: 0.1, immediateRender: false }, T[`count:${i}`]);
+      }
+
+      // ---- s7: CTA ----
+      ["ctaVerb", "ctaUrl", "ctaSmall"].forEach((k) => { tl.set("#" + k, { visibility: "hidden" }, 0); pop("#" + k, T[k], 0.85); });
+      tl.fromTo("#ctaGhost", { y: 0 }, { y: -24, duration: 0.5, yoyo: true, repeat: 9, ease: "sine.inOut", immediateRender: false }, SCENE_T.s7 + 0.25);
+
+      // ---- cortinillas: 6 losas giradas que entran alternando lados y cubren en el compás ----
+      const wipe = $("#wipe");
+      SC.cuts.forEach((cut, ci) => {
+        const t = cut.t;
+        const colors = [cut.color, "#191a20", "#f2f5f9", cut.color, "#191a20", "#f2f5f9", cut.color];
+        for (let k = 0; k < 7; k++) {
+          const s = document.createElement("div");
+          s.className = "slab";
+          s.style.top = -420 + k * 370 + "px";
+          s.style.background = colors[k];
+          wipe.appendChild(s);
+          const dir = k % 2 ? 1 : -1;
+          tl.set(s, { rotation: -8, x: dir * 2000, visibility: "visible" }, t - 0.32);
+          tl.to(s, { x: 0, duration: 0.3, ease: "back.out(1.3)" }, t - 0.32 + k * 0.004);
+          tl.to(s, { x: -dir * 2000, duration: 0.26, ease: "power2.in" }, t + 0.2);
+          tl.set(s, { visibility: "hidden" }, t + 0.47);
+        }
+        // glifo enorme que sella el corte
+        const isImg = cut.glyph === "ghosty";
+        tl.set("#glyphT", { display: isImg ? "none" : "inline-block", textContent: cut.glyph, color: "#191a20" }, t - 0.06);
+        tl.set("#glyphI", { display: isImg ? "inline-block" : "none" }, t - 0.06);
+        tl.set("#glyph", { visibility: "visible" }, t - 0.06);
+        tl.fromTo("#glyph", { scale: 0.4, rotation: -6 }, { scale: 1, rotation: 0, duration: 0.16, ease: "back.out(2.4)", immediateRender: false }, t - 0.06);
+        tl.to("#glyph", { scale: 0.2, duration: 0.14, ease: "power2.in" }, t + 0.2);
+        tl.set("#glyph", { visibility: "hidden" }, t + 0.34);
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

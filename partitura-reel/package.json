@@ -1,0 +1,11 @@
+{
+  "name": "short-factory-partitura",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "score": "node score.mjs",
+    "dev": "npx --yes hyperframes@0.8.44 preview",
+    "check": "npx --yes hyperframes@0.8.44 check",
+    "render": "npx --yes hyperframes@0.8.44 render --experimental-fast-capture=false"
+  }
+}
