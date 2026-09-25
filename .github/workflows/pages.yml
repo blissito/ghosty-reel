@@ -2,7 +2,7 @@ name: Publicar skills en GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ["skills/**", "scripts/**", "assets/**", ".github/workflows/pages.yml"]
+    paths: ["skills/**", "scripts/**", "assets/**", "*/docs/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
 permissions:
   contents: read

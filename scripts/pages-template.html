@@ -110,6 +110,15 @@ a.card:hover .arrow{transform:translateX(4px)}
 .prod .media img{width:100%;height:100%;object-fit:cover;display:block}
 .prod .media.tall{background:var(--brand-800)}
 .prod .media.tall img{width:auto;height:100%}
+.prod a[data-video] .media{position:relative}
+.prod a[data-video] .media::after{content:"";position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(255,255,255,.92) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7l9 5-9 5z' fill='%23191a20'/%3E%3C/svg%3E") center/26px no-repeat;box-shadow:0 6px 20px rgba(0,0,0,.25);transition:transform .15s}
+.prod a[data-video]:hover .media::after{transform:scale(1.08)}
+.prod .tag.code{margin-left:auto;background:var(--dark);color:#fff}
+.prod .tag.code:hover{background:#000}
+#player{position:fixed;inset:0;z-index:50;background:rgba(15,16,22,.82);display:none;align-items:center;justify-content:center;padding:24px}
+#player.open{display:flex}
+#player video{max-height:88vh;max-width:92vw;border-radius:18px;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#player button{position:absolute;top:18px;right:18px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;font-size:22px;cursor:pointer}
 .prod .body{padding:16px 18px}
 .prod h3{margin:0;font-size:16px;font-weight:600}
 .prod p{margin:6px 0 0;color:var(--metal);font-size:14px}
@@ -205,17 +214,17 @@ nav ul{margin-left:auto;margin-right:12px} /* el menú va pegado al botón: mism
   <h2>Producciones</h2>
   <p class="sub">Cinco piezas hechas con este pipeline. Cada carpeta trae su estado real y lo que no está versionado.</p>
   <div class="prod">
-    <a href="https://github.com/blissito/ghosty-reel/tree/main/fabrica-reel">
+    <a href="https://github.com/blissito/ghosty-reel/tree/main/fabrica-reel" data-video="v/fabrica-reel.mp4">
       <div class="media tall"><img src="https://raw.githubusercontent.com/blissito/ghosty-reel/main/fabrica-reel/docs/preview.png" alt="Ghosty Factory: tú apruebas el plan"></div>
-      <div class="body"><h3>fabrica-reel</h3><p>Un pedido real cruza el tablero de Ghosty Factory. Narrado; la voz marca el tiempo y cada efecto cae en su palabra.</p><div class="meta"><span class="tag">9:16</span><span class="tag">70 s</span><span class="tag">narrado</span></div></div>
+      <div class="body"><h3>fabrica-reel</h3><p>Un pedido real cruza el tablero de Ghosty Factory. Narrado; la voz marca el tiempo y cada efecto cae en su palabra.</p><div class="meta"><span class="tag">9:16</span><span class="tag">70 s</span><span class="tag">narrado</span><span class="tag code">Código ↗</span></div></div>
     </a>
-    <a href="https://github.com/blissito/ghosty-reel/tree/main/partitura-reel">
+    <a href="https://github.com/blissito/ghosty-reel/tree/main/partitura-reel" data-video="v/partitura-reel.mp4">
       <div class="media tall"><img src="partitura-poster.jpg" alt="Ghosty Factory: @build con 10 pruebas en verde"></div>
-      <div class="body"><h3>partitura-reel</h3><p>Ghosty Factory contado por sus agentes: cada rol tiene su instrumento y los únicos silencios son tus dos aprobaciones.</p><div class="meta"><span class="tag">9:16</span><span class="tag">37 s</span><span class="tag">HTML + GSAP</span></div></div>
+      <div class="body"><h3>partitura-reel</h3><p>Ghosty Factory contado por sus agentes: cada rol tiene su instrumento y los únicos silencios son tus dos aprobaciones.</p><div class="meta"><span class="tag">9:16</span><span class="tag">37 s</span><span class="tag">HTML + GSAP</span><span class="tag code">Código ↗</span></div></div>
     </a>
-    <a href="https://github.com/blissito/ghosty-reel/tree/main/harness-reel">
+    <a href="https://github.com/blissito/ghosty-reel/tree/main/harness-reel" data-video="v/harness-reel.mp4">
       <div class="media tall"><img src="harness-frame.jpg" alt="Reel del harness: diagrama trazándose solo"></div>
-      <div class="body"><h3>harness-reel</h3><p>Un diagrama que se dibuja solo con Grease Pencil, la cámara entra entre las capas.</p><div class="meta"><span class="tag">9:16</span><span class="tag">31 s</span><span class="tag">Blender</span></div></div>
+      <div class="body"><h3>harness-reel</h3><p>Un diagrama que se dibuja solo con Grease Pencil, la cámara entra entre las capas.</p><div class="meta"><span class="tag">9:16</span><span class="tag">31 s</span><span class="tag">Blender</span><span class="tag code">Código ↗</span></div></div>
     </a>
     <a href="https://github.com/blissito/ghosty-reel/tree/main/hooks-reel">
       <div class="media"><img src="https://raw.githubusercontent.com/blissito/ghosty-reel/main/hooks-reel/docs/preview.png" alt="Hooks: el control que no depende del modelo"></div>
@@ -265,6 +274,22 @@ nav ul{margin-left:auto;margin-right:12px} /* el menú va pegado al botón: mism
   <span>Hecho por <a href="https://github.com/blissito">blissito</a> · <a href="https://fixter.org">fixter.org</a></span>
   <span><a href=".well-known/skills/index.json">.well-known/skills/index.json</a> · formato <a href="https://agentskills.io">Agent Skills</a></span>
 </div></footer>
+<div id="player" role="dialog" aria-label="Video"><button aria-label="Cerrar">×</button><video controls playsinline></video></div>
+<script>
+/* producciones: el video se ve aquí mismo; «Código ↗» abre la carpeta en GitHub */
+(function () {
+  var pl = document.getElementById("player"), v = pl.querySelector("video");
+  function close() { v.pause(); v.removeAttribute("src"); v.load(); pl.classList.remove("open"); }
+  document.querySelectorAll(".prod a[data-video]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      if (e.target.closest(".code")) { e.preventDefault(); window.open(a.href, "_blank", "noopener"); return; }
+      e.preventDefault(); v.src = a.dataset.video; pl.classList.add("open"); v.play();
+    });
+  });
+  pl.addEventListener("click", function (e) { if (e.target === pl || e.target.tagName === "BUTTON") close(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && pl.classList.contains("open")) close(); });
+})();
+</script>
 <script>
 /* el punto lila marca la sección en la que estás (Skills, Producciones, Cómo funciona) */
 (function () {
