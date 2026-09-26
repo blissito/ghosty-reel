@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* Style frames de «Ghosty Ads — El colador». Piel de ghosty.studio (fondo claro, lila, radios grandes)
+     con acabado de caricatura plana: objetos SVG con contorno de tinta y sombra DURA en lila claro
+     (sin blur, sin gradientes). Composición vertical de flujo: anuncio arriba → Ghosty filtra → compradores abajo. */
+  :root {
+    --bg: #f4f5fb; --dark: #191a20; --metal: #4b5563; --iron: #81838e; --outline: #e1e3e7; --white: #fff;
+    --b100: #f5f5fc; --b200: #e4e4fa; --b300: #aeadef; --b500: #9a99ea; --b600: #8483e0; --b800: #161720;
+    --bird: #edc75a; --cloud: #8ad7c9; --salmon: #e4ae8e; --grass: #7fbe60; --danger: #ed695f;
+    --night: #23243a; --night2: #2e3050; --msg: #0a7cff; --hard: 8px 8px 0 #dcdcf6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; font-family: "Inter", sans-serif; color: var(--dark); background: var(--bg); }
+  .f { position: absolute; inset: 0; display: none; overflow: hidden; background: var(--bg); }
+  .f.on { display: block; }
+  /* fondo: rombos lila en diagonal (distinto a la malla de puntos de «La madrugada») */
+  .grid { position: absolute; inset: -80px; background-image:
+      linear-gradient(45deg, transparent 47%, #e6e6f8 47%, #e6e6f8 53%, transparent 53%),
+      linear-gradient(-45deg, transparent 47%, #e6e6f8 47%, #e6e6f8 53%, transparent 53%);
+    background-size: 90px 90px; opacity: .7; }
+  .abs { position: absolute; }
+  svg.o { position: absolute; overflow: visible; }
+
+  .hl { position: absolute; left: 70px; top: 262px; font-family: "Poppins"; font-weight: 700; font-size: 80px; line-height: 1.04; letter-spacing: -.02em; max-width: 900px; }
+  .hl span { color: var(--b600); }
+  .hl .num { display: inline-block; background: var(--danger); color: #fff; border-radius: 26px; padding: 0 22px; transform: rotate(-4deg); box-shadow: 6px 6px 0 var(--dark); }
+  .chip { position: absolute; display: inline-flex; align-items: center; gap: 12px; background: #fff; border: 3px solid var(--dark); border-radius: 999px; padding: 8px 24px 8px 10px; font-family: "Poppins"; font-weight: 600; font-size: 36px; box-shadow: var(--hard); }
+
+  /* anuncio de Facebook */
+  .ad { position: absolute; background: #fff; border: 3px solid var(--dark); border-radius: 36px; box-shadow: 10px 10px 0 var(--b300); overflow: hidden; }
+  .ad .top { display: flex; align-items: center; gap: 14px; padding: 20px 22px; }
+  .ad .top i { width: 58px; height: 58px; border-radius: 50%; background: var(--salmon); border: 3px solid var(--dark); display: grid; place-items: center; font-style: normal; font-family: "Poppins"; font-weight: 700; font-size: 26px; }
+  .ad .top b { font-size: 28px; display: block; } .ad .top span { font-size: 21px; color: var(--iron); }
+  .ad .pic { height: 330px; background: var(--b200); border-top: 3px solid var(--dark); border-bottom: 3px solid var(--dark); position: relative; }
+  .ad .foot { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; }
+  .ad .foot b { font-size: 25px; } .ad .foot span { display: block; font-size: 20px; color: var(--iron); }
+  .send { display: inline-flex; align-items: center; gap: 10px; background: var(--msg); color: #fff; font-weight: 700; font-size: 26px; border-radius: 16px; padding: 14px 20px; border: 3px solid var(--dark); }
+
+  /* celular */
+  .phone { position: absolute; background: var(--b800); border-radius: 64px; padding: 14px; box-shadow: 12px 12px 0 var(--b300); }
+  .screen { position: relative; width: 100%; height: 100%; background: #fff; border-radius: 52px; overflow: hidden; }
+  .screen.dark { background: var(--night); color: #eef0f6; }
+  .notch { position: absolute; left: 50%; top: 14px; width: 120px; height: 30px; margin-left: -60px; border-radius: 20px; background: var(--b800); }
+  .badge { position: absolute; min-width: 110px; height: 110px; border-radius: 55px; background: var(--danger); color: #fff; border: 5px solid var(--dark); display: grid; place-items: center; font-family: "Poppins"; font-weight: 800; font-size: 58px; padding: 0 18px; z-index: 5; }
+  .badge.gold { background: var(--bird); color: var(--dark); }
+  .stack { position: absolute; left: 18px; right: 18px; top: 70px; display: flex; flex-direction: column; gap: 12px; }
+  .nt { background: #eceef3; border-radius: 22px; padding: 12px 16px; display: flex; gap: 12px; align-items: center; font-size: 22px; }
+  .nt i { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--msg); display: grid; place-items: center; }
+  .nt b { font-size: 21px; display: block; } .nt span { color: var(--metal); }
+  .nt.fade { opacity: .5; } .nt.fade2 { opacity: .25; }
+  .nt.buy { background: #fff6dc; border: 3px solid var(--bird); }
+
+  /* burbujas */
+  .bub { position: absolute; font-size: 30px; font-weight: 600; padding: 16px 24px; border-radius: 30px; border: 3px solid var(--dark); background: #fff; white-space: nowrap; }
+  .bub.gray { background: #eceef3; color: var(--metal); border-color: #b9bcc6; }
+  .bub.gold { background: var(--bird); }
+  .bub.lil { background: var(--b500); color: #fff; }
+  .bub.tl { border-bottom-left-radius: 8px; } .bub.tr { border-bottom-right-radius: 8px; }
+
+  /* tarjetas de lead */
+  .card { position: absolute; background: #fff; border: 3px solid var(--dark); border-radius: 30px; padding: 20px 24px; box-shadow: var(--hard); }
+  .card h5 { font-family: "Poppins"; font-size: 30px; font-weight: 600; }
+  .card p { font-size: 23px; color: var(--metal); margin-top: 4px; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border-radius: 12px; padding: 5px 12px; }
+  .pill.ok { background: #e3f3da; color: #3f7a24; } .pill.bad { background: #fde2df; color: #b8372d; } .pill.off { background: #eceef3; color: var(--metal); }
+  .strike { text-decoration: line-through; text-decoration-color: var(--danger); text-decoration-thickness: 4px; }
+
+  /* reporte push */
+  .lock { text-align: center; padding-top: 80px; }
+  .lock .d { font-size: 26px; color: #b9bbd3; font-weight: 500; }
+  .lock .h { font-family: "Poppins"; font-weight: 700; font-size: 130px; line-height: 1; margin-top: 6px; }
+  .push { position: absolute; left: 20px; right: 20px; top: 330px; background: #fff; color: var(--dark); border-radius: 34px; padding: 22px; border: 3px solid var(--dark); }
+  .push .ph { display: flex; gap: 14px; align-items: center; }
+  .push .ph img { width: 54px; }
+  .push .ph b { font-size: 25px; display: block; } .push .ph span { font-size: 19px; color: var(--iron); }
+  .push .kpi { display: flex; gap: 10px; margin: 16px 0 10px; }
+  .push .kpi div { flex: 1; background: var(--b100); border-radius: 18px; padding: 10px; text-align: center; font-size: 18px; color: var(--metal); font-weight: 600; }
+  .push .kpi div b { display: block; font-family: "Poppins"; font-size: 40px; color: var(--dark); line-height: 1.1; }
+  .push .row { display: flex; gap: 12px; align-items: flex-start; padding: 12px 4px; border-top: 2px solid var(--outline); font-size: 21px; line-height: 1.3; }
+  .push .row i { flex: none; width: 16px; height: 16px; border-radius: 50%; margin-top: 7px; }
+  .push .row b { font-weight: 700; }
+
+  /* CTA */
+  .cta { position: absolute; background: #fff; border: 3px solid var(--dark); border-radius: 44px; box-shadow: 10px 10px 0 var(--b300); padding: 36px 36px 34px; }
+  .cta h3 { font-family: "Poppins"; font-weight: 700; font-size: 50px; line-height: 1.06; }
+  .cta h3 span { color: var(--b600); }
+  .cta .btn { margin-top: 26px; display: flex; align-items: center; gap: 12px; background: var(--msg); color: #fff; font-weight: 700; font-size: 32px; border-radius: 999px; padding: 16px 26px 16px 14px; border: 3px solid var(--dark); }
+  .cta .url { margin-top: 18px; font-family: "Poppins"; font-weight: 600; font-size: 30px; }
+  .cta .date { margin-top: 12px; display: inline-block; background: var(--bird); border: 3px solid var(--dark); border-radius: 14px; padding: 6px 14px; font-weight: 700; font-size: 24px; }
+
+  /* subtítulo karaoke: una línea, 72 px, en pastilla de tinta (dichas blanco, actual lila, por decir gris) */
+  .cap { position: absolute; left: 60px; width: 860px; top: 1262px; height: 118px; background: var(--dark); border-radius: 30px; display: flex; align-items: center; justify-content: center; gap: 18px; font-family: "Poppins"; font-weight: 700; font-size: 72px; line-height: 1; white-space: nowrap; }
+  .cap .s { color: #fff; } .cap .c { color: var(--b300); } .cap .p { color: #6b6e7c; }
+
+  .safe { position: absolute; background: rgba(237,105,95,.28); z-index: 99; display: none; }
+  body.guias .safe { display: block; }
+</style>
+</head>
+<body>
+<!-- ===== objetos SVG reutilizables (tinta #191a20, 4 px, rellenos sólidos) ===== -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- pastel de dos pisos con betún escurrido, fresa y vela -->
+    <g id="cake" stroke="#191a20" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+      <ellipse cx="150" cy="232" rx="138" ry="22" fill="#fff"/>
+      <rect x="40" y="150" width="220" height="78" rx="14" fill="#e4ae8e"/>
+      <path d="M40 166 q0 -20 20 -20 h180 q20 0 20 20 v10 q-14 16 -28 0 q-14 22 -30 0 q-16 18 -32 0 q-16 24 -34 0 q-16 16 -32 0 q-16 20 -30 0 q-14 14 -14 -4 z" fill="#fff"/>
+      <rect x="80" y="86" width="140" height="66" rx="12" fill="#f3c9d2"/>
+      <path d="M80 100 q0 -16 16 -16 h108 q16 0 16 16 v6 q-12 14 -24 0 q-12 18 -26 0 q-12 14 -26 0 q-14 18 -28 0 q-10 12 -16 -2 z" fill="#fff"/>
+      <circle cx="120" cy="196" r="7" fill="#ed695f"/><circle cx="178" cy="204" r="7" fill="#8ad7c9"/><circle cx="222" cy="192" r="7" fill="#edc75a"/>
+      <circle cx="150" cy="72" r="16" fill="#ed695f"/><path d="M150 56 q6 -12 16 -10" fill="none"/>
+      <rect x="176" y="40" width="12" height="46" rx="4" fill="#9a99ea"/>
+      <path d="M182 38 q-10 -14 0 -26 q10 12 0 26 z" fill="#edc75a"/>
+    </g>
+    <!-- logo de Messenger (burbuja con rayo) -->
+    <g id="msgr">
+      <path d="M24 2 C11 2 2 11 2 23 c0 7 3 12 8 16 v8 l7 -4 c2 1 5 1 7 1 c13 0 22 -9 22 -21 S37 2 24 2z" fill="#fff"/>
+      <path d="M11 29 l9 -10 l6 5 l10 -6 l-9 10 l-6 -5 z" fill="#0a7cff"/>
+    </g>
+    <!-- colador: tazón con agujeros, asas y patas -->
+    <g id="sieve" stroke="#191a20" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M8 40 h54 M438 40 h54" fill="none"/>
+      <path d="M-6 40 q-16 0 -16 -14 q0 -14 16 -14 h26 v28 z M506 40 q16 0 16 -14 q0 -14 -16 -14 h-26 v28 z" fill="#8ad7c9"/>
+      <path d="M40 40 h420 q-10 170 -210 170 q-200 0 -210 -170 z" fill="#8ad7c9"/>
+      <rect x="30" y="26" width="440" height="28" rx="14" fill="#fff"/>
+      <g fill="#191a20" stroke="none">
+        <circle cx="120" cy="86" r="9"/><circle cx="170" cy="86" r="9"/><circle cx="220" cy="86" r="9"/><circle cx="270" cy="86" r="9"/><circle cx="320" cy="86" r="9"/><circle cx="370" cy="86" r="9"/>
+        <circle cx="145" cy="122" r="9"/><circle cx="195" cy="122" r="9"/><circle cx="245" cy="122" r="9"/><circle cx="295" cy="122" r="9"/><circle cx="345" cy="122" r="9"/>
+        <circle cx="200" cy="158" r="9"/><circle cx="250" cy="158" r="9"/><circle cx="300" cy="158" r="9"/>
+      </g>
+      <path d="M190 206 l-16 26 h152 l-16 -26" fill="#fff"/>
+    </g>
+    <!-- sello de goma -->
+    <g id="stamp" stroke="#191a20" stroke-width="4" stroke-linejoin="round">
+      <ellipse cx="60" cy="20" rx="26" ry="18" fill="#ed695f"/>
+      <rect x="48" y="30" width="24" height="40" rx="6" fill="#e4ae8e"/>
+      <path d="M22 70 h76 l8 22 h-92 z" fill="#ed695f"/>
+      <rect x="10" y="92" width="100" height="16" rx="4" fill="#191a20"/>
+    </g>
+    <!-- banderita de alerta -->
+    <g id="flag" stroke="#191a20" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M10 6 v92" fill="none"/>
+      <path d="M10 10 q20 -10 40 0 q20 10 40 0 v40 q-20 10 -40 0 q-20 -10 -40 0 z" fill="#ed695f"/>
+      <circle cx="10" cy="100" r="7" fill="#191a20"/>
+    </g>
+    <!-- despertador de campanas, manecillas a las 9:00 -->
+    <g id="clock" stroke="#191a20" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M52 60 a36 36 0 0 1 50 -38 z" fill="#edc75a"/>
+      <path d="M208 60 a36 36 0 0 0 -50 -38 z" fill="#edc75a"/>
+      <path d="M80 222 l-22 28 M180 222 l22 28" fill="none"/>
+      <path d="M118 30 h24 v-12 h-24 z" fill="#191a20"/>
+      <circle cx="130" cy="140" r="100" fill="#9a99ea"/>
+      <circle cx="130" cy="140" r="78" fill="#fff"/>
+      <g stroke-width="6"><path d="M130 72 v10 M130 198 v10 M62 140 h10 M188 140 h10" fill="none"/></g>
+      <path d="M130 140 v-50 M130 140 h-46" fill="none" stroke-width="8"/>
+      <circle cx="130" cy="140" r="9" fill="#ed695f"/>
+    </g>
+    <g id="sun" stroke="#191a20" stroke-width="4" stroke-linecap="round">
+      <g fill="none"><path d="M30 2 v8 M30 50 v8 M2 30 h8 M50 30 h8 M10 10 l6 6 M44 44 l6 6 M50 10 l-6 6 M16 44 l-6 6"/></g>
+      <circle cx="30" cy="30" r="14" fill="#edc75a"/>
+    </g>
+    <g id="moon" stroke="#191a20" stroke-width="4" stroke-linejoin="round">
+      <path d="M40 6 a24 24 0 1 0 14 40 a20 20 0 0 1 -14 -40 z" fill="#edc75a"/>
+    </g>
+    <!-- caja de regalo con moño -->
+    <g id="gift" stroke="#191a20" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M100 58 q-40 -52 -62 -30 q-16 20 30 30 z M100 58 q40 -52 62 -30 q16 20 -30 30 z" fill="#ed695f"/>
+      <rect x="22" y="100" width="156" height="110" rx="10" fill="#9a99ea"/>
+      <rect x="12" y="58" width="176" height="46" rx="10" fill="#aeadef"/>
+      <rect x="86" y="58" width="28" height="152" fill="#edc75a"/>
+      <path d="M40 124 v30" stroke="#fff" fill="none" stroke-width="6"/>
+    </g>
+    <!-- documento PDF -->
+    <g id="pdf" stroke="#191a20" stroke-width="4" stroke-linejoin="round">
+      <path d="M6 4 h52 l20 20 v74 h-72 z" fill="#fff"/><path d="M58 4 v20 h20" fill="#aeadef"/>
+      <path d="M18 40 h44 M18 52 h44 M18 64 h30" stroke-width="4" fill="none" stroke="#aeadef"/>
+      <rect x="14" y="74" width="50" height="18" rx="4" fill="#ed695f"/>
+    </g>
+    <!-- calendario con palomita -->
+    <g id="cal" stroke="#191a20" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+      <rect x="4" y="14" width="80" height="74" rx="10" fill="#fff"/>
+      <path d="M4 24 q0 -10 10 -10 h60 q10 0 10 10 v14 h-80 z" fill="#ed695f"/>
+      <path d="M24 6 v16 M64 6 v16" fill="none"/>
+      <path d="M26 62 l12 12 l24 -24" fill="none" stroke="#7fbe60" stroke-width="7"/>
+    </g>
+  </defs>
+</svg>
+
+  <div class="safe" style="left:0;top:0;width:1080px;height:240px"></div>
+  <div class="safe" style="left:0;top:1400px;width:1080px;height:520px"></div>
+  <div class="safe" style="left:930px;top:880px;width:150px;height:520px"></div>
+
+  <!-- ================= 1 · 0 s — el anuncio funciona y el celular revienta (fotograma 0 / miniatura) ================= -->
+  <section class="f" id="f1"><div class="grid"></div>
+    <div class="hl">Te escribieron <span class="num">37</span>.<br><span>¿Cuántos compran?</span></div>
+
+    <div class="ad" style="left:60px;top:600px;width:540px;transform:rotate(-4deg)">
+      <div class="top"><i>L</i><div><b>Pastelería Lulú</b><span>Publicidad · ♡ 1.2 mil</span></div></div>
+      <div class="pic"><svg class="o" viewBox="0 0 300 260" style="left:100px;top:34px;width:330px;height:286px"><use href="#cake"/></svg></div>
+      <div class="foot"><div><b>Pasteles por encargo</b><span>Entrega el mismo día</span></div>
+        <div class="send"><svg viewBox="0 0 48 48" width="34" height="34"><use href="#msgr"/></svg>Enviar mensaje</div></div>
+    </div>
+
+    <!-- burbujas saliendo del botón hacia el celular -->
+    <div class="bub gray tl" style="left:650px;top:560px;transform:rotate(8deg);font-size:24px">¿precio?</div>
+    <div class="bub gray tl" style="left:560px;top:470px;transform:rotate(-6deg);font-size:24px">holaaa</div>
+    <div class="bub gray tl" style="left:780px;top:545px;transform:rotate(10deg);font-size:24px">info</div>
+
+    <div class="phone" style="left:570px;top:640px;width:350px;height:600px;transform:rotate(5deg)">
+      <div class="screen"><div class="notch"></div>
+        <div class="stack">
+          <div class="nt"><i><svg viewBox="0 0 48 48" width="26" height="26"><use href="#msgr"/></svg></i><div><b>Mariana</b><span>¿hacen envíos?</span></div></div>
+          <div class="nt"><i><svg viewBox="0 0 48 48" width="26" height="26"><use href="#msgr"/></svg></i><div><b>Kevin</b><span>jajaja</span></div></div>
+          <div class="nt"><i><svg viewBox="0 0 48 48" width="26" height="26"><use href="#msgr"/></svg></i><div><b>Ana R.</b><span>¿precio?</span></div></div>
+          <div class="nt fade"><i><svg viewBox="0 0 48 48" width="26" height="26"><use href="#msgr"/></svg></i><div><b>Beto</b><span>info</span></div></div>
+          <div class="nt fade"><i><svg viewBox="0 0 48 48" width="26" height="26"><use href="#msgr"/></svg></i><div><b>Luis</b><span>hola</span></div></div>
+          <div class="nt fade2"><i><svg viewBox="0 0 48 48" width="26" height="26"><use href="#msgr"/></svg></i><div><b>+32 más</b><span>sin responder</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="badge" style="left:540px;top:600px">37</div>
+    <!-- rayitas de vibración -->
+    <svg class="o" viewBox="0 0 60 120" style="left:500px;top:900px;width:40px;height:90px"><path d="M40 10 l-20 20 l20 20 l-20 20 l20 20" fill="none" stroke="#191a20" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+    <div class="chip" style="left:70px;top:458px"><svg viewBox="0 0 60 60" width="46" height="46"><use href="#moon"/></svg>21:47 · cerrando caja</div>
+
+    <div class="cap"><span class="c">treinta</span><span class="p">y</span><span class="p">siete.</span></div>
+  </section>
+
+  <!-- ================= 2 · ~18 s — el colador: curiosos fuera, compradores pasan ================= -->
+  <section class="f" id="f2"><div class="grid"></div>
+    <div class="hl">Los curiosos, <span>fuera</span>.</div>
+
+    <div class="bub gray tl" style="left:90px;top:420px;transform:rotate(-7deg)">asdfgh</div>
+    <div class="bub gray tr" style="left:360px;top:440px;transform:rotate(4deg)">¿eres bot? jaja</div>
+    <div class="bub gray tl" style="left:640px;top:410px;transform:rotate(9deg)">hola hola hola</div>
+    <div class="bub gold tl" style="left:300px;top:540px;transform:rotate(-3deg)">Quiero 2 pasteles p/ sábado</div>
+
+    <svg class="o" viewBox="-30 0 560 240" style="left:230px;top:640px;width:560px;height:240px"><use href="#sieve"/></svg>
+    <img class="abs" src="../assets/ghosty.png" style="left:50px;top:600px;width:180px" />
+
+    <!-- la dorada pasa por el colador y cae como lead -->
+    <div class="card" style="left:560px;top:920px;width:360px">
+      <h5>Ana R.</h5><p>2 pasteles · sábado</p>
+      <span class="pill ok">✓ Compradora</span>
+      <svg class="o" viewBox="0 0 90 100" style="right:22px;top:18px;width:60px;height:66px"><use href="#pdf"/></svg>
+    </div>
+
+    <!-- conversación cerrada con sello -->
+    <div class="card" style="left:60px;top:920px;width:470px">
+      <div class="bub lil tr" style="position:relative;font-size:24px;white-space:normal;line-height:1.3">Veo que por ahora no es lo que buscas. ¡Aquí estaré!</div>
+      <span class="pill off" style="margin-top:14px">Conversación cerrada</span>
+      <svg class="o" viewBox="0 0 120 110" style="right:-30px;bottom:-40px;width:110px;height:100px;transform:rotate(-14deg)"><use href="#stamp"/></svg>
+    </div>
+
+    <div class="card" style="left:560px;top:1120px;width:360px;padding:14px 20px">
+      <p style="margin:0"><b style="color:#191a20">Beto</b> · <span class="strike">beto@@gmail</span></p>
+      <span class="pill bad" style="margin-top:8px">Correo no válido</span>
+      <svg class="o" viewBox="0 0 100 110" style="right:18px;top:12px;width:54px;height:60px"><use href="#flag"/></svg>
+    </div>
+
+    <div class="cap"><span class="s">deja</span><span class="s">de</span><span class="c">gastar</span><span class="p">en ellos.</span></div>
+  </section>
+
+  <!-- ================= 3 · ~26 s — el reporte de las 21:00 ================= -->
+  <section class="f" id="f3"><div class="grid"></div>
+    <div class="hl">Tu reporte a las<br><span>9:00 y 21:00</span>.</div>
+
+    <svg class="o" viewBox="0 0 260 260" style="left:40px;top:560px;width:250px;height:250px;transform:rotate(-10deg)"><use href="#clock"/></svg>
+    <div class="chip" style="left:60px;top:850px"><svg viewBox="0 0 60 60" width="44" height="44"><use href="#sun"/></svg>9:00</div>
+    <div class="chip" style="left:80px;top:950px"><svg viewBox="0 0 60 60" width="44" height="44"><use href="#moon"/></svg>21:00</div>
+
+    <div class="phone" style="left:330px;top:470px;width:560px;height:780px;transform:rotate(4deg)">
+      <div class="screen dark"><div class="notch"></div>
+        <div class="lock"><div class="d">jueves</div><div class="h">21:00</div></div>
+        <div class="push">
+          <div class="ph"><img src="../assets/ghosty.png" /><div><b>Ghosty · Reporte de la noche</b><span>ahora</span></div></div>
+          <div class="kpi"><div><b>12</b>escribieron</div><div><b>3</b>compran</div><div><b>1</b>alerta</div></div>
+          <div class="row"><i style="background:var(--grass)"></i><div><b>Ana R.</b> — 2 pasteles el sábado → cotización enviada</div></div>
+          <div class="row"><i style="background:var(--b500)"></i><div><b>Luis</b> — pastel de boda → cita mañana 11:00</div></div>
+          <div class="row"><i style="background:var(--danger)"></i><div><b>Beto</b> dejó un correo falso</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cap"><span class="s">qué</span><span class="s">quiere,</span><span class="c">qué</span><span class="p">sigue.</span></div>
+  </section>
+
+  <!-- ================= 4 · ~36 s — cierre circular + CTA ================= -->
+  <section class="f" id="f4"><div class="grid"></div>
+    <div class="hl">Tú sólo hablas con<br>los que <span>sí compran</span>.</div>
+
+    <!-- el MISMO celular del inicio: de 37 sin leer a 3 compradores -->
+    <div class="phone" style="left:60px;top:520px;width:330px;height:560px;transform:rotate(-4deg)">
+      <div class="screen"><div class="notch"></div>
+        <div class="stack">
+          <div class="nt buy"><i><svg viewBox="0 0 48 48" width="26" height="26"><use href="#msgr"/></svg></i><div><b>Ana R.</b><span>cotizado</span></div></div>
+          <div class="nt buy"><i><svg viewBox="0 0 48 48" width="26" height="26"><use href="#msgr"/></svg></i><div><b>Luis</b><span>cita 11:00</span></div></div>
+          <div class="nt buy"><i><svg viewBox="0 0 48 48" width="26" height="26"><use href="#msgr"/></svg></i><div><b>Mariana</b><span>envío CDMX</span></div></div>
+        </div>
+        <svg class="o" viewBox="0 0 90 90" style="left:110px;top:360px;width:90px;height:90px"><use href="#cal"/></svg>
+      </div>
+    </div>
+    <div class="badge gold" style="left:34px;top:480px">3</div>
+
+    <div class="cta" style="left:420px;top:540px;width:500px">
+      <h3>Tu tablero <span>gratis</span>, con tu marca.</h3>
+      <div class="btn"><svg viewBox="0 0 48 48" width="46" height="46"><use href="#msgr"/></svg>Escríbenos</div>
+      <div class="url">ghosty.studio/messenger</div>
+      <div class="date">Hasta el 31 de octubre</div>
+    </div>
+    <svg class="o" viewBox="0 0 200 220" style="left:700px;top:1010px;width:190px;height:209px;transform:rotate(8deg)"><use href="#gift"/></svg>
+    <img class="abs" src="../assets/ghosty-wordmark.svg" style="left:430px;top:1130px;height:62px" />
+
+    <div class="cap"><span class="c">por</span><span class="p">Messenger:</span></div>
+  </section>
+
+  <script>
+    const q = new URLSearchParams(location.search);
+    document.getElementById("f" + (q.get("f") || "1")).classList.add("on");
+    if (q.has("guias")) document.body.classList.add("guias");
+  </script>
+</body>
+</html>

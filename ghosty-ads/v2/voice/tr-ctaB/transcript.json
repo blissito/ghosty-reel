@@ -1,0 +1,38 @@
+[
+  {
+    "text": "y",
+    "start": 0.05,
+    "end": 0.07,
+    "id": "w0"
+  },
+  {
+    "text": "te",
+    "start": 0.07,
+    "end": 0.22,
+    "id": "w1"
+  },
+  {
+    "text": "armamos",
+    "start": 0.22,
+    "end": 0.76,
+    "id": "w2"
+  },
+  {
+    "text": "tu",
+    "start": 0.76,
+    "end": 0.91,
+    "id": "w3"
+  },
+  {
+    "text": "primera",
+    "start": 0.91,
+    "end": 1.4,
+    "id": "w4"
+  },
+  {
+    "text": "campaña.",
+    "start": 1.48,
+    "end": 2.04,
+    "id": "w5"
+  }
+]

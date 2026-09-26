@@ -1,0 +1,68 @@
+[
+  {
+    "text": "Ysi",
+    "start": 0.03,
+    "end": 0.19,
+    "id": "w0"
+  },
+  {
+    "text": "el",
+    "start": 0.19,
+    "end": 0.31,
+    "id": "w1"
+  },
+  {
+    "text": "correo",
+    "start": 0.4,
+    "end": 0.72,
+    "id": "w2"
+  },
+  {
+    "text": "o",
+    "start": 0.72,
+    "end": 0.78,
+    "id": "w3"
+  },
+  {
+    "text": "el",
+    "start": 0.78,
+    "end": 0.91,
+    "id": "w4"
+  },
+  {
+    "text": "teléfono",
+    "start": 0.91,
+    "end": 1.44,
+    "id": "w5"
+  },
+  {
+    "text": "es",
+    "start": 1.44,
+    "end": 1.57,
+    "id": "w6"
+  },
+  {
+    "text": "falso,",
+    "start": 1.57,
+    "end": 2.14,
+    "id": "w7"
+  },
+  {
+    "text": "te",
+    "start": 2.14,
+    "end": 2.17,
+    "id": "w8"
+  },
+  {
+    "text": "lo",
+    "start": 2.27,
+    "end": 2.34,
+    "id": "w9"
+  },
+  {
+    "text": "marca.",
+    "start": 2.34,
+    "end": 2.63,
+    "id": "w10"
+  }
+]

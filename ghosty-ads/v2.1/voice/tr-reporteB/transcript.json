@@ -1,0 +1,44 @@
+[
+  {
+    "text": "Quien",
+    "start": 0.07,
+    "end": 0.31,
+    "id": "w0"
+  },
+  {
+    "text": "escribió,",
+    "start": 0.31,
+    "end": 0.93,
+    "id": "w1"
+  },
+  {
+    "text": "que",
+    "start": 0.93,
+    "end": 1.12,
+    "id": "w2"
+  },
+  {
+    "text": "busca",
+    "start": 1.12,
+    "end": 1.44,
+    "id": "w3"
+  },
+  {
+    "text": "y",
+    "start": 1.44,
+    "end": 1.52,
+    "id": "w4"
+  },
+  {
+    "text": "que",
+    "start": 1.52,
+    "end": 1.69,
+    "id": "w5"
+  },
+  {
+    "text": "sigue.",
+    "start": 1.69,
+    "end": 2.06,
+    "id": "w6"
+  }
+]

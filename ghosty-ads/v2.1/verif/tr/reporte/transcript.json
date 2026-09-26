@@ -1,0 +1,152 @@
+[
+  {
+    "text": "y",
+    "start": 0,
+    "end": 0.09,
+    "id": "w0"
+  },
+  {
+    "text": "a",
+    "start": 0.09,
+    "end": 0.18,
+    "id": "w1"
+  },
+  {
+    "text": "las",
+    "start": 0.18,
+    "end": 0.45,
+    "id": "w2"
+  },
+  {
+    "text": "9",
+    "start": 0.45,
+    "end": 0.72,
+    "id": "w3"
+  },
+  {
+    "text": "de",
+    "start": 0.72,
+    "end": 0.9,
+    "id": "w4"
+  },
+  {
+    "text": "la",
+    "start": 0.9,
+    "end": 1.08,
+    "id": "w5"
+  },
+  {
+    "text": "mañana",
+    "start": 1.08,
+    "end": 1.66,
+    "id": "w6"
+  },
+  {
+    "text": "y",
+    "start": 1.66,
+    "end": 1.74,
+    "id": "w7"
+  },
+  {
+    "text": "a",
+    "start": 1.74,
+    "end": 1.76,
+    "id": "w8"
+  },
+  {
+    "text": "las",
+    "start": 1.98,
+    "end": 2.07,
+    "id": "w9"
+  },
+  {
+    "text": "9",
+    "start": 2.07,
+    "end": 2.32,
+    "id": "w10"
+  },
+  {
+    "text": "de",
+    "start": 2.32,
+    "end": 2.48,
+    "id": "w11"
+  },
+  {
+    "text": "la",
+    "start": 2.51,
+    "end": 2.66,
+    "id": "w12"
+  },
+  {
+    "text": "noche",
+    "start": 2.66,
+    "end": 3.12,
+    "id": "w13"
+  },
+  {
+    "text": "te",
+    "start": 3.12,
+    "end": 3.3,
+    "id": "w14"
+  },
+  {
+    "text": "manda",
+    "start": 3.3,
+    "end": 3.68,
+    "id": "w15"
+  },
+  {
+    "text": "el",
+    "start": 3.68,
+    "end": 3.82,
+    "id": "w16"
+  },
+  {
+    "text": "reporte",
+    "start": 3.82,
+    "end": 4.32,
+    "id": "w17"
+  },
+  {
+    "text": "quien",
+    "start": 4.66,
+    "end": 4.74,
+    "id": "w18"
+  },
+  {
+    "text": "escribió",
+    "start": 4.74,
+    "end": 5.24,
+    "id": "w19"
+  },
+  {
+    "text": "que",
+    "start": 5.24,
+    "end": 5.5,
+    "id": "w20"
+  },
+  {
+    "text": "busca",
+    "start": 5.5,
+    "end": 5.94,
+    "id": "w21"
+  },
+  {
+    "text": "y",
+    "start": 5.94,
+    "end": 5.99,
+    "id": "w22"
+  },
+  {
+    "text": "que",
+    "start": 5.99,
+    "end": 6.14,
+    "id": "w23"
+  },
+  {
+    "text": "sigue",
+    "start": 6.14,
+    "end": 8.82,
+    "id": "w24"
+  }
+]

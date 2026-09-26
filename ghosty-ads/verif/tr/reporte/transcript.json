@@ -1,0 +1,146 @@
+[
+  {
+    "text": "Ya",
+    "start": 0,
+    "end": 0.17,
+    "id": "w0"
+  },
+  {
+    "text": "las",
+    "start": 0.18,
+    "end": 0.47,
+    "id": "w1"
+  },
+  {
+    "text": "9",
+    "start": 0.47,
+    "end": 0.75,
+    "id": "w2"
+  },
+  {
+    "text": "de",
+    "start": 0.76,
+    "end": 0.95,
+    "id": "w3"
+  },
+  {
+    "text": "la",
+    "start": 0.95,
+    "end": 1.14,
+    "id": "w4"
+  },
+  {
+    "text": "mañana",
+    "start": 1.14,
+    "end": 1.76,
+    "id": "w5"
+  },
+  {
+    "text": "y",
+    "start": 1.76,
+    "end": 1.84,
+    "id": "w6"
+  },
+  {
+    "text": "a",
+    "start": 1.84,
+    "end": 1.87,
+    "id": "w7"
+  },
+  {
+    "text": "las",
+    "start": 2.08,
+    "end": 2.17,
+    "id": "w8"
+  },
+  {
+    "text": "9",
+    "start": 2.17,
+    "end": 2.42,
+    "id": "w9"
+  },
+  {
+    "text": "de",
+    "start": 2.42,
+    "end": 2.57,
+    "id": "w10"
+  },
+  {
+    "text": "la",
+    "start": 2.61,
+    "end": 2.74,
+    "id": "w11"
+  },
+  {
+    "text": "noche",
+    "start": 2.74,
+    "end": 3.19,
+    "id": "w12"
+  },
+  {
+    "text": "te",
+    "start": 3.2,
+    "end": 3.27,
+    "id": "w13"
+  },
+  {
+    "text": "manda",
+    "start": 3.35,
+    "end": 3.69,
+    "id": "w14"
+  },
+  {
+    "text": "el",
+    "start": 3.69,
+    "end": 3.83,
+    "id": "w15"
+  },
+  {
+    "text": "reporte.",
+    "start": 3.83,
+    "end": 4.56,
+    "id": "w16"
+  },
+  {
+    "text": "Quien",
+    "start": 4.78,
+    "end": 4.86,
+    "id": "w17"
+  },
+  {
+    "text": "escribió,",
+    "start": 4.86,
+    "end": 5.46,
+    "id": "w18"
+  },
+  {
+    "text": "que",
+    "start": 5.46,
+    "end": 5.61,
+    "id": "w19"
+  },
+  {
+    "text": "busca",
+    "start": 5.65,
+    "end": 5.93,
+    "id": "w20"
+  },
+  {
+    "text": "y",
+    "start": 5.94,
+    "end": 6,
+    "id": "w21"
+  },
+  {
+    "text": "que",
+    "start": 6,
+    "end": 6.18,
+    "id": "w22"
+  },
+  {
+    "text": "sigue.",
+    "start": 6.18,
+    "end": 6.64,
+    "id": "w23"
+  }
+]

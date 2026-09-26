@@ -1,0 +1,74 @@
+[
+  {
+    "text": "Yla",
+    "start": 0.03,
+    "end": 0.21,
+    "id": "w0"
+  },
+  {
+    "text": "segmentación,",
+    "start": 0.21,
+    "end": 1.22,
+    "id": "w1"
+  },
+  {
+    "text": "intereses,",
+    "start": 1.25,
+    "end": 2.01,
+    "id": "w2"
+  },
+  {
+    "text": "edad",
+    "start": 2.01,
+    "end": 2.29,
+    "id": "w3"
+  },
+  {
+    "text": "y",
+    "start": 2.29,
+    "end": 2.35,
+    "id": "w4"
+  },
+  {
+    "text": "zona",
+    "start": 2.41,
+    "end": 2.7,
+    "id": "w5"
+  },
+  {
+    "text": "para",
+    "start": 2.7,
+    "end": 2.95,
+    "id": "w6"
+  },
+  {
+    "text": "que",
+    "start": 2.95,
+    "end": 3.14,
+    "id": "w7"
+  },
+  {
+    "text": "no",
+    "start": 3.14,
+    "end": 3.26,
+    "id": "w8"
+  },
+  {
+    "text": "te",
+    "start": 3.26,
+    "end": 3.33,
+    "id": "w9"
+  },
+  {
+    "text": "escriban",
+    "start": 3.42,
+    "end": 3.87,
+    "id": "w10"
+  },
+  {
+    "text": "curiosos.",
+    "start": 3.87,
+    "end": 4.58,
+    "id": "w11"
+  }
+]

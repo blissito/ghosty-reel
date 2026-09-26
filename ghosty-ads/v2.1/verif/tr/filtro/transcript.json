@@ -1,0 +1,146 @@
+[
+  {
+    "text": "A",
+    "start": 0,
+    "end": 0.07,
+    "id": "w0"
+  },
+  {
+    "text": "los",
+    "start": 0.07,
+    "end": 0.28,
+    "id": "w1"
+  },
+  {
+    "text": "curiosos",
+    "start": 0.28,
+    "end": 0.89,
+    "id": "w2"
+  },
+  {
+    "text": "los",
+    "start": 0.89,
+    "end": 1.11,
+    "id": "w3"
+  },
+  {
+    "text": "despide",
+    "start": 1.11,
+    "end": 1.63,
+    "id": "w4"
+  },
+  {
+    "text": "con",
+    "start": 1.63,
+    "end": 1.82,
+    "id": "w5"
+  },
+  {
+    "text": "amabilidad",
+    "start": 1.91,
+    "end": 2.62,
+    "id": "w6"
+  },
+  {
+    "text": "y",
+    "start": 2.63,
+    "end": 2.64,
+    "id": "w7"
+  },
+  {
+    "text": "deja",
+    "start": 2.86,
+    "end": 3.04,
+    "id": "w8"
+  },
+  {
+    "text": "de",
+    "start": 3.04,
+    "end": 3.12,
+    "id": "w9"
+  },
+  {
+    "text": "gastar",
+    "start": 3.22,
+    "end": 3.68,
+    "id": "w10"
+  },
+  {
+    "text": "en",
+    "start": 3.68,
+    "end": 3.84,
+    "id": "w11"
+  },
+  {
+    "text": "ellos.",
+    "start": 3.84,
+    "end": 4.28,
+    "id": "w12"
+  },
+  {
+    "text": "Ysi",
+    "start": 4.28,
+    "end": 4.62,
+    "id": "w13"
+  },
+  {
+    "text": "el",
+    "start": 4.62,
+    "end": 4.63,
+    "id": "w14"
+  },
+  {
+    "text": "correo",
+    "start": 4.63,
+    "end": 5.06,
+    "id": "w15"
+  },
+  {
+    "text": "o",
+    "start": 5.06,
+    "end": 5.13,
+    "id": "w16"
+  },
+  {
+    "text": "el",
+    "start": 5.13,
+    "end": 5.23,
+    "id": "w17"
+  },
+  {
+    "text": "teléfono",
+    "start": 5.33,
+    "end": 5.78,
+    "id": "w18"
+  },
+  {
+    "text": "es",
+    "start": 5.83,
+    "end": 5.94,
+    "id": "w19"
+  },
+  {
+    "text": "falso,",
+    "start": 6.01,
+    "end": 6.44,
+    "id": "w20"
+  },
+  {
+    "text": "te",
+    "start": 6.53,
+    "end": 6.6,
+    "id": "w21"
+  },
+  {
+    "text": "lo",
+    "start": 6.6,
+    "end": 6.74,
+    "id": "w22"
+  },
+  {
+    "text": "marca.",
+    "start": 6.74,
+    "end": 7.24,
+    "id": "w23"
+  }
+]

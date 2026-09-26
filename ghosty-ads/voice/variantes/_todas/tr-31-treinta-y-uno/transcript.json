@@ -1,0 +1,32 @@
+[
+  {
+    "text": "Hasta",
+    "start": 0.03,
+    "end": 0.32,
+    "id": "w0"
+  },
+  {
+    "text": "el",
+    "start": 0.45,
+    "end": 0.57,
+    "id": "w1"
+  },
+  {
+    "text": "31",
+    "start": 0.57,
+    "end": 1.06,
+    "id": "w2"
+  },
+  {
+    "text": "de",
+    "start": 1.06,
+    "end": 1.22,
+    "id": "w3"
+  },
+  {
+    "text": "octubre.",
+    "start": 1.22,
+    "end": 1.82,
+    "id": "w4"
+  }
+]

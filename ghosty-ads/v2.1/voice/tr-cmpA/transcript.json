@@ -1,0 +1,80 @@
+[
+  {
+    "text": "Con",
+    "start": 0.05,
+    "end": 0.18,
+    "id": "w0"
+  },
+  {
+    "text": "Ghosty",
+    "start": 0.2,
+    "end": 0.57,
+    "id": "w1"
+  },
+  {
+    "text": "Ads,",
+    "start": 0.57,
+    "end": 0.86,
+    "id": "w2"
+  },
+  {
+    "text": "Ghosty",
+    "start": 0.96,
+    "end": 1.27,
+    "id": "w3"
+  },
+  {
+    "text": "te",
+    "start": 1.34,
+    "end": 1.42,
+    "id": "w4"
+  },
+  {
+    "text": "arma",
+    "start": 1.42,
+    "end": 1.68,
+    "id": "w5"
+  },
+  {
+    "text": "la",
+    "start": 1.68,
+    "end": 1.75,
+    "id": "w6"
+  },
+  {
+    "text": "campaña,",
+    "start": 1.82,
+    "end": 2.34,
+    "id": "w7"
+  },
+  {
+    "text": "el",
+    "start": 2.34,
+    "end": 2.55,
+    "id": "w8"
+  },
+  {
+    "text": "creativo",
+    "start": 2.55,
+    "end": 3.03,
+    "id": "w9"
+  },
+  {
+    "text": "con",
+    "start": 3.03,
+    "end": 3.16,
+    "id": "w10"
+  },
+  {
+    "text": "tu",
+    "start": 3.24,
+    "end": 3.33,
+    "id": "w11"
+  },
+  {
+    "text": "marca.",
+    "start": 3.33,
+    "end": 3.74,
+    "id": "w12"
+  }
+]

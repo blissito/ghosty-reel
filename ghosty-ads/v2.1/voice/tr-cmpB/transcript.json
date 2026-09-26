@@ -1,0 +1,26 @@
+[
+  {
+    "text": "El",
+    "start": 0.03,
+    "end": 0.14,
+    "id": "w0"
+  },
+  {
+    "text": "texto",
+    "start": 0.24,
+    "end": 0.55,
+    "id": "w1"
+  },
+  {
+    "text": "del",
+    "start": 0.55,
+    "end": 0.79,
+    "id": "w2"
+  },
+  {
+    "text": "anuncio.",
+    "start": 0.79,
+    "end": 1.36,
+    "id": "w3"
+  }
+]

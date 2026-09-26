@@ -1,0 +1,86 @@
+[
+  {
+    "text": "Ysi",
+    "start": 0.03,
+    "end": 0.18,
+    "id": "w0"
+  },
+  {
+    "text": "te",
+    "start": 0.18,
+    "end": 0.3,
+    "id": "w1"
+  },
+  {
+    "text": "comentan",
+    "start": 0.3,
+    "end": 0.78,
+    "id": "w2"
+  },
+  {
+    "text": "en",
+    "start": 0.78,
+    "end": 0.9,
+    "id": "w3"
+  },
+  {
+    "text": "el",
+    "start": 0.9,
+    "end": 1.02,
+    "id": "w4"
+  },
+  {
+    "text": "anuncio,",
+    "start": 1.02,
+    "end": 1.58,
+    "id": "w5"
+  },
+  {
+    "text": "contesta",
+    "start": 1.58,
+    "end": 2.18,
+    "id": "w6"
+  },
+  {
+    "text": "el",
+    "start": 2.18,
+    "end": 2.33,
+    "id": "w7"
+  },
+  {
+    "text": "comentario",
+    "start": 2.33,
+    "end": 3.12,
+    "id": "w8"
+  },
+  {
+    "text": "y",
+    "start": 3.12,
+    "end": 3.17,
+    "id": "w9"
+  },
+  {
+    "text": "le",
+    "start": 3.26,
+    "end": 3.45,
+    "id": "w10"
+  },
+  {
+    "text": "escribe",
+    "start": 3.46,
+    "end": 3.76,
+    "id": "w11"
+  },
+  {
+    "text": "por",
+    "start": 3.76,
+    "end": 3.86,
+    "id": "w12"
+  },
+  {
+    "text": "Messenger.",
+    "start": 3.94,
+    "end": 4.43,
+    "id": "w13"
+  }
+]

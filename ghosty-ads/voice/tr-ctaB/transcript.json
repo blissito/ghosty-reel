@@ -1,0 +1,50 @@
+[
+  {
+    "text": "Yte",
+    "start": 0.03,
+    "end": 0.21,
+    "id": "w0"
+  },
+  {
+    "text": "armamos",
+    "start": 0.21,
+    "end": 0.7,
+    "id": "w1"
+  },
+  {
+    "text": "tu",
+    "start": 0.7,
+    "end": 0.84,
+    "id": "w2"
+  },
+  {
+    "text": "tablero",
+    "start": 0.84,
+    "end": 1.28,
+    "id": "w3"
+  },
+  {
+    "text": "gratis",
+    "start": 1.33,
+    "end": 1.8,
+    "id": "w4"
+  },
+  {
+    "text": "con",
+    "start": 1.8,
+    "end": 1.97,
+    "id": "w5"
+  },
+  {
+    "text": "tu",
+    "start": 1.97,
+    "end": 2.05,
+    "id": "w6"
+  },
+  {
+    "text": "marca.",
+    "start": 2.12,
+    "end": 2.55,
+    "id": "w7"
+  }
+]

@@ -1,0 +1,855 @@
+[
+ {
+  "scene": "hookA",
+  "file": "voice/hookA.wav",
+  "dur": 2.837,
+  "heard": "Pagas un anuncio y te escriben 37.",
+  "words": [
+   {
+    "w": "Pagas",
+    "s": 0.05,
+    "e": 0.37
+   },
+   {
+    "w": "un",
+    "s": 0.37,
+    "e": 0.52
+   },
+   {
+    "w": "anuncio",
+    "s": 0.52,
+    "e": 1.05
+   },
+   {
+    "w": "y",
+    "s": 1.05,
+    "e": 1.07
+   },
+   {
+    "w": "te",
+    "s": 1.19,
+    "e": 1.27
+   },
+   {
+    "w": "escriben",
+    "s": 1.27,
+    "e": 1.88
+   },
+   {
+    "w": "37.",
+    "s": 1.88,
+    "e": 2.56
+   }
+  ]
+ },
+ {
+  "scene": "hookB",
+  "file": "voice/hookB.wav",
+  "dur": 1.707,
+  "heard": "¿Cuántos de verdad compran?",
+  "words": [
+   {
+    "w": "¿Cuántos",
+    "s": 0.06,
+    "e": 0.48
+   },
+   {
+    "w": "de",
+    "s": 0.48,
+    "e": 0.6
+   },
+   {
+    "w": "verdad",
+    "s": 0.6,
+    "e": 0.97
+   },
+   {
+    "w": "compran?",
+    "s": 0.97,
+    "e": 1.61
+   }
+  ]
+ },
+ {
+  "scene": "cmpA",
+  "file": "voice/cmpA.wav",
+  "dur": 4.011,
+  "heard": "Con Ghosty Ads, Ghosty te arma la campaña, el creativo con tu marca.",
+  "words": [
+   {
+    "w": "Con",
+    "s": 0.05,
+    "e": 0.18
+   },
+   {
+    "w": "Ghosty",
+    "s": 0.2,
+    "e": 0.57
+   },
+   {
+    "w": "Ads,",
+    "s": 0.57,
+    "e": 0.86
+   },
+   {
+    "w": "Ghosty",
+    "s": 0.96,
+    "e": 1.27
+   },
+   {
+    "w": "te",
+    "s": 1.34,
+    "e": 1.42
+   },
+   {
+    "w": "arma",
+    "s": 1.42,
+    "e": 1.68
+   },
+   {
+    "w": "la",
+    "s": 1.68,
+    "e": 1.75
+   },
+   {
+    "w": "campaña:",
+    "s": 1.82,
+    "e": 2.34
+   },
+   {
+    "w": "el",
+    "s": 2.34,
+    "e": 2.55
+   },
+   {
+    "w": "creativo",
+    "s": 2.55,
+    "e": 3.03
+   },
+   {
+    "w": "con",
+    "s": 3.03,
+    "e": 3.16
+   },
+   {
+    "w": "tu",
+    "s": 3.24,
+    "e": 3.33
+   },
+   {
+    "w": "marca,",
+    "s": 3.33,
+    "e": 3.74
+   }
+  ]
+ },
+ {
+  "scene": "cmpB",
+  "file": "voice/cmpB.wav",
+  "dur": 1.408,
+  "heard": "El texto del anuncio.",
+  "words": [
+   {
+    "w": "el",
+    "s": 0.03,
+    "e": 0.14
+   },
+   {
+    "w": "texto",
+    "s": 0.24,
+    "e": 0.55
+   },
+   {
+    "w": "del",
+    "s": 0.55,
+    "e": 0.79
+   },
+   {
+    "w": "anuncio,",
+    "s": 0.79,
+    "e": 1.36
+   }
+  ]
+ },
+ {
+  "scene": "cmpC",
+  "file": "voice/cmpC.wav",
+  "dur": 4.651,
+  "heard": "Yla segmentación, intereses, edad y zona para que no te escriban curiosos.",
+  "words": [
+   {
+    "w": "y",
+    "s": 0.03,
+    "e": 0.12
+   },
+   {
+    "w": "la",
+    "s": 0.12,
+    "e": 0.21
+   },
+   {
+    "w": "segmentación:",
+    "s": 0.21,
+    "e": 1.22
+   },
+   {
+    "w": "intereses,",
+    "s": 1.25,
+    "e": 2.01
+   },
+   {
+    "w": "edad",
+    "s": 2.01,
+    "e": 2.29
+   },
+   {
+    "w": "y",
+    "s": 2.29,
+    "e": 2.35
+   },
+   {
+    "w": "zona,",
+    "s": 2.41,
+    "e": 2.7
+   },
+   {
+    "w": "para",
+    "s": 2.7,
+    "e": 2.95
+   },
+   {
+    "w": "que",
+    "s": 2.95,
+    "e": 3.14
+   },
+   {
+    "w": "no",
+    "s": 3.14,
+    "e": 3.26
+   },
+   {
+    "w": "te",
+    "s": 3.26,
+    "e": 3.33
+   },
+   {
+    "w": "escriban",
+    "s": 3.42,
+    "e": 3.87
+   },
+   {
+    "w": "curiosos.",
+    "s": 3.87,
+    "e": 4.58
+   }
+  ]
+ },
+ {
+  "scene": "cmpD",
+  "file": "voice/cmpD.wav",
+  "dur": 3.008,
+  "heard": "Te la deja en pausa, tú la prendes desde el celular.",
+  "words": [
+   {
+    "w": "Te",
+    "s": 0.05,
+    "e": 0.12
+   },
+   {
+    "w": "la",
+    "s": 0.12,
+    "e": 0.23
+   },
+   {
+    "w": "deja",
+    "s": 0.24,
+    "e": 0.48
+   },
+   {
+    "w": "en",
+    "s": 0.48,
+    "e": 0.6
+   },
+   {
+    "w": "pausa;",
+    "s": 0.6,
+    "e": 1.06
+   },
+   {
+    "w": "tú",
+    "s": 1.06,
+    "e": 1.12
+   },
+   {
+    "w": "la",
+    "s": 1.12,
+    "e": 1.33
+   },
+   {
+    "w": "prendes",
+    "s": 1.33,
+    "e": 1.73
+   },
+   {
+    "w": "desde",
+    "s": 1.73,
+    "e": 2.04
+   },
+   {
+    "w": "el",
+    "s": 2.04,
+    "e": 2.16
+   },
+   {
+    "w": "celular.",
+    "s": 2.16,
+    "e": 2.8
+   }
+  ]
+ },
+ {
+  "scene": "atiende",
+  "file": "voice/atiende.wav",
+  "dur": 2.496,
+  "heard": "Contesta al instante, cotiza y agenda.",
+  "words": [
+   {
+    "w": "Contesta",
+    "s": 0.05,
+    "e": 0.35
+   },
+   {
+    "w": "al",
+    "s": 0.43,
+    "e": 0.55
+   },
+   {
+    "w": "instante,",
+    "s": 0.55,
+    "e": 1.14
+   },
+   {
+    "w": "cotiza",
+    "s": 1.14,
+    "e": 1.56
+   },
+   {
+    "w": "y",
+    "s": 1.56,
+    "e": 1.63
+   },
+   {
+    "w": "agenda.",
+    "s": 1.63,
+    "e": 2.27
+   }
+  ]
+ },
+ {
+  "scene": "comenta",
+  "file": "voice/comenta.wav",
+  "dur": 4.651,
+  "heard": "Ysi te comentan en el anuncio, contesta el comentario y le escribe por Messenger.",
+  "words": [
+   {
+    "w": "Y",
+    "s": 0.03,
+    "e": 0.105
+   },
+   {
+    "w": "si",
+    "s": 0.105,
+    "e": 0.18
+   },
+   {
+    "w": "te",
+    "s": 0.18,
+    "e": 0.3
+   },
+   {
+    "w": "comentan",
+    "s": 0.3,
+    "e": 0.78
+   },
+   {
+    "w": "en",
+    "s": 0.78,
+    "e": 0.9
+   },
+   {
+    "w": "el",
+    "s": 0.9,
+    "e": 1.02
+   },
+   {
+    "w": "anuncio,",
+    "s": 1.02,
+    "e": 1.58
+   },
+   {
+    "w": "contesta",
+    "s": 1.58,
+    "e": 2.18
+   },
+   {
+    "w": "el",
+    "s": 2.18,
+    "e": 2.33
+   },
+   {
+    "w": "comentario",
+    "s": 2.33,
+    "e": 3.12
+   },
+   {
+    "w": "y",
+    "s": 3.12,
+    "e": 3.17
+   },
+   {
+    "w": "le",
+    "s": 3.26,
+    "e": 3.45
+   },
+   {
+    "w": "escribe",
+    "s": 3.46,
+    "e": 3.76
+   },
+   {
+    "w": "por",
+    "s": 3.76,
+    "e": 3.86
+   },
+   {
+    "w": "Messenger.",
+    "s": 3.94,
+    "e": 4.43
+   }
+  ]
+ },
+ {
+  "scene": "filtroA",
+  "file": "voice/filtroA.wav",
+  "dur": 3.989,
+  "heard": "A los curiosos los despide con amabilidad y deja de gastar en ellos.",
+  "words": [
+   {
+    "w": "A",
+    "s": 0.03,
+    "e": 0.06
+   },
+   {
+    "w": "los",
+    "s": 0.06,
+    "e": 0.2
+   },
+   {
+    "w": "curiosos",
+    "s": 0.31,
+    "e": 0.75
+   },
+   {
+    "w": "los",
+    "s": 0.75,
+    "e": 0.92
+   },
+   {
+    "w": "despide",
+    "s": 0.99,
+    "e": 1.38
+   },
+   {
+    "w": "con",
+    "s": 1.38,
+    "e": 1.57
+   },
+   {
+    "w": "amabilidad",
+    "s": 1.57,
+    "e": 2.21
+   },
+   {
+    "w": "y",
+    "s": 2.21,
+    "e": 2.46
+   },
+   {
+    "w": "deja",
+    "s": 2.46,
+    "e": 2.57
+   },
+   {
+    "w": "de",
+    "s": 2.61,
+    "e": 2.71
+   },
+   {
+    "w": "gastar",
+    "s": 2.71,
+    "e": 3.09
+   },
+   {
+    "w": "en",
+    "s": 3.11,
+    "e": 3.17
+   },
+   {
+    "w": "ellos.",
+    "s": 3.26,
+    "e": 3.79
+   }
+  ]
+ },
+ {
+  "scene": "filtroB",
+  "file": "voice/filtroB.wav",
+  "dur": 2.944,
+  "heard": "Ysi el correo o el teléfono es falso, te lo marca.",
+  "words": [
+   {
+    "w": "Y",
+    "s": 0.03,
+    "e": 0.11
+   },
+   {
+    "w": "si",
+    "s": 0.11,
+    "e": 0.19
+   },
+   {
+    "w": "el",
+    "s": 0.19,
+    "e": 0.31
+   },
+   {
+    "w": "correo",
+    "s": 0.4,
+    "e": 0.72
+   },
+   {
+    "w": "o",
+    "s": 0.72,
+    "e": 0.78
+   },
+   {
+    "w": "el",
+    "s": 0.78,
+    "e": 0.91
+   },
+   {
+    "w": "teléfono",
+    "s": 0.91,
+    "e": 1.44
+   },
+   {
+    "w": "es",
+    "s": 1.44,
+    "e": 1.57
+   },
+   {
+    "w": "falso,",
+    "s": 1.57,
+    "e": 2.14
+   },
+   {
+    "w": "te",
+    "s": 2.14,
+    "e": 2.17
+   },
+   {
+    "w": "lo",
+    "s": 2.27,
+    "e": 2.34
+   },
+   {
+    "w": "marca.",
+    "s": 2.34,
+    "e": 2.63
+   }
+  ]
+ },
+ {
+  "scene": "reporteA",
+  "file": "voice/reporteA.wav",
+  "dur": 3.989,
+  "heard": "Ya las nueve de la mañana y a las nueve de la noche te manda el reporte.",
+  "words": [
+   {
+    "w": "Y",
+    "s": 0.03,
+    "e": 0.075
+   },
+   {
+    "w": "a",
+    "s": 0.075,
+    "e": 0.12
+   },
+   {
+    "w": "las",
+    "s": 0.12,
+    "e": 0.3
+   },
+   {
+    "w": "nueve",
+    "s": 0.3,
+    "e": 0.6
+   },
+   {
+    "w": "de",
+    "s": 0.6,
+    "e": 0.72
+   },
+   {
+    "w": "la",
+    "s": 0.72,
+    "e": 0.84
+   },
+   {
+    "w": "mañana",
+    "s": 0.84,
+    "e": 1.26
+   },
+   {
+    "w": "y",
+    "s": 1.26,
+    "e": 1.33
+   },
+   {
+    "w": "a",
+    "s": 1.33,
+    "e": 1.36
+   },
+   {
+    "w": "las",
+    "s": 1.58,
+    "e": 1.62
+   },
+   {
+    "w": "nueve",
+    "s": 1.62,
+    "e": 1.99
+   },
+   {
+    "w": "de",
+    "s": 1.99,
+    "e": 2.14
+   },
+   {
+    "w": "la",
+    "s": 2.14,
+    "e": 2.29
+   },
+   {
+    "w": "noche",
+    "s": 2.29,
+    "e": 2.69
+   },
+   {
+    "w": "te",
+    "s": 2.69,
+    "e": 2.86
+   },
+   {
+    "w": "manda",
+    "s": 2.86,
+    "e": 3.28
+   },
+   {
+    "w": "el",
+    "s": 3.28,
+    "e": 3.36
+   },
+   {
+    "w": "reporte:",
+    "s": 3.39,
+    "e": 3.93
+   }
+  ]
+ },
+ {
+  "scene": "reporteB",
+  "file": "voice/reporteB.wav",
+  "dur": 2.112,
+  "heard": "Quien escribió, que busca y que sigue.",
+  "words": [
+   {
+    "w": "quién",
+    "s": 0.07,
+    "e": 0.31
+   },
+   {
+    "w": "escribió,",
+    "s": 0.31,
+    "e": 0.93
+   },
+   {
+    "w": "qué",
+    "s": 0.93,
+    "e": 1.12
+   },
+   {
+    "w": "busca",
+    "s": 1.12,
+    "e": 1.44
+   },
+   {
+    "w": "y",
+    "s": 1.44,
+    "e": 1.52
+   },
+   {
+    "w": "qué",
+    "s": 1.52,
+    "e": 1.69
+   },
+   {
+    "w": "sigue.",
+    "s": 1.69,
+    "e": 2.06
+   }
+  ]
+ },
+ {
+  "scene": "cierre",
+  "file": "voice/cierre.wav",
+  "dur": 2.24,
+  "heard": "Tú solo hablas con los que sí compran.",
+  "words": [
+   {
+    "w": "Tú",
+    "s": 0.05,
+    "e": 0.14
+   },
+   {
+    "w": "sólo",
+    "s": 0.14,
+    "e": 0.43
+   },
+   {
+    "w": "hablas",
+    "s": 0.43,
+    "e": 0.86
+   },
+   {
+    "w": "con",
+    "s": 0.86,
+    "e": 1.08
+   },
+   {
+    "w": "los",
+    "s": 1.08,
+    "e": 1.28
+   },
+   {
+    "w": "que",
+    "s": 1.37,
+    "e": 1.52
+   },
+   {
+    "w": "sí",
+    "s": 1.52,
+    "e": 1.62
+   },
+   {
+    "w": "compran.",
+    "s": 1.73,
+    "e": 2.2
+   }
+  ]
+ },
+ {
+  "scene": "ctaA",
+  "file": "voice/ctaA.wav",
+  "dur": 1.579,
+  "heard": "Escríbenos por Messenger.",
+  "words": [
+   {
+    "w": "Escríbenos",
+    "s": 0.04,
+    "e": 0.51
+   },
+   {
+    "w": "por",
+    "s": 0.51,
+    "e": 0.66
+   },
+   {
+    "w": "Messenger,",
+    "s": 0.77,
+    "e": 1.36
+   }
+  ]
+ },
+ {
+  "scene": "ctaB",
+  "file": "voice/ctaB.wav",
+  "dur": 2.091,
+  "heard": "y te armamos tu primera campaña.",
+  "words": [
+   {
+    "w": "y",
+    "s": 0.05,
+    "e": 0.07
+   },
+   {
+    "w": "te",
+    "s": 0.07,
+    "e": 0.22
+   },
+   {
+    "w": "armamos",
+    "s": 0.22,
+    "e": 0.76
+   },
+   {
+    "w": "tu",
+    "s": 0.76,
+    "e": 0.91
+   },
+   {
+    "w": "primera",
+    "s": 0.91,
+    "e": 1.4
+   },
+   {
+    "w": "campaña.",
+    "s": 1.48,
+    "e": 2.04
+   }
+  ]
+ },
+ {
+  "scene": "ctaC",
+  "file": "voice/ctaC.wav",
+  "dur": 1.856,
+  "heard": "Hasta el 31 de octubre.",
+  "words": [
+   {
+    "w": "Hasta",
+    "s": 0.05,
+    "e": 0.34
+   },
+   {
+    "w": "el",
+    "s": 0.44,
+    "e": 0.56
+   },
+   {
+    "w": "31",
+    "s": 0.56,
+    "e": 1.05
+   },
+   {
+    "w": "de",
+    "s": 1.05,
+    "e": 1.21
+   },
+   {
+    "w": "octubre.",
+    "s": 1.21,
+    "e": 1.8
+   }
+  ]
+ }
+]

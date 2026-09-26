@@ -1,0 +1,104 @@
+[
+  {
+    "text": "Ya",
+    "start": 0.03,
+    "end": 0.12,
+    "id": "w0"
+  },
+  {
+    "text": "las",
+    "start": 0.12,
+    "end": 0.3,
+    "id": "w1"
+  },
+  {
+    "text": "nueve",
+    "start": 0.3,
+    "end": 0.6,
+    "id": "w2"
+  },
+  {
+    "text": "de",
+    "start": 0.6,
+    "end": 0.72,
+    "id": "w3"
+  },
+  {
+    "text": "la",
+    "start": 0.72,
+    "end": 0.84,
+    "id": "w4"
+  },
+  {
+    "text": "mañana",
+    "start": 0.84,
+    "end": 1.26,
+    "id": "w5"
+  },
+  {
+    "text": "y",
+    "start": 1.26,
+    "end": 1.33,
+    "id": "w6"
+  },
+  {
+    "text": "a",
+    "start": 1.33,
+    "end": 1.36,
+    "id": "w7"
+  },
+  {
+    "text": "las",
+    "start": 1.58,
+    "end": 1.62,
+    "id": "w8"
+  },
+  {
+    "text": "nueve",
+    "start": 1.62,
+    "end": 1.99,
+    "id": "w9"
+  },
+  {
+    "text": "de",
+    "start": 1.99,
+    "end": 2.14,
+    "id": "w10"
+  },
+  {
+    "text": "la",
+    "start": 2.14,
+    "end": 2.29,
+    "id": "w11"
+  },
+  {
+    "text": "noche",
+    "start": 2.29,
+    "end": 2.69,
+    "id": "w12"
+  },
+  {
+    "text": "te",
+    "start": 2.69,
+    "end": 2.86,
+    "id": "w13"
+  },
+  {
+    "text": "manda",
+    "start": 2.86,
+    "end": 3.28,
+    "id": "w14"
+  },
+  {
+    "text": "el",
+    "start": 3.28,
+    "end": 3.36,
+    "id": "w15"
+  },
+  {
+    "text": "reporte.",
+    "start": 3.39,
+    "end": 3.93,
+    "id": "w16"
+  }
+]

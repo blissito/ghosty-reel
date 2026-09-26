@@ -1,0 +1,2 @@
+{ "name": "ghosty-ads-v2", "private": true, "type": "module",
+  "scripts": { "score": "node score.mjs", "render": "npx --yes hyperframes@0.8.44 render --experimental-fast-capture=false --low-memory-mode" } }

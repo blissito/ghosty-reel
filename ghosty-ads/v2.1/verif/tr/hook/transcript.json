@@ -1,0 +1,62 @@
+[
+  {
+    "text": "Pagas",
+    "start": 0.02,
+    "end": 0.5,
+    "id": "w0"
+  },
+  {
+    "text": "un",
+    "start": 0.5,
+    "end": 0.7,
+    "id": "w1"
+  },
+  {
+    "text": "anuncio",
+    "start": 0.7,
+    "end": 1.38,
+    "id": "w2"
+  },
+  {
+    "text": "y",
+    "start": 1.49,
+    "end": 1.51,
+    "id": "w3"
+  },
+  {
+    "text": "te",
+    "start": 1.51,
+    "end": 1.66,
+    "id": "w4"
+  },
+  {
+    "text": "escriben",
+    "start": 1.66,
+    "end": 2.21,
+    "id": "w5"
+  },
+  {
+    "text": "37.¿Cuántos",
+    "start": 2.27,
+    "end": 3.54,
+    "id": "w6"
+  },
+  {
+    "text": "de",
+    "start": 3.62,
+    "end": 3.69,
+    "id": "w7"
+  },
+  {
+    "text": "verdad",
+    "start": 3.69,
+    "end": 4.15,
+    "id": "w8"
+  },
+  {
+    "text": "compran?",
+    "start": 4.15,
+    "end": 4.96,
+    "id": "w9"
+  }
+]

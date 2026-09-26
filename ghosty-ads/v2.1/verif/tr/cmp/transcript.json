@@ -1,0 +1,248 @@
+[
+  {
+    "text": "Con",
+    "start": 0,
+    "end": 0.21,
+    "id": "w0"
+  },
+  {
+    "text": "Ghosty",
+    "start": 0.21,
+    "end": 0.64,
+    "id": "w1"
+  },
+  {
+    "text": "Ads,",
+    "start": 0.64,
+    "end": 0.99,
+    "id": "w2"
+  },
+  {
+    "text": "Ghosty",
+    "start": 0.99,
+    "end": 1.42,
+    "id": "w3"
+  },
+  {
+    "text": "te",
+    "start": 1.42,
+    "end": 1.53,
+    "id": "w4"
+  },
+  {
+    "text": "arma",
+    "start": 1.61,
+    "end": 1.85,
+    "id": "w5"
+  },
+  {
+    "text": "la",
+    "start": 1.85,
+    "end": 1.99,
+    "id": "w6"
+  },
+  {
+    "text": "campaña,",
+    "start": 1.99,
+    "end": 2.7,
+    "id": "w7"
+  },
+  {
+    "text": "el",
+    "start": 2.7,
+    "end": 2.86,
+    "id": "w8"
+  },
+  {
+    "text": "creativo",
+    "start": 2.86,
+    "end": 3.48,
+    "id": "w9"
+  },
+  {
+    "text": "con",
+    "start": 3.48,
+    "end": 3.72,
+    "id": "w10"
+  },
+  {
+    "text": "tu",
+    "start": 3.72,
+    "end": 3.88,
+    "id": "w11"
+  },
+  {
+    "text": "marca,",
+    "start": 3.88,
+    "end": 4.47,
+    "id": "w12"
+  },
+  {
+    "text": "el",
+    "start": 4.5,
+    "end": 4.66,
+    "id": "w13"
+  },
+  {
+    "text": "texto",
+    "start": 4.66,
+    "end": 5.11,
+    "id": "w14"
+  },
+  {
+    "text": "del",
+    "start": 5.11,
+    "end": 5.4,
+    "id": "w15"
+  },
+  {
+    "text": "anuncio",
+    "start": 5.4,
+    "end": 5.98,
+    "id": "w16"
+  },
+  {
+    "text": "y",
+    "start": 5.98,
+    "end": 6.05,
+    "id": "w17"
+  },
+  {
+    "text": "la",
+    "start": 6.05,
+    "end": 6.17,
+    "id": "w18"
+  },
+  {
+    "text": "segmentación,",
+    "start": 6.23,
+    "end": 7.32,
+    "id": "w19"
+  },
+  {
+    "text": "intereses,",
+    "start": 7.32,
+    "end": 8.08,
+    "id": "w20"
+  },
+  {
+    "text": "edad",
+    "start": 8.1,
+    "end": 8.38,
+    "id": "w21"
+  },
+  {
+    "text": "y",
+    "start": 8.38,
+    "end": 8.45,
+    "id": "w22"
+  },
+  {
+    "text": "zona",
+    "start": 8.45,
+    "end": 8.67,
+    "id": "w23"
+  },
+  {
+    "text": "para",
+    "start": 8.73,
+    "end": 9.01,
+    "id": "w24"
+  },
+  {
+    "text": "que",
+    "start": 9.01,
+    "end": 9.22,
+    "id": "w25"
+  },
+  {
+    "text": "no",
+    "start": 9.22,
+    "end": 9.33,
+    "id": "w26"
+  },
+  {
+    "text": "te",
+    "start": 9.43,
+    "end": 9.5,
+    "id": "w27"
+  },
+  {
+    "text": "escriban",
+    "start": 9.5,
+    "end": 10.07,
+    "id": "w28"
+  },
+  {
+    "text": "curiosos.",
+    "start": 10.07,
+    "end": 10.89,
+    "id": "w29"
+  },
+  {
+    "text": "Te",
+    "start": 10.89,
+    "end": 11.145,
+    "id": "w30"
+  },
+  {
+    "text": "la",
+    "start": 11.145,
+    "end": 11.4,
+    "id": "w31"
+  },
+  {
+    "text": "deja",
+    "start": 11.4,
+    "end": 11.5,
+    "id": "w32"
+  },
+  {
+    "text": "en",
+    "start": 11.5,
+    "end": 11.64,
+    "id": "w33"
+  },
+  {
+    "text": "pausa,",
+    "start": 11.64,
+    "end": 12.13,
+    "id": "w34"
+  },
+  {
+    "text": "tú",
+    "start": 12.13,
+    "end": 12.27,
+    "id": "w35"
+  },
+  {
+    "text": "la",
+    "start": 12.27,
+    "end": 12.41,
+    "id": "w36"
+  },
+  {
+    "text": "prendes",
+    "start": 12.41,
+    "end": 12.9,
+    "id": "w37"
+  },
+  {
+    "text": "desde",
+    "start": 12.9,
+    "end": 13.25,
+    "id": "w38"
+  },
+  {
+    "text": "el",
+    "start": 13.25,
+    "end": 13.39,
+    "id": "w39"
+  },
+  {
+    "text": "celular.",
+    "start": 13.39,
+    "end": 14.17,
+    "id": "w40"
+  }
+]

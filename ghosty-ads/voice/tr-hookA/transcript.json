@@ -1,0 +1,56 @@
+[
+  {
+    "text": "Pagas",
+    "start": 0.05,
+    "end": 0.32,
+    "id": "w0"
+  },
+  {
+    "text": "un",
+    "start": 0.32,
+    "end": 0.45,
+    "id": "w1"
+  },
+  {
+    "text": "anuncio",
+    "start": 0.45,
+    "end": 0.86,
+    "id": "w2"
+  },
+  {
+    "text": "y",
+    "start": 0.91,
+    "end": 0.97,
+    "id": "w3"
+  },
+  {
+    "text": "te",
+    "start": 0.97,
+    "end": 1.07,
+    "id": "w4"
+  },
+  {
+    "text": "escriben",
+    "start": 1.19,
+    "end": 1.64,
+    "id": "w5"
+  },
+  {
+    "text": "treinta",
+    "start": 1.64,
+    "end": 2.11,
+    "id": "w6"
+  },
+  {
+    "text": "y",
+    "start": 2.11,
+    "end": 2.17,
+    "id": "w7"
+  },
+  {
+    "text": "siete.",
+    "start": 2.17,
+    "end": 2.74,
+    "id": "w8"
+  }
+]

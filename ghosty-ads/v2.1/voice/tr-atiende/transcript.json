@@ -1,0 +1,38 @@
+[
+  {
+    "text": "Contesta",
+    "start": 0.05,
+    "end": 0.35,
+    "id": "w0"
+  },
+  {
+    "text": "al",
+    "start": 0.43,
+    "end": 0.55,
+    "id": "w1"
+  },
+  {
+    "text": "instante,",
+    "start": 0.55,
+    "end": 1.14,
+    "id": "w2"
+  },
+  {
+    "text": "cotiza",
+    "start": 1.14,
+    "end": 1.56,
+    "id": "w3"
+  },
+  {
+    "text": "y",
+    "start": 1.56,
+    "end": 1.63,
+    "id": "w4"
+  },
+  {
+    "text": "agenda.",
+    "start": 1.63,
+    "end": 2.27,
+    "id": "w5"
+  }
+]

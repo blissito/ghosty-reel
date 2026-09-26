@@ -1,0 +1,50 @@
+[
+  {
+    "text": "Tú",
+    "start": 0,
+    "end": 0.15,
+    "id": "w0"
+  },
+  {
+    "text": "solo",
+    "start": 0.15,
+    "end": 0.45,
+    "id": "w1"
+  },
+  {
+    "text": "hablas",
+    "start": 0.45,
+    "end": 0.89,
+    "id": "w2"
+  },
+  {
+    "text": "con",
+    "start": 0.89,
+    "end": 1.11,
+    "id": "w3"
+  },
+  {
+    "text": "los",
+    "start": 1.11,
+    "end": 1.29,
+    "id": "w4"
+  },
+  {
+    "text": "que",
+    "start": 1.38,
+    "end": 1.55,
+    "id": "w5"
+  },
+  {
+    "text": "sí",
+    "start": 1.55,
+    "end": 1.63,
+    "id": "w6"
+  },
+  {
+    "text": "compran.",
+    "start": 1.7,
+    "end": 2.47,
+    "id": "w7"
+  }
+]

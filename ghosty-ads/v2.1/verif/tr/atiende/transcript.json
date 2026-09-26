@@ -1,0 +1,128 @@
+[
+  {
+    "text": "contesta",
+    "start": 0,
+    "end": 1.12,
+    "id": "w0"
+  },
+  {
+    "text": "al",
+    "start": 1.12,
+    "end": 1.4,
+    "id": "w1"
+  },
+  {
+    "text": "instante",
+    "start": 1.4,
+    "end": 2.52,
+    "id": "w2"
+  },
+  {
+    "text": "cotiza",
+    "start": 2.52,
+    "end": 3.36,
+    "id": "w3"
+  },
+  {
+    "text": "y",
+    "start": 3.36,
+    "end": 3.46,
+    "id": "w4"
+  },
+  {
+    "text": "agenda",
+    "start": 3.53,
+    "end": 4.4,
+    "id": "w5"
+  },
+  {
+    "text": "y",
+    "start": 4.4,
+    "end": 4.48,
+    "id": "w6"
+  },
+  {
+    "text": "si",
+    "start": 4.48,
+    "end": 4.64,
+    "id": "w7"
+  },
+  {
+    "text": "te",
+    "start": 4.64,
+    "end": 4.8,
+    "id": "w8"
+  },
+  {
+    "text": "comentan",
+    "start": 4.8,
+    "end": 5.46,
+    "id": "w9"
+  },
+  {
+    "text": "en",
+    "start": 5.46,
+    "end": 5.62,
+    "id": "w10"
+  },
+  {
+    "text": "el",
+    "start": 5.62,
+    "end": 5.83,
+    "id": "w11"
+  },
+  {
+    "text": "anuncio",
+    "start": 5.84,
+    "end": 6.38,
+    "id": "w12"
+  },
+  {
+    "text": "contesta",
+    "start": 6.38,
+    "end": 7.16,
+    "id": "w13"
+  },
+  {
+    "text": "el",
+    "start": 7.16,
+    "end": 7.4,
+    "id": "w14"
+  },
+  {
+    "text": "comentario",
+    "start": 7.4,
+    "end": 8.56,
+    "id": "w15"
+  },
+  {
+    "text": "y",
+    "start": 8.65,
+    "end": 8.73,
+    "id": "w16"
+  },
+  {
+    "text": "le",
+    "start": 8.73,
+    "end": 8.95,
+    "id": "w17"
+  },
+  {
+    "text": "escribe",
+    "start": 9.03,
+    "end": 9.81,
+    "id": "w18"
+  },
+  {
+    "text": "por",
+    "start": 9.81,
+    "end": 10.16,
+    "id": "w19"
+  },
+  {
+    "text": "messenger",
+    "start": 10.17,
+    "end": 11.31,
+    "id": "w20"
+  }
+]
