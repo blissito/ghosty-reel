@@ -1,5 +1,17 @@
 {
   "name": "easybits-ad",
+  "style": "default",
+  "toon": {
+    "ink": "#0B0B0F",
+    "outline": "lineart",
+    "outline_width": 0.045,
+    "lineart_radius": 0.04,
+    "shadow_offset": [
+      0.16,
+      -0.16
+    ],
+    "shock_color": "#FBBF24"
+  },
   "resolution": [
     1920,
     1080

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1280, height=720" />
+    <title>motion-lab — toon-object</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=block" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <!-- build UMD (window.THREE): el adaptador `three` de HyperFrames lo busca ahí para esperar cargas -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <style>
+      body { margin: 0; background: #0E1317; }
+      #root { position: relative; width: 1280px; height: 720px; overflow: hidden; background: var(--bg); font-family: Inter, system-ui, sans-serif; }
+      .mono { font-family: "Geist Mono", monospace; }
+      #gl { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; display: block; }
+      #kicker { position: absolute; left: 70px; top: 120px; font-size: 18px; letter-spacing: 0.14em; color: var(--muted); }
+      #title { position: absolute; left: 70px; top: 156px; width: 520px; font-size: 64px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.04; color: var(--ink); }
+      #title div { overflow: hidden; }
+      #title span { display: inline-block; }
+      #pill { position: absolute; left: 70px; top: 420px; padding: 14px 22px; border: 3px solid var(--outline); border-radius: 999px; background: var(--accent2); color: var(--outline); font-size: 22px; font-weight: 600; white-space: nowrap; box-shadow: 6px 6px 0 var(--outline); }
+      #pill .ch { display: none; }
+      #pill .caret { display: inline-block; width: 3px; height: 1em; margin-left: 2px; vertical-align: -0.15em; background: var(--outline); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-width="1280" data-height="720" data-duration="4.5">
+      <canvas id="gl" width="1280" height="720"></canvas>
+      <div id="kicker" class="mono"></div>
+      <div id="title"></div>
+      <div id="pill"><span id="pill-text"></span><span class="caret"></span></div>
+    </div>
+
+    <script>
+      // Parámetros: TODO lo que cambia entre usos vive aquí
+      const PARAMS = {
+        palette: "fixtergeek",       // "fixtergeek" | "easybits"
+        kicker: "TALLER · SISTEMAS AGÉNTICOS",
+        title: ["Tu agente,", "listo para", "entregar"],
+        label: "Ghosty lo envuelve por ti",   // pastilla con typewriter ("" = ninguna)
+        // objeto: caja de regalo hecha con primitivas (cuerpo, tapa, listón y moño)
+        gift: { w: 1.6, h: 1.1, lidH: 0.32, lidOver: 0.08, ribbon: 0.26 },
+        place: { x: 1.75, z: 0 },    // dónde se para el objeto (unidades de mundo; la cámara mira a x=0)
+        restYaw: 0.6,                // giro final en Y (rad); entra desde startYaw con overshoot
+        startYaw: -1.1,
+        bands: [0.42, 0.72, 1.0],    // 2–3 tonos del toon (luz en cada banda, 0–1)
+        outline: 0.0075,             // grosor del contorno en fracción de la distancia (constante en pantalla)
+        light: { x: -5, y: 6, z: 1.2 },// de dónde viene la luz (decide bandas y sombra dura)
+        timings: {
+          anticip: 0.15,             // se agacha (squash) antes de saltar
+          leap: 0.4,                 // salta girando: escala y giro con back.out
+          land: 1.0,                 // aterriza: squash y recupera con overshoot
+          lid: 2.0,                  // la tapa salta y el moño gira
+          lidBack: 3.1,              // la tapa cae con rebote
+          label: 2.2,                // pastilla typewriter
+          total: 4.5,
+        },
+      };
+      const PALETTES = {
+        fixtergeek: { bg: "#0E1317", ink: "#F2F5F4", accent: "#85DDCB", accent2: "#8DCF6E", muted: "#7C8A8E", panel: "#16202A", shadow: "#0A0E11", outline: "#030506" },
+        easybits:   { bg: "#0b0b0f", ink: "#ffffff", accent: "#7c3aed", accent2: "#fbbf24", muted: "#8a8a99", panel: "#15131f", shadow: "#060608", outline: "#020203" },
+      };
+      const root = document.getElementById("root");
+      const PAL = PALETTES[PARAMS.palette];
+      for (const k in PAL) root.style.setProperty("--" + k, PAL[k]);
+      document.body.style.background = PAL.bg;
+      const T = PARAMS.timings;
+
+      // ---- textos del DOM ----
+      document.getElementById("kicker").textContent = PARAMS.kicker;
+      document.getElementById("title").innerHTML = PARAMS.title.map((l) => `<div><span>${l}</span></div>`).join("");
+      const pillText = document.getElementById("pill-text");
+      const pillChars = [...PARAMS.label].map((c) => { const s = document.createElement("span"); s.className = "ch"; s.innerHTML = c === " " ? "&nbsp;" : c; pillText.appendChild(s); return s; });
+
+      // ---- three: escena fija, todo se dibuja desde el tiempo ----
+      const canvas = document.getElementById("gl");
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(1);
+      renderer.setSize(1280, 720, false);
+      renderer.setClearColor(0x000000, 0); // transparente: el fondo es el del DOM
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(30, 1280 / 720, 0.1, 100);
+
+      // toon de bandas duras: DataTexture de N px con NearestFilter = cero degradado
+      const bandData = new Uint8Array(PARAMS.bands.map((b) => Math.round(b * 255)));
+      const gradientMap = new THREE.DataTexture(bandData, bandData.length, 1, THREE.RedFormat);
+      gradientMap.minFilter = gradientMap.magFilter = THREE.NearestFilter;
+      gradientMap.generateMipmaps = false;
+      gradientMap.needsUpdate = true;
+      const toon = (hex) => new THREE.MeshToonMaterial({ color: new THREE.Color(hex), gradientMap });
+
+      // la banda más alta debe dar el color exacto de la paleta: luz directa = π (luces físicas de r155+)
+      const sun = new THREE.DirectionalLight(0xffffff, Math.PI);
+      sun.position.set(PARAMS.light.x, PARAMS.light.y, PARAMS.light.z);
+      scene.add(sun);
+
+      // contorno por casco invertido: BackSide empujado por normales suavizadas, grosor constante en pantalla.
+      // (OutlinePass prohibido: mete blur y glow)
+      const outlineMat = new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        uniforms: { color: { value: new THREE.Color(PAL.outline) }, thickness: { value: PARAMS.outline } },
+        vertexShader: `
+          attribute vec3 smoothNormal;
+          uniform float thickness;
+          void main() {
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            vec3 n = normalize(normalMatrix * smoothNormal);
+            mv.xyz += n * thickness * -mv.z;
+            gl_Position = projectionMatrix * mv;
+          }`,
+        fragmentShader: `uniform vec3 color; void main() { gl_FragColor = vec4(color, 1.0);
+#include <colorspace_fragment>
+}`, // sin el chunk sale #000, no la tinta
+      });
+      // normales promediadas por posición: sin ellas, el casco de una caja se abre en las aristas
+      function addSmoothNormals(geo) {
+        const pos = geo.attributes.position, nor = geo.attributes.normal;
+        const acc = new Map(), key = (i) => `${pos.getX(i).toFixed(4)},${pos.getY(i).toFixed(4)},${pos.getZ(i).toFixed(4)}`;
+        for (let i = 0; i < pos.count; i++) {
+          const k = key(i), v = acc.get(k) || new THREE.Vector3();
+          v.x += nor.getX(i); v.y += nor.getY(i); v.z += nor.getZ(i); acc.set(k, v);
+        }
+        const out = new Float32Array(pos.count * 3);
+        for (let i = 0; i < pos.count; i++) { const v = acc.get(key(i)).clone().normalize(); out.set([v.x, v.y, v.z], i * 3); }
+        geo.setAttribute("smoothNormal", new THREE.BufferAttribute(out, 3));
+        return geo;
+      }
+
+      // sombra dura plana: proyección de cada pieza sobre el piso (y=0) según la luz, color sólido
+      const L = new THREE.Vector3(-PARAMS.light.x, -PARAMS.light.y, -PARAMS.light.z).normalize();
+      const shadowProj = new THREE.Matrix4().set(
+        1, -L.x / L.y, 0, 0,
+        0, 0, 0, 0.004,
+        0, -L.z / L.y, 1, 0,
+        0, 0, 0, 1,
+      );
+      const shadowMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(PAL.shadow), depthWrite: false });
+      const parts = [];   // { mesh, shadow }
+      function part(geo, mat, parent) {
+        addSmoothNormals(geo);
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.add(new THREE.Mesh(geo, outlineMat));
+        parent.add(mesh);
+        const shadow = new THREE.Mesh(geo, shadowMat);
+        shadow.matrixAutoUpdate = false; shadow.renderOrder = 1;
+        scene.add(shadow);
+        parts.push({ mesh, shadow });
+        return mesh;
+      }
+
+      // piso: plato tintado con su contorno (sostiene el cuadro 0 contra blackdetect)
+      const floor = new THREE.Mesh(new THREE.CircleGeometry(2.5, 64), new THREE.MeshBasicMaterial({ color: new THREE.Color(PAL.panel) }));
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.set(PARAMS.place.x, 0, PARAMS.place.z);
+      const floorRim = new THREE.Mesh(new THREE.RingGeometry(2.5, 2.56, 64), new THREE.MeshBasicMaterial({ color: new THREE.Color(PAL.muted) }));
+      floorRim.rotation.x = -Math.PI / 2;
+      floorRim.position.set(PARAMS.place.x, 0.001, PARAMS.place.z);
+      scene.add(floor, floorRim);
+
+      // ---- el objeto: caja de regalo ----
+      const G = PARAMS.gift;
+      const gift = new THREE.Group();          // raíz: posición, giro, squash
+      scene.add(gift);
+      const body = part(new THREE.BoxGeometry(G.w, G.h, G.w), toon(PAL.accent), gift);
+      body.position.y = G.h / 2;
+      part(new THREE.BoxGeometry(G.ribbon, G.h + 0.01, G.w + 0.02), toon(PAL.ink), body);
+      part(new THREE.BoxGeometry(G.w + 0.02, G.h + 0.01, G.ribbon), toon(PAL.ink), body);
+      const lid = new THREE.Group();
+      lid.position.y = G.h;
+      gift.add(lid);
+      const lidW = G.w + G.lidOver * 2;
+      const lidBox = part(new THREE.BoxGeometry(lidW, G.lidH, lidW), toon(PAL.accent2), lid);
+      lidBox.position.y = G.lidH / 2;
+      part(new THREE.BoxGeometry(G.ribbon, G.lidH + 0.01, lidW + 0.02), toon(PAL.ink), lidBox);
+      part(new THREE.BoxGeometry(lidW + 0.02, G.lidH + 0.01, G.ribbon), toon(PAL.ink), lidBox);
+      const bow = new THREE.Group();
+      bow.position.y = G.lidH + 0.12;
+      lid.add(bow);
+      for (const side of [-1, 1]) {
+        const loop = part(new THREE.TorusGeometry(0.24, 0.085, 12, 32), toon(PAL.ink), bow);
+        loop.position.x = side * 0.25;
+        loop.rotation.set(0, 0, side * 0.35);
+      }
+      part(new THREE.SphereGeometry(0.12, 16, 12), toon(PAL.accent2), bow);
+
+      // ---- pose por tiempo (pura: el mismo t da el mismo cuadro) ----
+      const clamp01 = (x) => Math.max(0, Math.min(1, x));
+      const lerp = (a, b, p) => a + (b - a) * p;
+      const seg = (t, a, b, ease) => ease(clamp01((t - a) / (b - a)));
+      const E = {
+        lin: (p) => p,
+        p2o: gsap.parseEase("power2.out"),
+        p2i: gsap.parseEase("power2.in"),
+        p1io: gsap.parseEase("power1.inOut"),
+        back: gsap.parseEase("back.out(1.8)"),
+        backLid: gsap.parseEase("back.out(3)"),
+        bounce: gsap.parseEase("bounce.out"),
+        p3o: gsap.parseEase("power3.out"),
+      };
+      function renderAt(t) {
+        // squash/stretch: k>0 aplasta, k<0 estira (volumen aprox. constante)
+        let k = 0;
+        if (t < T.leap) k = 0.2 * seg(t, T.anticip, T.leap, E.p2o);
+        else if (t < T.leap + 0.15) k = lerp(0.2, -0.14, seg(t, T.leap, T.leap + 0.15, E.lin));
+        else if (t < T.land) k = lerp(-0.14, 0, seg(t, T.leap + 0.15, T.land, E.lin));
+        else if (t < T.land + 0.1) k = 0.16 * seg(t, T.land, T.land + 0.1, E.p2o);
+        else k = 0.16 * (1 - seg(t, T.land + 0.1, T.land + 0.6, E.back));
+        const grow = seg(t, T.leap, T.land + 0.15, E.back);
+        const s = lerp(0.62, 1, grow);
+        const hop = Math.sin(Math.PI * seg(t, T.leap, T.land, E.lin)) * 0.9;
+        gift.position.set(PARAMS.place.x, hop, PARAMS.place.z);
+        gift.rotation.y = lerp(PARAMS.startYaw, PARAMS.restYaw, grow);
+        gift.scale.set(s * (1 + k / 2), s * (1 - k), s * (1 + k / 2));
+
+        // tapa: salta con overshoot, cae con rebote; el moño gira en el salto
+        const up = seg(t, T.lid, T.lid + 0.5, E.backLid) * (1 - seg(t, T.lidBack, T.lidBack + 0.6, E.bounce));
+        lid.position.y = G.h + up * 0.7;
+        lid.rotation.z = -0.28 * up;
+        bow.rotation.y = Math.PI * 2 * seg(t, T.lid, T.lid + 0.9, E.p3o);
+
+        // cámara: push-in lento para que el plano respire
+        const push = seg(t, 0, T.total, E.p1io);
+        camera.position.set(lerp(0.2, 0.45, push), lerp(3.4, 3.0, push), lerp(10.4, 9.4, push));
+        camera.lookAt(lerp(0.25, 0.45, push), 0.85, 0);
+
+        // sombras: cada pieza proyectada desde su matriz de mundo
+        scene.updateMatrixWorld(true);
+        for (const { mesh, shadow } of parts) shadow.matrix.multiplyMatrices(shadowProj, mesh.matrixWorld);
+        renderer.render(scene, camera);
+      }
+
+      // ---- DOM con GSAP; la misma timeline dibuja el canvas en cada seek ----
+      const tl = gsap.timeline({ paused: true });
+      // el titular queda fijo desde el cuadro 0 (es la miniatura); el que actúa es el objeto
+      tl.set("#pill", { autoAlpha: 0, scale: 0.6, transformOrigin: "0% 50%" }, 0);
+      if (PARAMS.label) {
+        tl.set("#pill", { autoAlpha: 1 }, T.label);
+        tl.to("#pill", { scale: 1, duration: 0.35, ease: "back.out(2.5)" }, T.label);
+        pillChars.forEach((c, i) => tl.set(c, { display: "inline" }, T.label + 0.15 + i * 0.035));
+      }
+      const clock = { t: 0 };
+      tl.to(clock, { t: T.total, duration: T.total, ease: "none", onUpdate: () => renderAt(clock.t) }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+
+      // adaptador `three` de HyperFrames: publica __hfThreeTime y dispara hf-seek en cada cuadro
+      window.addEventListener("hf-seek", (e) => renderAt(e.detail.time));
+      renderAt(window.__hfThreeTime || 0);
+    </script>
+  </body>
+</html>

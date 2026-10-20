@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1280, height=720" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1280px; height: 720px; overflow: hidden; }
+      #root { position: absolute; inset: 0; background: var(--bg); font-family: Inter, system-ui, sans-serif; color: var(--ink); }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      svg text { font-family: "Geist Mono", ui-monospace, monospace; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="4" data-width="1280" data-height="720">
+      <div class="clip" data-start="0" data-duration="4">
+        <svg id="stage" width="1280" height="720" viewBox="0 0 1280 720">
+          <defs>
+            <clipPath id="cardClip"><rect x="60" y="50" width="1160" height="600" rx="28" /></clipPath>
+            <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+              <circle cx="20" cy="20" r="2" fill="var(--muted)" opacity="0.35" />
+            </pattern>
+          </defs>
+          <rect width="1280" height="720" fill="url(#dots)" />
+          <rect x="72" y="62" width="1160" height="600" rx="28" fill="var(--accent)" />
+          <rect x="60" y="50" width="1160" height="600" rx="28" fill="var(--ink)" />
+          <g clip-path="url(#cardClip)">
+            <!-- piso -->
+            <rect id="floor" x="40" y="540" width="1200" height="140" fill="var(--accent2)" stroke="var(--bg)" stroke-width="6" />
+            <g id="marks"></g>
+            <g id="actor">
+              <!-- sombra en el piso: elipse sólida, sin blur; se encoge al subir -->
+              <g id="floorSh"><ellipse cx="0" cy="2" rx="92" ry="14" fill="var(--bg)" /></g>
+              <!-- objeto: posición (y = altura) -->
+              <g id="hopPos">
+                <!-- sombra dura del objeto: clon con --sh; su desfase dice la altura (8 → 18 en el aire → 3 al aplastarse) -->
+                <use id="boxSh" href="#body" style="--sh: var(--bg)" />
+                <!-- cuerpo: squash & stretch con pivote en la base (svgOrigin 0 0) -->
+                <g id="body">
+                  <rect x="-80" y="-136" width="160" height="136" rx="10" style="fill:var(--sh,var(--accent));stroke:var(--sh,var(--bg));stroke-width:7;stroke-linejoin:round" />
+                  <rect x="-80" y="-136" width="160" height="34" rx="10" style="fill:var(--sh,var(--accent2));stroke:var(--sh,var(--bg));stroke-width:7;stroke-linejoin:round" />
+                  <rect x="-16" y="-136" width="32" height="136" style="fill:var(--sh,var(--ink));stroke:var(--sh,var(--bg));stroke-width:6" />
+                  <rect x="-62" y="-72" width="34" height="44" rx="4" style="fill:var(--sh,var(--ink));stroke:var(--sh,var(--bg));stroke-width:5" />
+                  <path d="M-55 -60 h20 M-55 -50 h20 M-55 -40 h12" style="stroke:var(--sh,var(--bg));stroke-width:4;stroke-linecap:round" />
+                  <path d="M34 -66 l12 -14 l12 14 M46 -80 v30" style="fill:none;stroke:var(--sh,var(--bg));stroke-width:5;stroke-linecap:round;stroke-linejoin:round" />
+                </g>
+              </g>
+            </g>
+          </g>
+          <rect x="60" y="50" width="1160" height="600" rx="28" fill="none" stroke="var(--bg)" stroke-width="6" />
+          <g id="pill" transform="translate(96 84)">
+            <rect x="6" y="6" width="520" height="44" rx="22" fill="var(--bg)" />
+            <rect width="520" height="44" rx="22" fill="var(--ink)" stroke="var(--bg)" stroke-width="5" />
+            <text id="pillText" x="260" y="29" text-anchor="middle" font-size="18" fill="var(--bg)"></text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <script>
+      // Parámetros: TODO lo que cambia entre usos vive aquí
+      const PARAMS = {
+        palette: "fixtergeek",         // "fixtergeek" | "easybits"
+        groundY: 540,                  // y del piso
+        stops: [300, 527, 753, 980],   // x de cada aterrizaje (n stops = n−1 saltos; bucle finito)
+        height: 230,                   // altura del salto (px)
+        start: 0.35,                   // primer salto (s)
+        gap: 0.08,                     // pausa entre saltos (s)
+        anticip: 0.14,                 // agacharse antes de saltar
+        rise: 0.32,                    // subida (sine.out)
+        fall: 0.24,                    // caída (power3.in)
+        settle: 0.4,                   // asentarse tras el golpe
+        settleEase: 2.5,               // s de back.out(s) del asentarse
+        squash: { land: [1.28, 0.76], anticip: [1.22, 0.8], launch: [0.84, 1.2], fall: [0.88, 1.14] }, // [scaleX, scaleY], ~volumen constante
+        floorShMin: 0.45,              // escala de la sombra del piso en el punto más alto
+        shOffset: { rest: 8, air: 18, squash: 3 }, // desfase de la sombra dura del objeto
+        label: true,                   // pastilla con la regla del golpe
+      };
+      const PALETTES = {
+        fixtergeek: { bg: "#0E1317", ink: "#F2F5F4", accent: "#85DDCB", accent2: "#8DCF6E", muted: "#7C8A8E" },
+        easybits:   { bg: "#0b0b0f", ink: "#ffffff", accent: "#7c3aed", accent2: "#fbbf24", muted: "#8a8a99" },
+      };
+      const P = PALETTES[PARAMS.palette];
+      const root = document.getElementById("root");
+      for (const k of ["bg", "ink", "accent", "accent2", "muted"]) root.style.setProperty("--" + k, P[k]);
+      const DUR = parseFloat(root.dataset.duration);
+      const NS = "http://www.w3.org/2000/svg";
+      const G = PARAMS.groundY;
+      document.getElementById("floor").setAttribute("y", G - 44); // el piso se ve un poco desde arriba: la sombra cae sobre él
+      document.getElementById("actor").setAttribute("transform", `translate(0 ${G})`);
+      // marcas de aterrizaje en el piso (dónde cae cada salto)
+      const marks = document.getElementById("marks");
+      PARAMS.stops.forEach((x) => {
+        const m = document.createElementNS(NS, "rect");
+        Object.entries({ x: x - 34, y: G + 46, width: 68, height: 12, rx: 6, fill: P.bg }).forEach(([k, v]) => m.setAttribute(k, v));
+        marks.appendChild(m);
+      });
+      const s = PARAMS.settleEase;
+      document.getElementById("pillText").textContent = `back.out(${s}) · rebote en 1/(s+1) = ${(1 / (s + 1)).toFixed(3)}`;
+      document.getElementById("pill").style.display = PARAMS.label ? "" : "none";
+
+      const tl = gsap.timeline({ paused: true });
+      const x0 = PARAMS.stops[0], so = PARAMS.shOffset, sq = PARAMS.squash;
+      // estado inicial DENTRO de la timeline (sobrevive al seek del render)
+      tl.set("#hopPos", { x: x0, y: 0 }, 0)
+        .set("#floorSh", { x: x0, scale: 1, svgOrigin: "0 0" }, 0)
+        .set("#body", { scaleX: 1, scaleY: 1, svgOrigin: "0 0" }, 0)
+        .set("#boxSh", { x: so.rest, y: so.rest }, 0);
+
+      const cues = []; // instantes para montar SFX con ffmpeg (también en window.__sfxCues)
+      let t0 = PARAMS.start;
+      for (let i = 0; i < PARAMS.stops.length - 1; i++) {
+        const xa = PARAMS.stops[i], xb = PARAMS.stops[i + 1];
+        const tUp = t0 + PARAMS.anticip, tDown = tUp + PARAMS.rise, tLand = tDown + PARAMS.fall;
+        const air = PARAMS.rise + PARAMS.fall;
+        // 1) anticipación: se agacha (squash ancho)
+        tl.to("#body", { scaleX: sq.anticip[0], scaleY: sq.anticip[1], duration: PARAMS.anticip, ease: "power2.in" }, t0)
+          .to("#boxSh", { x: so.squash + 2, y: so.squash + 2, duration: PARAMS.anticip, ease: "power2.in" }, t0);
+        // 2) despegue: se estira y sube; la x avanza lineal durante todo el vuelo (arco)
+        tl.to("#body", { scaleX: sq.launch[0], scaleY: sq.launch[1], duration: 0.1, ease: "power2.out" }, tUp)
+          .to("#body", { scaleX: 1, scaleY: 1, duration: PARAMS.rise - 0.1, ease: "sine.inOut" }, tUp + 0.1)
+          .to("#hopPos", { y: -PARAMS.height, duration: PARAMS.rise, ease: "sine.out" }, tUp)
+          .to(["#hopPos", "#floorSh"], { x: xb, duration: air, ease: "none" }, tUp)
+          .to("#floorSh", { scale: PARAMS.floorShMin, duration: PARAMS.rise, ease: "sine.out" }, tUp)
+          .to("#boxSh", { x: so.air, y: so.air, duration: PARAMS.rise, ease: "sine.out" }, tUp);
+        // 3) caída: acelera (power3.in) y se vuelve a estirar
+        tl.to("#hopPos", { y: 0, duration: PARAMS.fall, ease: "power3.in" }, tDown)
+          .to("#body", { scaleX: sq.fall[0], scaleY: sq.fall[1], duration: PARAMS.fall, ease: "power2.in" }, tDown)
+          .to("#floorSh", { scale: 1, duration: PARAMS.fall, ease: "power3.in" }, tDown)
+          .to("#boxSh", { x: so.squash, y: so.squash, duration: PARAMS.fall, ease: "power3.in" }, tDown);
+        // 4) golpe: un cuadro de squash fuerte y se asienta con overshoot
+        tl.set("#body", { scaleX: sq.land[0], scaleY: sq.land[1] }, tLand)
+          .set("#floorSh", { scaleX: 1.18, scaleY: 1 }, tLand)
+          .to("#body", { scaleX: 1, scaleY: 1, duration: PARAMS.settle, ease: `back.out(${s})` }, tLand)
+          .to("#floorSh", { scaleX: 1, duration: PARAMS.settle, ease: `back.out(${s})` }, tLand)
+          .to("#boxSh", { x: so.rest, y: so.rest, duration: PARAMS.settle, ease: `back.out(${s})` }, tLand);
+        cues.push({ t: +tUp.toFixed(3), sfx: "whoosh" });                                   // despegue
+        cues.push({ t: +tLand.toFixed(3), sfx: "thud" });                                    // contacto con el piso
+        cues.push({ t: +(tLand + PARAMS.settle / (s + 1)).toFixed(3), sfx: "boing" });       // el back.out cruza 1 y rebota
+        t0 = tLand + PARAMS.settle + PARAMS.gap;
+      }
+      window.__sfxCues = cues;
+      tl.to({}, { duration: 0.001 }, DUR - 0.001);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

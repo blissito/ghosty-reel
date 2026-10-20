@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1280, height=720" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1280px; height: 720px; overflow: hidden; }
+      #root { position: absolute; inset: 0; background: var(--bg); font-family: Inter, system-ui, sans-serif; color: var(--ink); }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      svg text { font-family: "Geist Mono", ui-monospace, monospace; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="4" data-width="1280" data-height="720">
+      <div class="clip" data-start="0" data-duration="4">
+        <svg id="stage" width="1280" height="720" viewBox="0 0 1280 720">
+          <defs>
+            <clipPath id="cardClip"><rect x="60" y="50" width="1160" height="600" rx="28" /></clipPath>
+            <!-- retícula de puntos del fondo oscuro (para que el cuadro 0 no sea plano) -->
+            <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+              <circle cx="20" cy="20" r="2" fill="var(--muted)" opacity="0.35" />
+            </pattern>
+          </defs>
+          <rect width="1280" height="720" fill="url(#dots)" />
+          <!-- tarjeta: sombra dura de acento + cuerpo claro con contorno grueso -->
+          <rect x="72" y="62" width="1160" height="600" rx="28" fill="var(--accent)" />
+          <rect x="60" y="50" width="1160" height="600" rx="28" fill="var(--ink)" />
+          <g clip-path="url(#cardClip)">
+            <!-- cámara: TODO lo de dentro se mueve fluido (ease continuo, cuadro a cuadro) -->
+            <g id="cam">
+              <g id="clouds"></g>
+              <g id="hills"></g>
+              <g id="ground"></g>
+              <g id="posts"></g>
+              <!-- personaje: sombra (clon con --sh) + original; sus poses se muestrean a PARAMS.charFps -->
+              <g transform="translate(640 560)">
+                <use href="#robot" x="8" y="8" style="--sh: var(--bg)" />
+                <g id="robot">
+                  <g id="legL"><rect x="-38" y="-62" width="26" height="62" rx="8" style="fill:var(--sh,var(--muted));stroke:var(--sh,var(--bg));stroke-width:6" /></g>
+                  <g id="legR"><rect x="12" y="-62" width="26" height="62" rx="8" style="fill:var(--sh,var(--muted));stroke:var(--sh,var(--bg));stroke-width:6" /></g>
+                  <g id="bodyBob">
+                    <g id="armL"><rect x="-92" y="-182" width="30" height="88" rx="14" style="fill:var(--sh,var(--accent2));stroke:var(--sh,var(--bg));stroke-width:6" /></g>
+                    <rect x="-64" y="-196" width="128" height="138" rx="20" style="fill:var(--sh,var(--accent));stroke:var(--sh,var(--bg));stroke-width:6;stroke-linejoin:round" />
+                    <rect x="-38" y="-170" width="76" height="46" rx="8" style="fill:var(--sh,var(--bg));stroke:var(--sh,var(--bg));stroke-width:6" />
+                    <path d="M-28 -147 h14 l8 -12 l10 24 l8 -12 h16" style="fill:none;stroke:var(--sh,var(--accent2));stroke-width:5;stroke-linecap:round;stroke-linejoin:round" />
+                    <g id="armR"><rect x="62" y="-182" width="30" height="88" rx="14" style="fill:var(--sh,var(--accent2));stroke:var(--sh,var(--bg));stroke-width:6" /></g>
+                    <rect x="-12" y="-214" width="24" height="22" style="fill:var(--sh,var(--muted));stroke:var(--sh,var(--bg));stroke-width:6" />
+                    <g id="head">
+                      <g id="antenna">
+                        <line x1="0" y1="-292" x2="0" y2="-330" style="stroke:var(--sh,var(--bg));stroke-width:6;stroke-linecap:round" />
+                        <circle cx="0" cy="-338" r="12" style="fill:var(--sh,var(--accent2));stroke:var(--sh,var(--bg));stroke-width:6" />
+                      </g>
+                      <rect x="-58" y="-296" width="116" height="86" rx="22" style="fill:var(--sh,var(--ink));stroke:var(--sh,var(--bg));stroke-width:6" />
+                      <g id="eyes">
+                        <ellipse cx="-22" cy="-254" rx="9" ry="13" style="fill:var(--sh,var(--bg))" />
+                        <ellipse cx="22" cy="-254" rx="9" ry="13" style="fill:var(--sh,var(--bg))" />
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+          <!-- contorno de la tarjeta encima del recorte -->
+          <rect x="60" y="50" width="1160" height="600" rx="28" fill="none" stroke="var(--bg)" stroke-width="6" />
+          <!-- pastilla de cadencias -->
+          <g id="pill" transform="translate(96 84)">
+            <rect x="6" y="6" width="400" height="44" rx="22" fill="var(--bg)" />
+            <rect width="400" height="44" rx="22" fill="var(--ink)" stroke="var(--bg)" stroke-width="5" />
+            <text id="pillText" x="200" y="29" text-anchor="middle" font-size="18" fill="var(--bg)"></text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <script>
+      // Parámetros: TODO lo que cambia entre usos vive aquí
+      const PARAMS = {
+        palette: "fixtergeek",       // "fixtergeek" | "easybits"
+        charFps: 12,                 // cadencia del personaje: 12 = «a dos» de cine (a 30 fps sostiene 3-2-3-2 cuadros); 15 = dos exactos a 30
+        camFps: 30,                  // sólo para la pastilla: la cámara se muestrea a la fps del render (30 o 60 con -f 60)
+        label: true,                 // pastilla «personaje 12 fps · cámara 30 fps»
+        stepPeriod: 0.5,             // un ciclo de paso completo (izq + der), en segundos
+        pan: { far: 160, mid: 320, near: 900 }, // px que viaja cada capa en toda la duración (parallax)
+        camZoom: 1.06,               // escala final de la cámara (dolly suave)
+        wave: { at: 2.4, times: 3 }, // saluda con el brazo derecho N veces (bucle finito) mientras camina
+        blinkAt: 1.5,                // parpadeo (s)
+      };
+      const PALETTES = {
+        fixtergeek: { bg: "#0E1317", ink: "#F2F5F4", accent: "#85DDCB", accent2: "#8DCF6E", muted: "#7C8A8E" },
+        easybits:   { bg: "#0b0b0f", ink: "#ffffff", accent: "#7c3aed", accent2: "#fbbf24", muted: "#8a8a99" },
+      };
+      const P = PALETTES[PARAMS.palette];
+      const root = document.getElementById("root");
+      for (const k of ["bg", "ink", "accent", "accent2", "muted"]) root.style.setProperty("--" + k, P[k]);
+      const DUR = parseFloat(root.dataset.duration);
+      const NS = "http://www.w3.org/2000/svg";
+      const add = (parent, tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+
+      // escenografía: capas repetidas a lo ancho (determinista, sin azar)
+      const clouds = document.getElementById("clouds");
+      [[180, 230], [520, 205], [860, 250], [1220, 215], [1560, 240]].forEach(([x, y]) => {
+        add(clouds, "path", { d: `M${x} ${y} a28 28 0 0 1 50 -18 a34 34 0 0 1 62 8 a24 24 0 0 1 8 46 h-112 a24 24 0 0 1 -8 -36 z`,
+          fill: P.accent, stroke: P.bg, "stroke-width": 6, "stroke-linejoin": "round" });
+      });
+      const hills = document.getElementById("hills");
+      let d = "M0 560 ";
+      for (let x = 0; x < 2000; x += 260) d += `Q${x + 130} ${x % 520 ? 380 : 420} ${x + 260} 560 `;
+      add(hills, "path", { d: d + "Z", fill: P.muted, stroke: P.bg, "stroke-width": 6, "stroke-linejoin": "round" });
+      const ground = document.getElementById("ground");
+      add(ground, "rect", { x: 0, y: 560, width: 2400, height: 120, fill: P.accent2, stroke: P.bg, "stroke-width": 6 });
+      for (let x = 20; x < 2400; x += 110) add(ground, "rect", { x, y: 600, width: 52, height: 12, rx: 6, fill: P.bg });
+      const posts = document.getElementById("posts");
+      for (let x = 120; x < 2400; x += 300) {
+        add(posts, "rect", { x: x + 6, y: 476, width: 22, height: 90, rx: 4, fill: P.bg });
+        add(posts, "rect", { x, y: 470, width: 22, height: 90, rx: 4, fill: P.ink, stroke: P.bg, "stroke-width": 6 });
+      }
+      document.getElementById("pillText").textContent = `personaje ${PARAMS.charFps} fps · cámara ${PARAMS.camFps} fps`;
+      document.getElementById("pill").style.display = PARAMS.label ? "" : "none";
+
+      // --- timeline del PERSONAJE: se arma con eases normales y se MUESTREA a charFps ---
+      const ch = gsap.timeline({ paused: true });
+      const half = PARAMS.stepPeriod / 2, reps = Math.max(1, Math.round(DUR / half)) - 1; // bucle finito
+      ch.set("#legL", { rotation: -18, svgOrigin: "-25 -62" }, 0)
+        .set("#legR", { rotation: 18, svgOrigin: "25 -62" }, 0)
+        .set("#armL", { rotation: 20, svgOrigin: "-77 -174" }, 0)
+        .set("#armR", { rotation: -20, svgOrigin: "77 -174" }, 0)
+        .set("#bodyBob", { y: 0 }, 0)
+        .set("#antenna", { rotation: -10, svgOrigin: "0 -292" }, 0)
+        .set("#eyes", { scaleY: 1, x: 0, svgOrigin: "0 -254" }, 0);
+      ch.to("#legL", { rotation: 18, duration: half, ease: "sine.inOut", yoyo: true, repeat: reps }, 0)
+        .to("#legR", { rotation: -18, duration: half, ease: "sine.inOut", yoyo: true, repeat: reps }, 0)
+        .to("#armL", { rotation: -20, duration: half, ease: "sine.inOut", yoyo: true, repeat: reps }, 0)
+        .to("#bodyBob", { y: -12, duration: half / 2, ease: "sine.out", yoyo: true, repeat: reps * 2 + 1 }, 0)
+        // follow-through: la antena va un poco detrás del cuerpo
+        .to("#antenna", { rotation: 10, duration: half, ease: "sine.inOut", yoyo: true, repeat: reps }, 0.08);
+      // brazo derecho: camina y luego saluda N veces
+      const wAt = PARAMS.wave.at, wReps = PARAMS.wave.times * 2 - 1;
+      ch.to("#armR", { rotation: 20, duration: half, ease: "sine.inOut", yoyo: true, repeat: Math.max(0, Math.floor(wAt / half) - 1) }, 0)
+        .to("#armR", { rotation: -150, duration: 0.25, ease: "back.out(2)" }, wAt)
+        .to("#armR", { rotation: -120, duration: 0.18, ease: "sine.inOut", yoyo: true, repeat: wReps }, wAt + 0.25)
+        .to("#eyes", { x: 6, duration: 0.2, ease: "power2.out" }, wAt);
+      ch.to("#eyes", { scaleY: 0.1, duration: 0.08, ease: "power1.in", yoyo: true, repeat: 1 }, PARAMS.blinkAt);
+
+      // --- timeline principal: cámara fluida + reloj del personaje cuantizado ---
+      const tl = gsap.timeline({ paused: true });
+      tl.set("#clouds", { x: 0 }, 0).set("#hills", { x: 0 }, 0).set("#ground", { x: 0 }, 0).set("#posts", { x: 0 }, 0)
+        .set("#cam", { scale: 1, svgOrigin: "640 400" }, 0);
+      tl.to("#clouds", { x: -PARAMS.pan.far, duration: DUR, ease: "none" }, 0)
+        .to("#hills", { x: -PARAMS.pan.mid, duration: DUR, ease: "none" }, 0)
+        .to("#ground", { x: -PARAMS.pan.near, duration: DUR, ease: "none" }, 0)
+        .to("#posts", { x: -PARAMS.pan.near, duration: DUR, ease: "none" }, 0)
+        .to("#cam", { scale: PARAMS.camZoom, duration: DUR, ease: "sine.inOut" }, 0);
+      // el truco: el tiempo del personaje se redondea hacia abajo a la rejilla de 1/charFps
+      const clock = { t: 0 };
+      const snap = (t) => Math.floor(t * PARAMS.charFps + 1e-6) / PARAMS.charFps;
+      tl.to(clock, { t: DUR, duration: DUR, ease: "none", onUpdate: () => ch.seek(snap(clock.t)) }, 0);
+      ch.seek(0.001).seek(0); // fuerza el render del estado inicial (un seek a 0 sobre una timeline en 0 no pinta)
+      tl.to({}, { duration: 0.001 }, DUR - 0.001);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

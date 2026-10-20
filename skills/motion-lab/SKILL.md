@@ -13,3 +13,5 @@ Ver `README.md` (tabla de recetas, reglas y trampas) y `MOLDE.md` (contrato de c
 3. Mantén el `data-duration` del HTML igual a la duración que calcule tu timeline.
 4. Renderiza con `npx hyperframes render . -o out.mp4` y verifica sobre el archivo: `start_time` 0, `blackdetect` sin hallazgos, cuadro 0 completo.
 5. Monta los SFX que sugiere el `SKILL.md` con ffmpeg fuera del render.
+
+Objeto 3D en caricatura plana (three.js toon + contorno + sombra dura): `toon-object/`. Animación a mano en 2D: `on-twos/` (personaje a 12 fps, cámara fluida), `squash-hop/` (salto con squash, sombra que dice la altura y SFX en `__sfxCues`), `smear-dash/` (smear y múltiplos en vez de blur). Para pegar inicios al beat o a la palabra: `_lib/beat-snap.js` (sección «Ritmo al beat» del README).

@@ -303,7 +303,12 @@ también `grease_pencil.fill_color`.
 
 **`Lineart`** (`GREASE_PENCIL_LINEART`) genera trazos desde la geometría de otros
 objetos — es el reemplazo moderno de Freestyle y la vía para que un volumen 3D
-real se vea dibujado a mano. Sin verificar todavía.
+real se vea dibujado a mano. **Verificado en 5.2.2:** el tipo es `"LINEART"`
+(no `GREASE_PENCIL_LINEART`), fuente `COLLECTION`, `radius` en unidades de mundo,
+y un `GREASE_PENCIL_BUILD` después en el stack lo traza solo. Ojo: un objeto con
+`hide_render` sale del depsgraph y Line Art deja de verlo; para esconder el
+relleno mientras se dibuja el contorno usa `visible_camera = False`. Ejemplo
+que corre solo: `lineart-build.py`. El modo `"style": "toon"` de `scene.py` lo usa.
 
 ## Formato vertical (9:16)
 

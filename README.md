@@ -61,6 +61,16 @@ el botón viviera dentro de la textura de fondo, jamás podría despegarse de el
 explicar. El diagrama se dibuja en el espacio 3D, la cámara entra entre las capas
 y el trazo se dibuja solo. Render mucho más barato.
 
+**Modo caricatura (`"style": "toon"`).** En `scene.json`, `"style": "toon"`
+cambia el look al de la marca: emisión plana con el hex exacto (sin luces ni
+degradados), contorno de tinta con Line Art (`"outline": "hull"` usa casco
+invertido, más barato), sombra dura desplazada en vez del blob radial, y sin
+bloom, sin DOF, sin motion blur, view transform Standard. Colores y grosores en
+el bloque `"toon"`. El default sigue siendo `"style": "default"` para no romper
+reels viejos. Probar sin editar el JSON: `STYLE=toon PREVIEW=1 OUT=/tmp/toon
+blender -b -P scene.py`. Para que el contorno se dibuje solo (Line Art + Build):
+[`skills/blender-ad/lineart-build.py`](./skills/blender-ad/lineart-build.py).
+
 ### Sin Blender
 
 **Componer en HTML.** Para piezas 2D planas —tipografía, diagramas, código en

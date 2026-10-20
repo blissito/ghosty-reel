@@ -19,6 +19,12 @@ Uso:
     ONLY=titles,cursor PREVIEW=1 ...       # aislar objetos (biseccion de bugs)
     RANGE=520,960 blender -b -P scene.py   # re-renderizar solo un tramo
     FRAMES=460,640 PREVIEW=1 blender -b -P scene.py
+    STYLE=toon PREVIEW=1 OUT=/tmp/x blender -b -P scene.py   # modo caricatura
+
+"style" en scene.json: "default" (3D iluminado, bloom, DOF, AgX) o "toon"
+(caricatura plana de la casa: emisión con el hex exacto, contorno de tinta,
+sombra dura desplazada, sin bloom, sin DOF, sin motion blur, view Standard).
+La env STYLE pisa al JSON para probar sin editarlo.
 """
 
 import bpy, json, math, os, random
@@ -38,6 +44,14 @@ PLANE_W = 16.0
 PLANE_H = PLANE_W * RES_Y / RES_X
 CAM_D = CFG["camera"]["distance"]
 
+# Modo de estilo. "default" es el look original (no se toca para no romper
+# reels viejos); "toon" es la caricatura plana de la marca.
+STYLE = os.environ.get("STYLE") or CFG.get("style", "default")
+TOON = STYLE == "toon"
+TC = {"ink": "#0B0B0F", "outline": "lineart", "outline_width": 0.045,
+      "lineart_radius": 0.04, "shadow_offset": [0.16, -0.16],
+      "shock_color": None, **CFG.get("toon", {})}
+
 
 # --------------------------------------------------------------------------- #
 # helpers
@@ -46,6 +60,18 @@ CAM_D = CFG["camera"]["distance"]
 def hex_rgb(h, gamma=2.2):
     h = h.lstrip("#")
     return (*[(int(h[i:i + 2], 16) / 255.0) ** gamma for i in (0, 2, 4)], 1.0)
+
+
+def srgb(h):
+    """Hex -> lineal con la curva sRGB exacta (no gamma 2.2). Con emisión 1 y
+    view transform Standard, el PNG sale con el MISMO hex: el modo toon lo
+    necesita para que la paleta no se corra ni un punto."""
+    h = h.lstrip("#")
+    out = []
+    for i in (0, 2, 4):
+        c = int(h[i:i + 2], 16) / 255.0
+        out.append(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4)
+    return (*out, 1.0)
 
 
 def px_to_world(px, py):
@@ -153,7 +179,8 @@ def card_obj(name, image, w, radius_frac=0.0, depth=0.0, emit=1.0):
     o = bpy.data.objects.new(name, mesh)
     bpy.context.collection.objects.link(o)
 
-    mat, strength = image_emissive(name + "Mat", img, emit)
+    # En toon la textura sale a fuerza 1: arriba de 1 se queman los colores.
+    mat, strength = image_emissive(name + "Mat", img, 1.0 if TOON else emit)
     o.data.materials.append(mat)
     if depth > 0:
         s = o.modifiers.new("D", "SOLIDIFY")
@@ -204,7 +231,25 @@ def set_blend(mat):
         mat.show_transparent_back = False
 
 
-def solid(name, color, rough=0.35, metallic=0.0, emit=0.0):
+def flat(name, color, cull=False):
+    """Color plano: emisión pura a fuerza 1, opaca. No ve luces, así que no hay
+    degradado posible: el hex entra y el hex sale."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    nt.nodes.clear()
+    emi = nt.nodes.new("ShaderNodeEmission")
+    emi.inputs["Color"].default_value = color
+    emi.inputs["Strength"].default_value = 1.0
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    nt.links.new(emi.outputs["Emission"], out.inputs["Surface"])
+    mat.use_backface_culling = cull
+    return mat
+
+
+def solid(name, color, rough=0.35, metallic=0.0, emit=0.0, hex_=None):
+    if TOON:
+        return flat(name, srgb(hex_) if hex_ else color)
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     b = mat.node_tree.nodes["Principled BSDF"]
@@ -254,7 +299,7 @@ def build_camera():
     cd.type = "PERSP"
     cd.sensor_fit = "HORIZONTAL"
     cd.angle = 2 * math.atan((PLANE_W / 2) / CAM_D)
-    cd.dof.use_dof = True
+    cd.dof.use_dof = not TOON          # toon: sin desenfoque de profundidad
     cd.dof.focus_distance = CAM_D
     cd.dof.aperture_fstop = CFG["camera"]["fstop"]
 
@@ -437,7 +482,7 @@ def build_button():
     sol.offset, sol.use_rim = 1, True
     sol.material_offset_rim = 1
     o.data.materials.append(solid("BtnSide", hex_rgb(bc["color"]),
-                                  rough=0.26, emit=0.5))
+                                  rough=0.26, emit=0.5, hex_=bc["color"]))
 
     # El botón no existe durante el acto 1: sin esto se ve flotando sobre los
     # títulos, porque una fcurve extrapola su primer valor hacia atrás.
@@ -477,10 +522,41 @@ def build_button():
     return o, (cx, cy)
 
 
+def build_shadow_toon(origin):
+    """Sombra dura de la marca (`8px 8px 0`): la silueta del botón en tinta
+    sólida, pegada a la página y desplazada en diagonal. Sin gradiente ni
+    alpha: aparece con el botón y se aleja de él conforme sube."""
+    bc = CFG["button"]
+    _, _, w, h = bc["rect_px"]
+    bw, bh = px_size(w, h)
+    cx, cy = origin
+    mesh = rounded_rect_mesh("ShadowM", bw, bh, bh * bc["radius_px"] / h)
+    s = bpy.data.objects.new("Shadow", mesh)
+    bpy.context.collection.objects.link(s)
+    s.data.materials.append(flat("ShadowMat", srgb(TC["ink"])))
+    s.location = (cx, cy, 0.006)
+
+    dx, dy = TC["shadow_offset"]
+    a, z = B["button_pop"]
+    for i in (0, 1):
+        key(s, "scale", a, 1.0, index=i)
+        key(s, "scale", z, 1.16, index=i, interp="BACK", easing="EASE_OUT")
+    key(s, "location", a, cx, index=0)
+    key(s, "location", z, cx + dx, index=0, interp="BACK", easing="EASE_OUT")
+    key(s, "location", a, cy, index=1)
+    key(s, "location", z, cy + dy, index=1, interp="BACK", easing="EASE_OUT")
+    ca, cz = B["clear"]
+    key(s, "location", ca, 0.006, index=2)
+    key(s, "location", cz, -6.0, index=2, interp="BEZIER", easing="EASE_IN")
+    only_between(s, a, cz)
+
+
 def build_shadow(origin):
     """La página es emisión pura: no recibe luz, así que no puede recibir una
     sombra real. Este blob radial es lo único que hace leer al botón como objeto
     despegado y no como calcomanía flotante."""
+    if TOON:
+        return build_shadow_toon(origin)
     bc = CFG["button"]
     _, _, w, h = bc["rect_px"]
     bw, bh = px_size(w, h)
@@ -570,13 +646,17 @@ def build_shockwave(origin):
     cr.elements[1].color = (0, 0, 0, 1)
     peak = cr.elements.new(0.045)
     peak.color = (1, 1, 1, 1)
+    if TOON:
+        # Anillo de borde duro: sin interpolación entre paradas.
+        cr.interpolation = "CONSTANT"
     op = nt.nodes.new("ShaderNodeValue")
     mul = nt.nodes.new("ShaderNodeMath"); mul.operation = "MULTIPLY"
     mix = nt.nodes.new("ShaderNodeMixShader")
     trans = nt.nodes.new("ShaderNodeBsdfTransparent")
     emi = nt.nodes.new("ShaderNodeEmission")
-    emi.inputs["Color"].default_value = hex_rgb("#C9AEFF")
-    emi.inputs["Strength"].default_value = 2.2
+    shock_hex = (TC["shock_color"] or CFG["button"]["color"]) if TOON else "#C9AEFF"
+    emi.inputs["Color"].default_value = srgb(shock_hex) if TOON else hex_rgb(shock_hex)
+    emi.inputs["Strength"].default_value = 1.0 if TOON else 2.2
     out = nt.nodes.new("ShaderNodeOutputMaterial")
 
     nt.links.new(coord.outputs["Generated"], remap.inputs["Vector"])
@@ -595,9 +675,12 @@ def build_shockwave(origin):
     for i in (0, 1):
         key(o, "scale", a, 0.25, index=i)
         key(o, "scale", z, 2.0, index=i, interp="BEZIER", easing="EASE_OUT")
-    key_socket(mat, op.outputs[0], a, 0.0)
-    key_socket(mat, op.outputs[0], a + 3, 0.55)
-    key_socket(mat, op.outputs[0], z, 0.0, easing="EASE_IN")
+    if TOON:
+        op.outputs[0].default_value = 1.0      # opaco: entra y sale por corte
+    else:
+        key_socket(mat, op.outputs[0], a, 0.0)
+        key_socket(mat, op.outputs[0], a + 3, 0.55)
+        key_socket(mat, op.outputs[0], z, 0.0, easing="EASE_IN")
     only_between(o, a, z)
 
 
@@ -687,7 +770,8 @@ def build_cursor():
     m = c.modifiers.new("D", "SOLIDIFY"); m.thickness, m.offset = 0.11, 0
     b = c.modifiers.new("B", "BEVEL"); b.width, b.segments = 0.016, 3
     c.data.materials.append(solid("CursorMat", hex_rgb(CFG["cursor"]["color"]),
-                                  rough=0.22, emit=0.15))
+                                  rough=0.22, emit=0.15,
+                                  hex_=CFG["cursor"]["color"]))
 
     path = [px_to_world(*p) for p in CFG["cursor"]["path_px"]]
     a, z = B["cursor_in"]
@@ -940,6 +1024,68 @@ def build_scene_share():
     scene_title("share_title", "assets/t5.png", cfg["title_width"], cfg["title_y"])
 
 
+# Lo que se despega de la página lleva contorno. Los títulos y la marca no: son
+# planos con alpha y el contorno dibujaría el rectángulo, no las letras.
+OUTLINED = ("Button", "Cursor", "Card", "AgentPanel", "Tool", "AgentFile",
+            "Chan", "FleetFile", "SharePill", "ShareCopy")
+
+
+def outline_targets():
+    return [o for o in bpy.data.objects
+            if o.type == "MESH" and o.name.startswith(OUTLINED)]
+
+
+def outline_hull(objs):
+    """Casco invertido: un Solidify más grande, con normales volteadas y un
+    material de tinta con backface culling. Sólo se ve la cara trasera del
+    casco, que asoma alrededor de la silueta: contorno grueso, determinista y
+    gratis. El grosor va en unidades de mundo."""
+    ink = flat("Ink", srgb(TC["ink"]), cull=True)
+    for o in objs:
+        o.data.materials.append(ink)
+        # Los materiales con alpha no deben dejar ver el casco por detrás.
+        for m in o.data.materials:
+            if m and m != ink:
+                m.use_backface_culling = True
+        hull = o.modifiers.new("Outline", "SOLIDIFY")
+        hull.thickness = TC["outline_width"]
+        hull.offset = 1.0
+        hull.use_even_offset = True
+        hull.use_flip_normals = True
+        hull.use_rim = False
+        hull.material_offset = len(o.data.materials) - 1
+
+
+def outline_lineart(objs):
+    """Contorno con Line Art de Grease Pencil: un solo objeto GP saca la
+    silueta de todos los objetos de la colección `Outline`, con oclusión real.
+    Más caro que el casco, pero el grosor es de pantalla y sirve con planos
+    sin grosor."""
+    col = bpy.data.collections.new("Outline")
+    bpy.context.scene.collection.children.link(col)
+    for o in objs:
+        col.objects.link(o)
+    gp = bpy.data.grease_pencils.new("Lineart")
+    ob = bpy.data.objects.new("Lineart", gp)
+    bpy.context.scene.collection.objects.link(ob)
+    mat = bpy.data.materials.new("InkGP")
+    bpy.data.materials.create_gpencil_data(mat)
+    mat.grease_pencil.color = srgb(TC["ink"])
+    gp.materials.append(mat)
+    lay = gp.layers.new("Lines")
+    lay.use_lights = False
+    lay.frames.new(1)
+    la = ob.modifiers.new("Lineart", "LINEART")      # en 5.2: "LINEART"
+    la.source_type = "COLLECTION"
+    la.source_collection = col
+    la.target_layer = "Lines"
+    la.target_material = mat
+    la.radius = TC["lineart_radius"]
+    la.use_crease = False
+    la.use_intersection = False
+    return ob
+
+
 def setup_glow(sc):
     """Bloom. Dejó de ser opción del motor en EEVEE Next y vive en el
     compositor; en Blender 5 el árbol además se mudó a un node group y los
@@ -1000,15 +1146,26 @@ def configure_render():
             if hasattr(getattr(sc, "eevee", None), attr):
                 setattr(sc.eevee, attr, val)
 
-    if r.get("motion_blur"):
+    if TOON:
+        # Sin oclusión ambiental ni trazado de rayos: todo es emisión plana.
+        for attr in ("use_gtao", "use_raytracing"):
+            if hasattr(getattr(sc, "eevee", None), attr):
+                setattr(sc.eevee, attr, False)
+        sc.render.dither_intensity = 0.0   # sin ruido: el hex sale exacto
+
+    if r.get("motion_blur") and not TOON:
         sc.render.use_motion_blur = True
         if hasattr(sc.render, "motion_blur_shutter"):
             sc.render.motion_blur_shutter = 0.45
 
-    if not os.environ.get('NOGLOW'):
+    if not os.environ.get('NOGLOW') and not TOON:
         setup_glow(sc)
 
     sc.render.image_settings.file_format = "PNG"
+    if TOON:
+        sc.view_settings.view_transform = "Standard"
+        sc.view_settings.look = "None"
+        return
     names = [v.identifier for v in
              sc.view_settings.bl_rna.properties["view_transform"].enum_items]
     sc.view_settings.view_transform = "AgX" if "AgX" in names else "Filmic"
@@ -1018,7 +1175,8 @@ def configure_render():
 
 def main():
     reset()
-    build_lights()
+    if not TOON:                       # toon es emisión pura: no hay luces
+        build_lights()
     only = set(os.environ.get("ONLY", "").split(",")) - {""}
     want = lambda n: not only or n in only
 
@@ -1047,10 +1205,13 @@ def main():
     if want("end"):
         build_end()
     build_camera()
+    if TOON:
+        (outline_lineart if TC["outline"] == "lineart" else outline_hull)(
+            outline_targets())
     configure_render()
 
     sc = bpy.context.scene
-    out = os.path.join(ROOT, CFG["render"]["out_dir"])
+    out = os.environ.get("OUT") or os.path.join(ROOT, CFG["render"]["out_dir"])
 
     if os.environ.get("PREVIEW"):
         sc.render.resolution_percentage = 40
@@ -1073,7 +1234,8 @@ def main():
         bpy.ops.render.render(animation=True)
         print(f"[ok] frames {sc.frame_start}-{sc.frame_end} -> {out}/frames")
 
-    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(ROOT, "scene.blend"))
+    if not os.environ.get("OUT"):
+        bpy.ops.wm.save_as_mainfile(filepath=os.path.join(ROOT, "scene.blend"))
 
 
 main()

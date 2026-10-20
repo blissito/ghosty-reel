@@ -27,6 +27,10 @@ El contrato de una receta está en `MOLDE.md`. Hoja de contactos: `GALERIA.png`.
 | `word-karaoke-panel` | párrafo que se enciende por palabra en un panel con etiqueta | disclaimer |
 | `stacked-boxes` | cajas con `back.out` apiladas sobre guías | "Prod / Not God" |
 | `dither-corners` | textura half-tone en esquinas, modos `dots` y `noise` | fondo rosa de las tarjetas |
+| `on-twos` | personaje con poses a 12 fps (reloj cuantizado) y cámara/parallax fluidos a 30/60 | investigación motion 20 oct (técnica 5) |
+| `squash-hop` | objeto que salta con anticipación, squash & stretch y overshoot; sombra del piso y sombra dura que dicen la altura; `__sfxCues` | investigación motion 20 oct (técnicas 2–4) |
+| `smear-dash` | objeto que cruza con smear de 1–2 cuadros, múltiplos y líneas de velocidad en vez de blur; frenón con `back.out` | investigación motion 20 oct (técnica 6) |
+| `toon-object` | objeto 3D (caja de regalo) en three.js: toon de 2–3 tonos, contorno por casco invertido, sombra dura plana, salto con squash y overshoot | investigación motion 20 oct (3D toon en HTML) |
 
 Las captions cinéticas, scrambles y cortinillas de texto ya están en `../motion-anything/`.
 
@@ -36,6 +40,26 @@ Las captions cinéticas, scrambles y cortinillas de texto ya están en `../motio
 - Fotograma 0 completo y fondo `--bg` de la paleta (FixterGeek `#0E1317` / EasyBits `#0b0b0f`), nunca `#000`.
 - Un SFX por movimiento, montado con ffmpeg fuera del render; cada `SKILL.md` sugiere cuáles y en qué instante.
 - Render: `npx hyperframes render . -c preview.html -o preview.mp4` (el CLI toma un directorio; `-c` elige la composición).
+
+## Ritmo al beat: `_lib/beat-snap.js` (y `_lib/beat_snap.py`)
+La palabra decide **qué** entra; el beat decide **cuándo** exacto. `snap()` mueve un inicio al beat (o a la palabra)
+más cercano sólo si cae a ≤ `maxShift` (0.12 s); si no, lo deja. Con `impact` alinea el golpe visible, no el inicio
+(`back.out(s)` → `1/(s+1)` del tween). Redondea al cuadro (30 fps).
+
+```html
+<script src="../_lib/beat-snap.js"></script>   <!-- o copiar el archivo junto a la composición -->
+<script>
+  const beats = BeatSnap.grid({ bpm: 112, offset: 0.21, subdiv: 2, duration: 30 }); // o BeatSnap.beats(detectados)
+  const words = BeatSnap.words(TRANSCRIPT);   // JSON de `npx hyperframes transcribe … --json`
+  // 1) un tiempo suelto: entra con la palabra «agente» y se afina a la corchea
+  T.leap = BeatSnap.snap(BeatSnap.wordAt(words, "agente"), { beats });
+  // 2) toda la timeline ya armada: cada tween se corre al beat; los back.out(s) alinean su golpe
+  BeatSnap.snapTimeline(tl, { beats, maxShift: 0.1 });
+  // 3) pegar a palabras en vez de beats: { words, to: "word" }  ·  a lo que esté más cerca: { beats, words, to: "both" }
+</script>
+```
+En `plan.py` (SFX derivados de beats): `sys.path.insert(0, "skills/motion-lab/_lib"); from beat_snap import grid, words, word_at, snap`
+— mismo contrato (`max_shift`, `impact`, `duration`, `to`), así imagen y sonido se ajustan con la misma regla.
 
 ## Trampas aprendidas (valen para cualquier composición)
 - El renderizador lee el `data-duration` **estático** del HTML; ponerlo desde JS deja cuadros negros al final.
