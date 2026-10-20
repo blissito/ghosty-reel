@@ -15,6 +15,7 @@
          rellena de --bg con un trazo grueso; pasada de relleno = la forma sin trazo encima. Así las piezas
          que se tocan funden su silueta (una sola línea exterior, sin dobles líneas) */
       .pc { fill: var(--sh, var(--fc, var(--c))); stroke: var(--sh, var(--oc, none)); stroke-width: var(--ow, 0px); stroke-linejoin: round; stroke-linecap: round; }
+      .ar { fill: none; stroke: var(--sh, var(--lc, var(--c))); stroke-width: calc(var(--aw, 26px) + var(--ow, 0px)); stroke-linejoin: round; stroke-linecap: round; }
       .lg { fill: none; stroke: var(--sh, var(--lc, var(--c))); stroke-width: var(--lw, 16px); stroke-linejoin: round; stroke-linecap: round; }
       .ol { --fc: var(--bg); --oc: var(--bg); --ow: 18px; --lc: var(--bg); --lw: 34px; }
       /* detalles interiores: trazo delgado, nunca entran a la silueta */
@@ -61,9 +62,15 @@
                     <use href="#ubShapes" class="ol" x="2.5" y="3" />
                     <use href="#ubShapes" class="ol" />
                     <g id="ubShapes">
+                      <!-- brazo lejano (detrás del torso y de la cabeza; es el que saluda): su silueta se funde con el tronco -->
                       <g id="armFar" style="--c: var(--muted)">
-                        <rect class="pc" x="-13" y="-212" width="26" height="92" rx="13" />
-                        <circle class="pc" cx="0" cy="-116" r="16" />
+                        <path id="armFarU" class="ar" d="M0 -214 L0 -144" />
+                        <path id="armFarF" class="ar" style="--aw: 24px" d="M0 -144 L0 -74" />
+                        <g id="handFar">
+                        <ellipse class="pc" cx="13" cy="2" rx="8" ry="10" />
+                        <rect class="pc" x="-15" y="-22" width="30" height="36" rx="14" />
+                        <path class="dl" style="--c: var(--bg)" d="M-5 -16 v10 M5 -16 v10" />
+                        </g>
                       </g>
                       <!-- mochila: dice «la espalda está a la izquierda» -->
                       <rect class="pc" style="--c: var(--muted)" x="-72" y="-208" width="32" height="74" rx="10" />
@@ -93,8 +100,8 @@
                         <!-- costura del casco (interior fino) -->
                         <path id="seam" class="dl" style="--c: var(--bg); stroke-width: 4px" d="M-14 -334 q-8 44 0 88" />
                       </g>
-                      <rect class="dt" style="--c: var(--bg)" x="17" y="-186" width="27" height="30" rx="8" />
-                      <path class="dl" style="--c: var(--accent2)" d="M20 -171 h3 l4 -7 l4 14 l4 -7 h3" />
+                      <rect class="dt" style="--c: var(--bg)" x="17" y="-192" width="27" height="30" rx="8" />
+                      <path class="dl" style="--c: var(--accent2)" d="M20 -177 h3 l4 -7 l4 14 l4 -7 h3" />
                     </g>
                   </g>
                   <!-- pierna cercana (delante del torso) -->
@@ -104,19 +111,20 @@
                     <path id="legNearP" class="lg" d="M0 -98 L0 -14" />
                     <g id="bootNear"><path class="pc" d="M-16 -20 h32 a20 20 0 0 1 20 20 h-52 z" /></g>
                   </g>
-                  <!-- brazo cercano (delante de todo; es el que saluda) -->
+                  <!-- brazo cercano (lado de la cámara, delante de todo): sólo camina, en contrafase a las piernas -->
                   <g id="upperFront">
-                   <g id="shoulderNear">
                     <use href="#armNear" class="ol" x="2.5" y="3" />
                     <use href="#armNear" class="ol" />
                     <g id="armNear" style="--c: var(--accent2)">
-                      <rect class="pc" x="-13" y="-212" width="26" height="66" rx="13" />
-                      <g id="foreNear">
-                        <rect class="pc" x="-12" y="-170" width="24" height="58" rx="12" />
-                        <circle class="pc" cx="0" cy="-112" r="16" />
+                      <path id="armNearU" class="ar" d="M-24 -200 L-24 -130" />
+                      <path id="armNearF" class="ar" style="--aw: 24px" d="M-24 -130 L-24 -60" />
+                      <g id="handNear">
+                        <!-- manopla: palma redondeada + pulgar; apunta hacia -y en su marco -->
+                        <ellipse class="pc" cx="13" cy="2" rx="8" ry="10" />
+                        <rect class="pc" x="-15" y="-22" width="30" height="36" rx="14" />
+                        <path class="dl" style="--c: var(--bg)" d="M-5 -16 v10 M5 -16 v10" />
                       </g>
                     </g>
-                   </g>
                   </g>
                 </g>
               </g>
@@ -145,12 +153,13 @@
         duty: 0.55,                  // fracción del ciclo con el pie en el piso (>0.5 = doble apoyo, caminata y no carrera)
         bob: 4,                      // px extra de bajada tras el contacto (el sube-y-baja grande sale solo del compás de la pierna)
         kneeFlex: 50,                // grados que se dobla la rodilla en el aire (el pie sube solo, la espinilla nunca horizontal)
-        armSwing: 20,                // grados de vaivén de brazos (en contrafase a las piernas)
+        armSwing: 16,                // grados de vaivén de brazos (en contrafase a las piernas)
         groundOnTwos: true,          // piso y postes a charFps junto al personaje: el pie no patina entre poses
         camZoom: 1.06,               // escala final de la cámara (dolly suave)
-        wave: { at: 2.4, times: 3, upper: -110, fore: -36, turn: -4, shoulder: 2 }, // saluda con el brazo cercano N veces (bucle finito) sin dejar de caminar: brazo arriba y adelante, mano delante del visor sin taparlo (el hombro se adelanta a `shoulder`); turn = visor a 3/4
+        wave: { at: 2.4, times: 3, upper: -142, fore: -162, swing: 20, turn: -8 }, // saluda con el brazo cercano N veces (bucle finito) sin dejar de caminar: con el brazo LEJANO, que sube por detrás del hombro y deja la manopla sobre la cabeza (upper/fore = ángulos desde la vertical hacia abajo, negativo = hacia atrás; ±180 = arriba), meneándose ±swing° alrededor del codo; turn = visor a 3/4
         blinkAt: 1.5,                // parpadeo (s)
       };
+      const ARM = { upper: 64, fore: 64 }; // largo FIJO de brazo y antebrazo (iguales al caminar y al saludar)
       const PALETTES = {
         fixtergeek: { bg: "#0E1317", ink: "#F2F5F4", accent: "#85DDCB", accent2: "#8DCF6E", muted: "#7C8A8E" },
         easybits:   { bg: "#0b0b0f", ink: "#ffffff", accent: "#7c3aed", accent2: "#fbbf24", muted: "#8a8a99" },
@@ -235,8 +244,8 @@
         return { hy, d: `M0 ${hy.toFixed(2)} L${kx.toFixed(2)} ${ky.toFixed(2)} L${ax.toFixed(2)} ${ay.toFixed(2)}`, ax, ay, th, sh };
       };
       const legNearP = document.getElementById("legNearP"), legFarP = document.getElementById("legFarP");
-      gsap.set(["#armNear", "#armFar"], { rotation: 0, svgOrigin: "0 -200" });
-      gsap.set("#foreNear", { rotation: 0, svgOrigin: "0 -158" });
+      const armFarU = document.getElementById("armFarU"), armFarF = document.getElementById("armFarF"), handFar = document.getElementById("handFar");
+      const armNearU = document.getElementById("armNearU"), armNearF = document.getElementById("armNearF"), handNear = document.getElementById("handNear");
       gsap.set("#antenna", { rotation: 0, svgOrigin: "-12 -330" });
       gsap.set("#head", { rotation: 0, svgOrigin: "2 -246" });
 
@@ -247,13 +256,11 @@
       ch.set(W, { amt: 0, wig: 0 }, 0)
         .set("#eyesOpen", { scaleY: 1, opacity: 1, svgOrigin: "37 -294" }, 0)
         .set("#eyesHappy", { opacity: 0 }, 0)
-        .set(["#visor", "#seam"], { x: 0 }, 0)
-        .set("#shoulderNear", { x: -18 }, 0); // hombro cercano atrás: al caminar el brazo no cruza la pantalla del pecho
+        .set(["#visor", "#seam"], { x: 0 }, 0);
       ch.to(W, { amt: 1, duration: 0.25, ease: "back.out(2)" }, wAt)
-        .fromTo(W, { wig: -10 }, { wig: 10, duration: 0.18, ease: "sine.inOut", yoyo: true, repeat: wReps }, wAt + 0.25)
-        .to("#head", { rotation: -7, duration: 0.25, ease: "power2.out" }, wAt)
-        .to("#shoulderNear", { x: PARAMS.wave.shoulder, duration: 0.25, ease: "back.out(2)" }, wAt)
-        .to("#visor", { x: PARAMS.wave.turn, duration: 0.25, ease: "power2.out" }, wAt) // visor a 3/4: mira a cámara
+        .fromTo(W, { wig: -PARAMS.wave.swing }, { wig: PARAMS.wave.swing, duration: 0.18, ease: "sine.inOut", yoyo: true, repeat: wReps }, wAt + 0.25)
+        .to("#head", { rotation: -4, duration: 0.25, ease: "power2.out" }, wAt)
+                .to("#visor", { x: PARAMS.wave.turn, duration: 0.25, ease: "power2.out" }, wAt) // visor a 3/4: mira a cámara
         .to("#seam", { x: PARAMS.wave.turn * 0.6, duration: 0.25, ease: "power2.out" }, wAt)
         .set("#eyesOpen", { opacity: 0 }, wAt + 0.08).set("#eyesHappy", { opacity: 1 }, wAt + 0.08);
       ch.to("#eyesOpen", { scaleY: 0.12, duration: 0.08, ease: "power1.in", yoyo: true, repeat: 1 }, PARAMS.blinkAt);
@@ -268,11 +275,22 @@
         gsap.set("#bootFar", { x: F.ax, y: F.ay + ANKLE });
         gsap.set(["#upperBack", "#upperFront"], { y: N.hy + HIP0 });
         // brazos en contrafase: el cercano va con la pierna lejana (negativo = hacia adelante)
-        const walkNear = -PARAMS.armSwing * Math.sin(F.th) / Math.sin(35 * D2R), walkFar = -PARAMS.armSwing * Math.sin(N.th) / Math.sin(35 * D2R);
-        const k = W.amt;
-        gsap.set("#armNear", { rotation: walkNear + (PARAMS.wave.upper - walkNear) * k });
-        gsap.set("#foreNear", { rotation: -12 + (PARAMS.wave.fore + W.wig + 12) * k });
-        gsap.set("#armFar", { rotation: walkFar });
+        // brazos en contrafase: el cercano va con la pierna lejana (ángulos desde la vertical, positivo = adelante)
+        const swingNear = PARAMS.armSwing * Math.sin(F.th) / Math.sin(35 * D2R), swingFar = PARAMS.armSwing * Math.sin(N.th) / Math.sin(35 * D2R);
+        const k = W.amt, wv = PARAMS.wave;
+        // brazo de dos segmentos de largo fijo: hombro (sx, sy), ángulos desde la vertical hacia abajo (positivo = adelante)
+        const drawArm = (U, Fp, hand, sx, sy, thU, thF) => {
+          const ex = sx + ARM.upper * Math.sin(thU), ey = sy + ARM.upper * Math.cos(thU);
+          const hx = ex + ARM.fore * Math.sin(thF), hy = ey + ARM.fore * Math.cos(thF);
+          U.setAttribute("d", `M${sx.toFixed(2)} ${sy} L${ex.toFixed(2)} ${ey.toFixed(2)}`);
+          Fp.setAttribute("d", `M${ex.toFixed(2)} ${ey.toFixed(2)} L${hx.toFixed(2)} ${hy.toFixed(2)}`);
+          hand.setAttribute("transform", `translate(${hx.toFixed(2)} ${hy.toFixed(2)}) rotate(${(180 - thF / D2R).toFixed(2)})`);
+        };
+        // cercano: siempre caminando, colgado del hombro de atrás (x −24: no cruza la pantalla del pecho)
+        drawArm(armNearU, armNearF, handNear, -24, -200, swingNear * D2R, (swingNear + 6) * D2R);
+        // lejano: contrafase al caminar; al saludar sube hacia ATRÁS (por detrás del hombro) hasta dejar la mano sobre la cabeza
+        const mix = (a, b) => a + (b - a) * k;
+        drawArm(armFarU, armFarF, handFar, -12, -224, mix(swingFar, wv.upper) * D2R, mix(swingFar + 12, wv.fore + W.wig) * D2R);
         // follow-through: la antena va un poco detrás del bob
         gsap.set("#antenna", { rotation: 12 * bobAt(p - 0.08) });
       };

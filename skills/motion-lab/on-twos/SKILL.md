@@ -54,10 +54,11 @@ suave. El pie apoyado se queda pegado al piso: el ciclo de paso sale de la veloc
 | duty | 0–1 | 0.55 | fracción del ciclo con el pie en el piso (>0.5 = doble apoyo: caminata) |
 | bob | px | 4 | bajada extra tras el contacto (el sube-y-baja grande sale solo: la cadera nunca queda más lejos del pie apoyado que la pierna casi estirada) |
 | kneeFlex | ° | 50 | doblez de rodilla en el aire (el pie sube solo; espinilla nunca horizontal) |
-| armSwing | ° | 20 | vaivén de brazos |
+| armSwing | ° | 16 | vaivén de brazos |
 | groundOnTwos | bool | true | piso y postes a charFps junto al personaje (sin esto el pie patina hasta v/charFps px entre poses) |
 | camZoom | number | 1.06 | dolly de la cámara (`sine.inOut`) |
-| wave | {at, times, upper, fore, turn, shoulder} | 2.4 / 3 / −110 / −36 / −4 / 2 | saludo con el brazo cercano (dos huesos) sin dejar de caminar, N veces (finito); el hombro se adelanta, la mano queda delante sin tapar visor ni pecho; turn = visor a 3/4 hacia cámara |
+| wave | {at, times, upper, fore, swing, turn} | 2.4 / 3 / −142 / −162 / 20 / −8 | saludo con el brazo LEJANO (detrás del torso): sube por detrás del hombro y la manopla asoma sobre la cabeza junto a la antena, ±swing° alrededor del codo, N vaivenes; el cercano sigue caminando; turn = visor a 3/4 |
+| ARM (constante) | px | 64 / 64 | largo de brazo y antebrazo, fijo en todos los cuadros (sin estirar) |
 | blinkAt | s | 1.5 | parpadeo |
 
 ## SFX sugerido
@@ -80,6 +81,15 @@ suave. El pie apoyado se queda pegado al piso: el ciclo de paso sale de la veloc
   y el pie apoyado se mueve a la velocidad del piso, si no, patina.
 - Con el piso fluido a 30 fps y el personaje a 12 el pie patina hasta `v/charFps` px (≈19 px) dentro de cada pose:
   por eso la capa de contacto (piso, postes) va en la misma rejilla y lo fluido son cámara, nubes y cerros.
+- v7 (20 oct): la v6 estiró el mismo brazo (telescópico) y bliss la rechazó: «saluda con la OTRA mano». Saluda el
+  brazo lejano, por detrás; largos fijos 64/64 (con 42/46 la mano no alcanza a pasar la cabeza). Chequeo automático
+  (`scratchpad/on-twos-v7/check.mjs`): largos ±1 px en 120 cuadros, brazo cercano sin tocar visor ni pantalla del
+  pecho, manopla del saludo sin tocar el visor y 15–29 px sobre la cabeza.
+- v6 (rechazada): el brazo salía del hombro de atrás y cruzaba el torso hasta la
+  barbilla (abrazo/rascarse). El saludo nace del hombro delantero, sube por FUERA del contorno y la manopla queda sobre
+  la cabeza; el brazo es procedural (`.ar`, grosor `calc(26px + --ow)` para que la silueta crezca con el estiramiento).
+  Chequeo automático por cuadro (puppeteer): brazo + contorno contra el bbox del torso y del visor, 0 cruces en el
+  saludo; con `fore` 170 y hombro en 54 la manopla tocaba el visor al menearse hacia atrás.
 - v4 (20 oct): con cadera fija la rodilla trasera se doblaba hasta quedar horizontal (se leía hincado). La altura de
   cadera sale del compás de la pierna apoyada (`hipAt`) y el pie en el aire se mueve por ángulos, no por IK.
 - El brazo cercano cruzaba la pantalla del pecho: hombro atrás (x −18) al caminar y pantalla al frente del torso;
