@@ -17,9 +17,9 @@
   },
   "renders": {
     "latest": {
-      "id": "2ff36a88-7305-4e79-8f33-28d17fb7949f",
-      "completedAt": 1792506246119,
-      "output": "/private/tmp/claude-501/-Users-bliss-ghosty-studio/9471ce6c-87c0-48d9-a499-1a3a880dea9c/scratchpad/recetas/on-twos.mp4",
+      "id": "145c37fb-a6a3-4655-b93b-393619fe7827",
+      "completedAt": 1792507415391,
+      "output": "/private/tmp/claude-501/-Users-bliss-ghosty-studio/9471ce6c-87c0-48d9-a499-1a3a880dea9c/scratchpad/on-twos-v5/on-twos-v5.mp4",
       "status": "completed",
       "revision": null
     },

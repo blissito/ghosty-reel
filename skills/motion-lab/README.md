@@ -30,7 +30,8 @@ El contrato de una receta está en `MOLDE.md`. Hoja de contactos: `GALERIA.png`.
 | `on-twos` | personaje con poses a 12 fps (reloj cuantizado) y cámara/parallax fluidos a 30/60 | investigación motion 20 oct (técnica 5) |
 | `squash-hop` | objeto que salta con anticipación, squash & stretch y overshoot; sombra del piso y sombra dura que dicen la altura; `__sfxCues` | investigación motion 20 oct (técnicas 2–4) |
 | `smear-dash` | objeto que cruza con smear de 1–2 cuadros, múltiplos y líneas de velocidad en vez de blur; frenón con `back.out` | investigación motion 20 oct (técnica 6) |
-| `toon-object` | objeto 3D (caja de regalo) en three.js: toon de 2–3 tonos, contorno por casco invertido, sombra dura plana, salto con squash y overshoot | investigación motion 20 oct (3D toon en HTML) |
+| `camera-rig` | cámara virtual por capas: `camera.to({x, y, zoom, rot, yaw})` con parallax real por profundidad, push-in, paneo, whip-pan con smear que transmuta de escena, zoom-punch y dolly-out con corte invisible; 1080×1920 | investigación motion 20 oct (técnicas 8–9, hueco 1 de la auditoría) |
+| `toon-object` | escena 3D en three.js: caja de regalo hueca en una mesa, la tapa vuela y sale un robot que saluda; toon de 3 tonos, una silueta de tinta por objeto (redonda, interiores delgados), sombra dura gris, dolly + cambio de ángulo, titular palabra por palabra y CTA que se escribe | investigación motion 20 oct (3D toon en HTML) |
 
 Las captions cinéticas, scrambles y cortinillas de texto ya están en `../motion-anything/`.
 

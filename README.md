@@ -3,8 +3,10 @@
 Guion, voz, música, efectos, render y mezcla desde la línea de comandos. Nadie
 abre Blender, ni un editor de video, ni un DAW. Todo el stack es libre.
 
-Hay **dos motores** según lo que haya que contar: Blender headless para 3D, y
-HTML + GSAP para 2D plano. Comparten guion, voz y mezcla; cambia lo que dibuja
+Hay **dos motores**: HTML + GSAP (el que se usa por default) y Blender headless.
+**Primero GSAP**: en los shorts da mejores resultados (ritmo, texto vivo, cambios de
+dirección de cámara con `skills/motion-lab/camera-rig`). Blender, incluido el modo
+toon, es experimental: sólo para un objeto que tenga que girar en el espacio de verdad. Comparten guion, voz y mezcla; cambia lo que dibuja
 los cuadros. La tabla de cuándo usar cada uno está en
 [hooks-reel](./hooks-reel#cuándo-usar-esto-y-cuándo-blender).
 

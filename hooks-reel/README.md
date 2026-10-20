@@ -96,10 +96,12 @@ argumento de la escena.
 | | HTML + GSAP (aquí) | Blender (el resto del repo) |
 | --- | --- | --- |
 | Tipografía, diagramas, código en pantalla | ✅ | caro |
-| Profundidad, cámara, materiales | ✗ | ✅ |
+| Profundidad y cámara (parallax, dolly, whip) | ✅ con `camera-rig` | ✅ |
+| Materiales y volumen real | ✗ | ✅ |
 | Capturar una UI real en capas | ✗ | ✅ |
 | Iterar el diseño | segundos | minutos |
 | Render de 2 min en 9:16 | ~50s | mucho más |
 
-Si lo que cuentas cabe en un plano, esto es más rápido. Si algo tiene que salir
-de la pantalla o girar en el espacio, Blender.
+**Default: esto.** En los shorts GSAP con cámara por capas salió mejor que Blender,
+cuyos resultados quedaron pobres (estáticos, sin texto vivo). Blender sólo si un
+objeto tiene que girar en el espacio de verdad, y siempre con `"style": "toon"`.

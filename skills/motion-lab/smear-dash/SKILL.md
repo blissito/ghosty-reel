@@ -58,3 +58,15 @@ frena de golpe con el cuerpo hacia adelante y se asienta; luego sale disparado y
 - Sólo se apagan con un `pose` posterior: el último cuadro de un dash que sale de pantalla debe traer `ghosts: []`.
 - Giro de ruedas con valor absoluto acumulado, no `"+=540"` (relativo depende de en qué orden se inicializa al hacer seek).
 - El estirado también estira las ruedas (salen ovaladas): es correcto en smear, no corregirlo.
+
+## Línea (guía `fixter2025/docs/motion-investigacion-oct20/5-estilo-de-linea.md`)
+- Silueta UNIDA (`#carSil`: cabina + carrocería + llantas) trazada a 18 px DETRÁS del relleno → contorno de 9 px;
+  copia corrida `(2, 3)` = peso extra abajo-derecha. Todo con `vector-effect="non-scaling-stroke"`: con `scaleX 2.4`
+  el contorno sigue en 9 px.
+- Unión cabina/carrocería, manija, líneas de velocidad (cola afilada) y flecha de los letreros: pincel horneado con
+  perfect-freehand y pegado como `d` (no hierve). Sólo trazos horizontales: un pincel vertical engordaría 2.4× con el
+  smear; por eso el rayo de la rueda es `stroke` de 4.5 px con `non-scaling-stroke`.
+- Ventanas y faro: sub-objetos con contorno interior de 4.5 px, separados de la línea de unión (nada encimado).
+- La misma gramática en los tres sitios: cuadros de smear (`#carBody`), copias (`<use href="#carArt">`, con opacidad
+  de grupo, así no se ven los trazos internos) y sombra (`--sh`, ahora `--muted`). El camino pasó a `--accent` para
+  que la sombra `--muted` se lea encima; letreros con la misma silueta unida a peso de entorno (5.5 px).

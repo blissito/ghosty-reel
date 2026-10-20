@@ -60,3 +60,11 @@ un cuadro al tocar el piso y se asienta con `back.out`.
 - La x avanza lineal durante subida + caída (`ease: "none"`) y la y lleva `sine.out` / `power3.in`: así sale el arco.
   Con la misma ease en x y y el salto parece en diagonal.
 - La sombra dura es `<use href="#body">` con `--sh`: hereda el squash; su desfase se anima aparte.
+
+## Línea (guía `fixter2025/docs/motion-investigacion-oct20/5-estilo-de-linea.md`)
+- Silueta UNIDA (`#silShape`: tapa + caja) trazada a 18 px DETRÁS del relleno → contorno de 9 px sin líneas dobles;
+  copia corrida `(2, 3)` = peso extra abajo-derecha.
+- Cinta, unión tapa/caja y flecha: pincel horneado con perfect-freehand (`linea/bake-brush.mjs`) y recortado a la
+  silueta (`#silClip`); etiqueta = sub-objeto con contorno interior de 4.5 px.
+- `vector-effect="non-scaling-stroke"` en todo contorno: el squash no engorda los verticales.
+- Sombra dura y sombra del piso en `--muted`, nunca en tinta (en tinta se lee como un contorno de 20 px).
