@@ -11,6 +11,8 @@ triggers:
   - "anima a Ghosty"
   - "Ghosty con gafete / sombrero"
   - "que Ghosty entre y salga de cuadro"
+  - "Ghosty sorprendido / confundido / pensando / triste / asustado / riéndose"
+  - "que Ghosty diga sí o no, se incline, festeje, duerma, espere, trabaje o siga algo con la mirada"
 origin: rig de fixter2025/videos/ghosty-identidad (7 oct 2026) + gestos de ghosty-verificado-2 (16 oct 2026), extraído el 20 oct 2026
 ---
 
@@ -94,6 +96,36 @@ alguien pide igualarlo al PNG, se cambian esos dos `fill` en `ghosty.svg`, en ni
 | `finalize(dur)` | — | agrega el driver; devuelve `tl` |
 | `cues` | — | `[{t, sfx, gesture}]` para montar SFX |
 
+## Gestos v2 (20 oct 2026, aditivos; demo `emociones.html`, 30.2 s)
+Los gestos v1 no cambiaron: con la demo vieja, los 207 cuadros salen idénticos byte a byte antes y después.
+Todos los nuevos llevan overlap: los olanes y los lentes llegan ~0.09 s tarde a cada pose nueva.
+
+| gesto | firma | dura | emoción / para qué | cue de SFX (`rig.cues`) |
+|---|---|---|---|---|
+| `surprise` | `(t, {hold 0.7})` | ~1.1 s | sorpresa: se agacha 0.08 s, respinga hacia atrás, ojos ×1.22 con overshoot | `gasp` en t+0.08 |
+| `confused` | `(t, {hold 1.3, side "R"})` | ~1.65 s | confusión: se ladea 8°, un ojo entrecerrado con párpado inclinado, pupilas que buscan | `hmm` |
+| `think` | `(t, {hold 1.5, dir "upRight"})` | ~1.95 s | pensar: mira arriba de lado, sube y flota lento, parpadeo lento | `bubble` |
+| `sad` | `(t, {hold 1.3})` | ~1.75 s | tristeza: se encoge, párpados caídos hacia afuera, mira abajo, olanes sin vida | `deflate` |
+| `scared` | `(t, {hold 0.9})` | ~1.2 s | miedo: se encoge hacia atrás, ojos ×0.7, temblor a 12 fps | `shiver` |
+| `laugh` | `(t, {hold 1.1, beats 4})` | 1.1 s | risa: ojitos `^^`, rebotes y vaivén al ritmo | `giggle` |
+| `doubleTake` | `(t, dir, {hold 0.5})` | ~1.5 s | doble toma: mira, regresa y vuelve de golpe con ojos grandes | `tick` en t, `zip` en t+0.72 |
+| `hopAnticipated` | `(t, {h 90, dur 0.5, anticip 0.22})` | ~1.2 s | brinco con anticipación marcada (mira arriba, se agacha hondo) | `whoosh` despegue, `thud` contacto |
+| `nod` | `(t, {times 2, dur 0.7})` | 0.76 s | sí; las pupilas llegan tarde | `tock` |
+| `shake` | `(t, {times 3, dur 0.8, deg 5})` | 0.9 s | no; las pupilas hacen contra-giro con retraso | `wobble` |
+| `lean` | `(t, dir, {hold 0.9, deg 9, dx 18})` | ~1.3 s | señalar algo sin manos: contra-movimiento, se ladea con overshoot y lo mira | `slide` en t+0.08 |
+| `celebrate` | `(t, {h1 70, h2 100})` | ~1.9 s | festejo: vuelta sugerida (se angosta y las pupilas barren; nunca 360°), dos brincos, squash | `twirl`, `whoosh`, `thud`, `whoosh`, `thud`, `tada` |
+| `land` | `(t, {k 0.11})` | 0.7 s | squash de aterrizaje (tras un `moveTo` o una caída propia) | `thud` |
+| `sleep` | `(t0, t1, {amp 5, period 3})` | t1−t0 | dormido: ojos cerrados, respira, flota lento; despierta al final | `snooze` en t0+0.3, `tick` en t1−0.35 |
+| `wait` | `(t0, t1, {amp 4, period 2.4})` | t1−t0 | espera: ojos relajados, mira a los lados, parpadeo lento | `ticktock` |
+| `work` | `(t, {lines 3, lineDur 0.55})` | lines×lineDur | trabajando: lee renglones de izquierda a derecha y el cuerpo acompaña | `keys` |
+| `follow` | `(t0, t1, path, {space "canvas", reach 7})` | t1−t0 | las pupilas siguen un camino `[[x, y], …]` del lienzo (o `u → [x, y]`; `space "eye"` = px del vector); se ladea un poco hacia allá | `glance` |
+
+Piezas nuevas: los párpados superior e inferior (`gLidsL/R`) son rectángulos **del color de `gBody`**, recortados a la
+silueta del ojo y metidos en `eyeL`/`eyeR`. `rig.js` los crea sólo cuando un gesto los pide (confused, think, sad),
+así que un `<svg>` pegado de la v1 sigue sirviendo sin cambios. `GhostyRig.pathAt(pts, u)` da el mismo camino que usa
+`follow` (para mover el objetivo en la escena). `nod`, `shake` y `celebrate` fijan la pupila desde el centro: úsalos
+con la mirada al frente.
+
 ## Parámetros de `recipe.html`
 | clave | tipo | default | qué controla |
 |---|---|---|---|
@@ -110,6 +142,7 @@ alguien pide igualarlo al PNG, se cambian esos dos `fill` en `ghosty.svg`, en ni
 - `pop` del accesorio en `t + dur/3.4` (`back.out(2.4)` cruza su valor final en 1/(s+1) del tween).
 - `tick` en `blink`/`wink`, `sparkle` en `happy`, `swell` en `proud`, `aww` en `shy`, `swish` en `wave`.
 - Nunca el mismo dos veces seguidas: alterna dos `thud` y dos `whoosh`.
+- v2: los cues de cada gesto nuevo están en la tabla de «Gestos v2».
 
 ## Trampas
 - **`svgOrigin` de GSAP se mide en el `<svg>` raíz**: en ghosty-identidad funcionaba porque Ghosty tenía su propio
