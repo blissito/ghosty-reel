@@ -15,7 +15,7 @@ origin: investigación motion 20 oct 2026 (fixter2025/docs/motion-investigacion-
 
 # toon-object
 
-Cuarto con mesa: la caja tiembla, se encoge y suelta la tapa, que da una vuelta y cae en la mesa; la cámara sube
+Cuarto con mesa: la caja tiembla, se encoge y suelta la tapa, que sube en vertical, da una voltereta por encima de todo y cae en la mesa; la cámara sube
 para ver adentro (paredes con grosor, forro de otro tono, borde visible) y sale un robot estirado con overshoot,
 aterriza aplastado, la antena rebota, saluda y parpadea. A la izquierda el titular entra palabra por palabra, la
 palabra acento reacciona cuando aterriza el robot y la pastilla CTA se escribe. 6.5 s, máximo 3 cosas en movimiento.
@@ -38,28 +38,30 @@ palabra acento reacciona cuando aterriza el robot y la pastilla CTA se escribe. 
    `part(geo, toon(color), padre, { sub })`. Piezas con el mismo `sub` no llevan línea entre ellas.
 3. Animar sólo dentro de `renderAt(t)` como función pura de `t`; el DOM en la timeline GSAP.
 4. `data-duration` del HTML = `timings.total` (el adaptador `three` no infiere duración).
-5. Renderizar desde `motion-lab/` para que cargue `_lib`: `npx hyperframes render . -c toon-object/preview.html -o out.mp4`
-   (GPU del Mac: ~1 min por 6.5 s). Verificar `start_time` 0, `blackdetect`, y mirar cuadros.
+5. Si cambias medidas, `lidRest` o tiempos: `node toon-object/check-lid.mjs` (desde `motion-lab/`, ~15 s). Mide cada cuadro
+   con Box3 la tapa contra caja, mesa y robot (falla si se encajan > 1 px) y que no salga del cuadro con todo y contorno.
+6. Renderizar desde `motion-lab/` para que cargue `_lib`: `npx hyperframes render . -c toon-object/preview.html -o out.mp4`
+   (GPU del Mac: ~1 min por 6.5 s; borra el `.hyperframes/` que deja). Verificar `start_time` 0, `blackdetect`, y mirar cuadros.
 
 ## Parámetros
 | clave | tipo | default | qué controla |
 |---|---|---|---|
 | palette | "fixtergeek" \| "easybits" | fixtergeek | colores; además `wall`, `floor`, `table`, `inside`, `screen`, `shadow` (gris, no tinta), `outline` |
 | kicker, title, label | string, string[], string | … | renglón mono; titular (renglón 0 fijo en el cuadro 0, `*palabra*` = acento letra por letra); CTA |
-| gift | {w,h,wall,lidH,lidOver,ribbon} | 1.6, 0.95, 0.1, 0.3, 0.08, 0.24 | caja hueca: medidas y grosor de pared |
+| gift | {w,h,wall,lidH,lidOver,ribbon,radius,bevel} | 1.6, 0.95, 0.1, 0.3, 0.08, 0.24, 0.16, 0.03 | caja hueca: medidas, grosor de pared, radio de las esquinas en planta y bisel de los cantos |
 | table | {top,w,d,x} | 1.0, 6.4, 2.8, 0.7 | mesa |
-| lidRest | {x,z,yaw} | 2.05, −0.25, 0.35 | dónde cae la tapa (relativo a la caja) |
+| lidRest, lidApex | {x,z,yaw}, u | 2.12, −0.66, 0.45 · 0.18 | dónde cae la tapa (relativo a la caja, en su giro; la planta debe librar la caja) y cuánto sube sobre la altura mínima para girar |
 | giftYaw, botRise | rad, u | −0.45, 0.2 | giro de la caja; cuánto asoma el robot |
 | bands | number[] | [0.42, 0.72, 1.0] | luz de cada banda del toon |
 | line | {outer,env,extra,inner} | 9, 5.5, 2.5, 4.5 | px a 1280×720: silueta del protagonista, del entorno (mesa), peso extra abajo-derecha, interiores |
 | light | {x,y,z} | {−3, 7, 3} | dirección de la luz: bandas y sombra dura |
-| cam | {a,b,dolly} | … | pose de entrada, pose alta (se cruza al abrir la caja) y dolly continuo |
+| cam | {a,b,dolly,follow} | … | pose de entrada, pose alta (se cruza al abrir la caja), dolly continuo y cuánto sube la mirada con la tapa |
 | beat | {bpm,offset,subdiv} | 120, 0, 2 | rejilla de BeatSnap para `lidPop`, `robotPop`, `accent`, `wave`, `label` (null = no pegar) |
-| timings | s | words .15 · rumble .85 · lidPop 1.5 · lidLand 2.1 · robotPop 2.25 · robotSettle/accent 2.75 · wave 3.25–4.55 · label 3.5 · blink 5.1 · total 6.5 | |
+| timings | s | words .15 · rumble .85 · lidPop 1.5 · lidLand 2.2 · robotPop 2.25 · robotSettle/accent 2.75 · wave 3.25–4.55 · label 3.5 · blink 5.1 · total 6.5 | |
 
 ## SFX sugerido
 - `rumble` (0.85–1.4 s): traqueteo de cartón corto, sube de volumen.
-- `lidPop` (1.5 s): pop de corcho; whoosh mientras gira; `lidLand` (2.1 s): toc de cartón con un rebote.
+- `lidPop` (1.5 s): pop de corcho; whoosh mientras gira; `lidLand` (2.2 s): toc de cartón con un rebote.
 - `robotPop` (2.25 s): boing de resorte; el golpe visible de `back.out(1.6)` cae en 1/(1.6+1) ≈ 38 % de 0.5 s → 2.44 s.
 - `robotSettle` (2.75 s): clonc metálico suave + «pip» de la antena; `accent`: ding corto.
 - `wave` (3.25 s): chirrido de servo; `label`: click + ticks cada 0.035 s; `blink` (5.1 s): bip.
@@ -80,4 +82,10 @@ palabra acento reacciona cuando aterriza el robot y la pastilla CTA se escribe. 
 - Build UMD `three@0.160.0` (`window.THREE`), que es donde el adaptador `three` busca el `DefaultLoadingManager`.
 - El canvas se dibuja desde el evento `hf-seek` y desde un tween de reloj; ambos llaman `renderAt(t)` puro.
 - Cuadro 0: cuarto, mesa, caja cerrada y primer renglón del titular (miniatura completa).
-- Pendiente: esquinas redondeadas en el relleno (BoxGeometry es recta; la silueta sí sale redonda).
+- El relleno también va redondo: `roundedSlab` (ExtrudeGeometry de un rectángulo de esquinas redondas con bisel compensado);
+  con BoxGeometry la silueta sale redonda pero el relleno queda en pico.
+- La tapa no gira donde pueda rozar: sube en vertical (parábola) hasta que su radio de voltereta (medido de la geometría,
+  con moño) libra el borde de la caja y la cabeza del robot más el contorno; gira 2π sobre su centro sólo arriba de esa
+  altura y baja cuando su planta ya no pisa la de la caja. El temblor inclina caja y tapa juntas (`shake`).
+- Las cintas de la tapa son UNA pieza (mismo `sub`) y no pasan por debajo: si no, al voltear se ve el cruce con línea y
+  parpadeo de profundidad.

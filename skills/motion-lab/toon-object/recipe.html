@@ -45,9 +45,10 @@
         title: ["Tu agente,", "listo para", "*trabajar*"],
         label: "Arma el tuyo en fixtergeek.com",   // pastilla CTA con typewriter ("" = ninguna)
         // caja de regalo HUECA: paredes con grosor, interior de otro tono y tapa aparte
-        gift: { w: 1.6, h: 0.95, wall: 0.1, lidH: 0.3, lidOver: 0.08, ribbon: 0.24 },
+        gift: { w: 1.6, h: 0.95, wall: 0.1, lidH: 0.3, lidOver: 0.08, ribbon: 0.24, radius: 0.16, bevel: 0.03 },
         table: { top: 1.0, w: 6.4, d: 2.8, x: 0.7 },  // mesa: altura, medidas y centro en x (la caja vive en x=0)
-        lidRest: { x: 2.05, z: -0.25, yaw: 0.35 },      // dónde cae la tapa sobre la mesa (relativo a la caja)
+        lidRest: { x: 2.12, z: -0.66, yaw: 0.45 },       // dónde cae la tapa sobre la mesa (relativo a la caja, en su giro)
+        lidApex: 0.18,               // cuánto sube la tapa por encima de la altura mínima para girar sin rozar
         giftYaw: -0.45,              // giro de la caja en Y (rad)
         botRise: 0.2,                // cuánto asoma el robot sobre su posición de pie (los pies quedan dentro)
         bands: [0.42, 0.72, 1.0],    // 2–3 tonos del toon (luz en cada banda, 0–1)
@@ -58,15 +59,16 @@
         // cámara: pose A (entrada) → pose B (más alta, para ver dentro de la caja); dolly = acercamiento continuo
         cam: {
           a: { pos: [-1.2, 3.1, 10.6], look: [-1.75, 1.55, 0] },
-          b: { pos: [1.3, 6.4, 9.8], look: [-1.0, 1.35, 0] },
+          b: { pos: [1.3, 6.4, 9.8], look: [-0.8, 1.35, 0] },
           dolly: 0.86,               // fracción de la distancia al terminar (1 = sin dolly)
+          follow: 0.4,               // la mirada sube con la tapa mientras vuela (aire arriba para la voltereta)
         },
         beat: { bpm: 120, offset: 0, subdiv: 2 },   // rejilla para BeatSnap (null = no pegar)
         timings: {
           words: 0.15,               // entran las palabras del titular (stagger 0.12)
           rumble: 0.85,              // la caja tiembla: algo hay adentro
           lidPop: 1.5,               // la tapa sale volando (y la cámara cambia de ángulo)
-          lidLand: 2.1,              // la tapa cae en la mesa con rebote
+          lidLand: 2.2,              // la tapa cae en la mesa con rebote
           robotPop: 2.25,            // el robot sale con estiramiento y overshoot
           robotSettle: 2.75,         // aterriza con squash
           accent: 2.75,              // la palabra acento reacciona
@@ -310,54 +312,90 @@
         leg.position.set(sx * (TB.w / 2 - 0.3), (TB.top - topT) / 2, sz * (TB.d / 2 - 0.25));
       }
 
+      // ---- piezas de planta redonda: ExtrudeGeometry de un rectángulo de esquinas redondas, con bisel en los cantos ----
+      // (BoxGeometry tiene esquinas rectas: la silueta sale redonda por el disco de la tinta, pero el relleno no)
+      function roundedRect(w, d, r) {
+        const x = w / 2, y = d / 2, s = new THREE.Shape();
+        r = Math.max(0.001, Math.min(r, x - 0.001, y - 0.001));
+        s.moveTo(-x + r, -y); s.lineTo(x - r, -y); s.absarc(x - r, -y + r, r, -Math.PI / 2, 0);
+        s.lineTo(x, y - r); s.absarc(x - r, y - r, r, 0, Math.PI / 2);
+        s.lineTo(-x + r, y); s.absarc(-x + r, y - r, r, Math.PI / 2, Math.PI);
+        s.lineTo(-x, -y + r); s.absarc(-x + r, -y + r, r, Math.PI, Math.PI * 1.5);
+        return s;
+      }
+      // pieza vertical de planta w×d y alto h con base en y=0; `inset` > 0 la vuelve anillo (paredes de ese grosor).
+      // El bisel crece hacia afuera del contorno y hacia adentro del hueco: se compensa para que las medidas sean exactas.
+      function roundedSlab(w, d, h, r, bevel = 0, inset = 0) {
+        const b = Math.min(bevel, h / 2 - 0.001);
+        const shape = roundedRect(w - 2 * b, d - 2 * b, r - b);
+        if (inset) shape.holes.push(roundedRect(w - 2 * inset + 2 * b, d - 2 * inset + 2 * b, r - inset + b));
+        const geo = new THREE.ExtrudeGeometry(shape, { depth: h - 2 * b, bevelEnabled: b > 0, bevelThickness: b, bevelSize: b, bevelSegments: 3, curveSegments: 10 });
+        geo.rotateX(-Math.PI / 2);             // la extrusión (z) pasa a ser la altura (y)
+        geo.translate(0, b, 0);
+        return geo;
+      }
+
       // ---- el objeto: caja de regalo HUECA ----
       const G = PARAMS.gift;
       curObj = 2;                              // rango 2: la caja
-      const gift = new THREE.Group();          // raíz: posición, giro, squash (pie en la mesa)
+      const gift = new THREE.Group();          // raíz: posición y giro (pie en la mesa)
       gift.position.set(0, TB.top, 0);
       gift.rotation.y = PARAMS.giftYaw;
       scene.add(gift);
+      const shake = new THREE.Group();         // el temblor inclina caja Y tapa juntas: la tapa viaja apoyada, no la atraviesa
+      gift.add(shake);
       const boxG = new THREE.Group();          // lo que se aplasta (sin la tapa, que vuela sola)
-      gift.add(boxG);
+      shake.add(boxG);
       const inner = G.w - 2 * G.wall;
       const wallMat = toon(PAL.accent), insideMat = toon(PAL.inside), ribbonMat = toon(PAL.ink);
       const SUB_SHELL = ++subSeq, SUB_IN = ++subSeq;   // fondo+paredes = una pieza; el forro, otra (línea fina en el borde)
-      part(new THREE.BoxGeometry(G.w, G.wall, G.w), wallMat, boxG, { sub: SUB_SHELL }).position.y = G.wall / 2;          // fondo
-      for (const [x, z, w, d] of [[0, (G.w - G.wall) / 2, G.w, G.wall], [0, -(G.w - G.wall) / 2, G.w, G.wall],
-        [(G.w - G.wall) / 2, 0, G.wall, inner], [-(G.w - G.wall) / 2, 0, G.wall, inner]]) {
-        part(new THREE.BoxGeometry(w, G.h, d), wallMat, boxG, { sub: SUB_SHELL }).position.set(x, G.h / 2, z);           // paredes con grosor
-      }
-      // forro interior de otro tono
-      const lin = 0.012;
-      for (const [x, z, w, d] of [[0, inner / 2 - lin / 2, inner, lin], [0, -inner / 2 + lin / 2, inner, lin],
-        [inner / 2 - lin / 2, 0, lin, inner], [-inner / 2 + lin / 2, 0, lin, inner]]) {
-        part(new THREE.BoxGeometry(w, G.h - G.wall - 0.004, d), insideMat, boxG, { sub: SUB_IN, shadow: false })
-          .position.set(x, G.wall + (G.h - G.wall) / 2, z);
-      }
-      part(new THREE.BoxGeometry(inner, lin, inner), insideMat, boxG, { sub: SUB_IN, shadow: false }).position.y = G.wall + lin / 2;
-      // listón por fuera de cada pared
+      part(roundedSlab(G.w, G.w, G.wall, G.radius, G.bevel), wallMat, boxG, { sub: SUB_SHELL });                  // fondo
+      part(roundedSlab(G.w, G.w, G.h, G.radius, G.bevel, G.wall), wallMat, boxG, { sub: SUB_SHELL });             // paredes con grosor
+      // forro interior de otro tono: sigue la curva de las paredes por dentro y termina antes del bisel del borde
+      const lin = 0.012, rIn = G.radius - G.wall;
+      part(roundedSlab(inner, inner, G.h - G.wall - G.bevel, rIn, 0, lin), insideMat, boxG, { sub: SUB_IN, shadow: false }).position.y = G.wall;
+      part(roundedSlab(inner, inner, lin, rIn), insideMat, boxG, { sub: SUB_IN, shadow: false }).position.y = G.wall;
+      // listón por fuera de cada pared (en la parte plana, lejos de las esquinas)
       for (const [x, z, w, d] of [[0, G.w / 2 + 0.01, G.ribbon, 0.02], [0, -G.w / 2 - 0.01, G.ribbon, 0.02],
         [G.w / 2 + 0.01, 0, 0.02, G.ribbon], [-G.w / 2 - 0.01, 0, 0.02, G.ribbon]]) {
-        part(new THREE.BoxGeometry(w, G.h - 0.004, d), ribbonMat, boxG, { shadow: false }).position.set(x, G.h / 2 - 0.002, z);
+        part(new THREE.BoxGeometry(w, G.h - 2 * G.bevel, d), ribbonMat, boxG, { shadow: false }).position.set(x, G.h / 2, z);
       }
-      // tapa: grupo con pivote en su base; vuela y cae sobre la mesa
+      // tapa: lid (pivote en la base: posición, giro en Y y squash al caer) → lidSpin (pivote en su centro: la voltereta)
+      // → lidBody (la geometría, base en y=0)
       curObj = 3;                              // rango 3: la tapa (va encima de la caja y la mesa)
       const lid = new THREE.Group();
-      gift.add(lid);
-      const lidW = G.w + G.lidOver * 2;
-      const lidBox = part(new THREE.BoxGeometry(lidW, G.lidH, lidW), toon(PAL.accent2), lid);
-      lidBox.position.y = G.lidH / 2;
-      part(new THREE.BoxGeometry(G.ribbon, G.lidH + 0.01, lidW + 0.02), ribbonMat, lidBox, { shadow: false });
-      part(new THREE.BoxGeometry(lidW + 0.02, G.lidH + 0.01, G.ribbon), ribbonMat, lidBox, { shadow: false });
+      shake.add(lid);
+      const lidSpin = new THREE.Group(), lidBody = new THREE.Group();
+      lid.add(lidSpin); lidSpin.add(lidBody);
+      const lidW = G.w + G.lidOver * 2, lidR = G.radius + G.lidOver;
+      part(roundedSlab(lidW, lidW, G.lidH, lidR, G.bevel * 1.5), toon(PAL.accent2), lidBody);
+      // la cinta cruza por ARRIBA y baja por los lados; no por debajo (por debajo se ve el cartón cuando la tapa voltea).
+      // Las dos bandas son UNA pieza (mismo sub): sin línea ni parpadeo de profundidad donde se cruzan.
+      const SUB_RIB = ++subSeq;
+      for (const yaw of [0, Math.PI / 2]) {
+        const band = part(roundedSlab(G.ribbon, lidW + 0.02, G.lidH + 0.008 - 0.006, 0.01, G.bevel * 1.5), ribbonMat, lidBody, { sub: SUB_RIB, shadow: false });
+        band.position.y = 0.006;               // su cara de abajo queda dentro de la tapa
+        band.rotation.y = yaw;
+      }
       const bow = new THREE.Group();
       bow.position.y = G.lidH + 0.16;   // los lazos no deben asomar por debajo de la tapa
-      lid.add(bow);
+      lidBody.add(bow);
       for (const side of [-1, 1]) {
         const loop = part(new THREE.TorusGeometry(0.22, 0.08, 12, 32), ribbonMat, bow);
         loop.position.x = side * 0.23;
         loop.rotation.set(0, 0, side * 0.35);
       }
       part(new THREE.SphereGeometry(0.11, 16, 12), toon(PAL.accent2), bow);
+      // medidas reales de la tapa (con moño) en su propio marco: el centro de la voltereta y su radio en el plano YZ
+      lidBody.updateMatrixWorld(true);
+      const lidLocal = new THREE.Box3().setFromObject(lidBody, true);
+      const LID = {
+        cy: (lidLocal.min.y + lidLocal.max.y) / 2,
+        rSpin: Math.hypot((lidLocal.max.y - lidLocal.min.y) / 2, (lidLocal.max.z - lidLocal.min.z) / 2),
+        rPlan: (lidW / 2 - lidR) * Math.SQRT2 + lidR + 0.01,   // radio en planta de la esquina redonda (+ cinta)
+      };
+      lidSpin.position.y = LID.cy;
+      lidBody.position.y = -LID.cy;
 
       // ---- el agente: robot de primitivas toon (pies en el fondo de la caja) ----
       curObj = 4;                              // rango 4: el robot
@@ -426,27 +464,19 @@
       };
       const squash = (obj, k, s = 1) => obj.scale.set(s * (1 + k / 2), s * (1 - k), s * (1 + k / 2)); // k>0 aplasta, k<0 estira
       const camPos = new THREE.Vector3(), camLook = new THREE.Vector3();
-      function renderAt(t) {
-        // caja: tiembla (algo adentro), se aplasta al soltar la tapa y otra vez cuando sale el robot
-        const rumbleEnv = seg(t, T.rumble, T.rumble + 0.2, E.lin) * (1 - seg(t, T.lidPop - 0.1, T.lidPop, E.lin));
-        boxG.rotation.z = Math.sin((t - T.rumble) * 38) * 0.035 * rumbleEnv;
+      const rumbleOf = (t) => seg(t, T.rumble, T.rumble + 0.2, E.lin) * (1 - seg(t, T.lidPop - 0.1, T.lidPop, E.lin));
+      function poseBox(t) {
+        // caja: tiembla (algo adentro), se aplasta al soltar la tapa y otra vez cuando sale el robot. El temblor inclina
+        // caja y tapa juntas (la tapa sigue apoyada); antes del pop la tapa además brinca, nunca baja del borde
+        const rumbleEnv = rumbleOf(t);
+        shake.rotation.z = Math.sin((t - T.rumble) * 38) * 0.035 * rumbleEnv;
         let k = 0;
         k += 0.16 * Math.sin(Math.PI * seg(t, T.lidPop - 0.12, T.lidPop, E.lin));                // se encoge y suelta
         k -= 0.08 * Math.sin(Math.PI * seg(t, T.lidPop, T.lidPop + 0.3, E.lin));
         k += 0.12 * Math.sin(Math.PI * seg(t, T.robotPop, T.robotPop + 0.3, E.lin));            // retroceso del robot
         squash(boxG, k);
-
-        // tapa: tiembla con la caja, sale volando dando una vuelta y cae en la mesa con rebote
-        const R = PARAMS.lidRest;
-        const fly = clamp01((t - T.lidPop) / (T.lidLand - T.lidPop));
-        const hopRumble = 0.05 * Math.abs(Math.sin((t - T.rumble) * 19)) * rumbleEnv;
-        const bounceY = t > T.lidLand ? 0.18 * Math.abs(Math.sin(Math.PI * seg(t, T.lidLand, T.lidLand + 0.18, E.lin))) * (t < T.lidLand + 0.18 ? 1 : 0) : 0;
-        const fx = E.p2o(fly);
-        lid.position.set(lerp(0, R.x, fx), lerp(G.h, 0, fly) + Math.sin(Math.PI * fly) * 1.1 + hopRumble + bounceY, lerp(0, R.z, fx));
-        lid.rotation.set(Math.PI * 2 * E.p2o(fly), lerp(0, R.yaw, fx), Math.sin(Math.PI * fly) * 0.4 + rumbleEnv * Math.sin((t - T.rumble) * 31) * 0.04);
-        const lidK = t > T.lidLand ? 0.22 * Math.sin(Math.PI * seg(t, T.lidLand, T.lidLand + 0.14, E.lin)) : 0;
-        squash(lid, lidK);
-
+      }
+      function poseBot(t) {
         // robot: escondido hasta robotPop; sube estirado con overshoot, aterriza aplastado, saluda
         bot.visible = t >= T.robotPop;
         const rise = seg(t, T.robotPop, T.robotSettle, E.backPop);
@@ -467,24 +497,101 @@
         // parpadeo
         const bl = 1 - 0.9 * Math.sin(Math.PI * seg(t, T.blink, T.blink + 0.14, E.lin));
         for (const e of eyes) e.scale.y = bl;
-
+      }
+      function poseCam(t) {
         // cámara: dolly continuo + cambio de ángulo A→B cuando se abre la caja
         const C = PARAMS.cam;
         const ang = seg(t, T.lidPop - 0.1, T.lidPop + 0.85, E.p2io);
         camPos.fromArray(C.a.pos).lerp(new THREE.Vector3().fromArray(C.b.pos), ang);
         camLook.fromArray(C.a.look).lerp(new THREE.Vector3().fromArray(C.b.look), ang);
+        camLook.y += C.follow * Math.sin(Math.PI * seg(t, T.lidPop - 0.05, T.lidLand + 0.25, E.p1io));
         const dolly = lerp(1, C.dolly, seg(t, 0, T.total, E.p1io));
         camera.position.copy(camLook).addScaledVector(camPos.sub(camLook), dolly);
         camera.lookAt(camLook);
+        camera.updateMatrixWorld(true);
+      }
 
+      // ---- vuelo de la tapa con criterio físico, calculado con las medidas reales (marco de `shake`, base de la caja = 0) ----
+      // 1) sube en vertical (parábola balística: sale rápida y frena) hasta que su voltereta libra el borde de la caja y la
+      //    cabeza del robot, contando el contorno; 2) sólo entonces gira (2π en X, sobre su centro) y avanza hacia la mesa;
+      //    3) la voltereta termina arriba de esa misma altura; 4) baja únicamente cuando su planta ya no pisa la de la caja;
+      // 5) aterriza en su cara con squash y un rebote corto, la base nunca debajo de la mesa.
+      const box3 = new THREE.Box3(), _v = new THREE.Vector3(), _inv = new THREE.Matrix4();
+      // Box3 de `obj` medido en el marco de `frame` (vértice por vértice: ajustado, no la caja de la caja)
+      function boxIn(obj, frame, out = new THREE.Box3()) {
+        out.makeEmpty();
+        _inv.copy(frame.matrixWorld).invert();
+        obj.traverse((o) => {
+          if (!o.isMesh || o.userData.shadow) return;
+          const pos = o.geometry.attributes.position;
+          for (let i = 0; i < pos.count; i++) out.expandByPoint(_v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld).applyMatrix4(_inv));
+        });
+        return out;
+      }
+      const LP = (() => {
+        const R = PARAMS.lidRest, t0 = T.lidPop, t3 = T.lidLand;
+        // lo más alto que llegan el borde de la caja (estirada) y la cabeza del robot (escondido adentro) mientras vuela la tapa
+        let top = 0, nearest = Infinity;
+        for (let t = t0 - 0.15; t <= t3; t += 1 / 120) {
+          poseBox(t); poseBot(t); poseCam(t);
+          scene.updateMatrixWorld(true);
+          top = Math.max(top, boxIn(boxG, shake, box3).max.y, boxIn(bot, shake, box3).max.y);
+          nearest = Math.min(nearest, camera.position.distanceTo(gift.getWorldPosition(_v)));
+        }
+        // el contorno (silueta + peso del lado de la sombra) convertido a unidades de mundo a la distancia más corta
+        const pxWorld = (2 * nearest * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) / H;
+        const margin = (PARAMS.line.outer + PARAMS.line.extra) * pxWorld;
+        const rim = top + margin;                               // la base de la tapa arriba de esto = ya salió
+        const spinBase = rim + LID.rSpin - LID.cy;              // la base arriba de esto = puede girar sin rozar nada
+        const yA = spinBase + PARAMS.lidApex;                   // ápice de la parábola
+        const y0 = G.h, D = t3 - t0;
+        const a = ((Math.sqrt(yA - y0) + Math.sqrt(yA)) / D) ** 2;   // «gravedad» que cierra el vuelo en D segundos
+        const tA = t0 + Math.sqrt((yA - y0) / a);
+        const half = Math.sqrt((yA - spinBase) / a);
+        const tS0 = tA - half, tS1 = tA + half;                 // ventana de la voltereta (arriba de spinBase)
+        const tDown = tA + Math.sqrt((yA - rim) / a);           // de aquí en adelante la base ya está debajo del borde
+        // en planta: la tapa (radio de su esquina redonda) debe quedar fuera del cuadrado de la caja (con cinta) + contorno
+        const half2 = G.w / 2 + 0.02, P = new THREE.Vector2(R.x, R.z);
+        const clearAt = (u) => { const px = Math.max(0, Math.abs(u * P.x) - half2), pz = Math.max(0, Math.abs(u * P.y) - half2); return Math.hypot(px, pz) >= LID.rPlan + margin; };
+        let uClear = 1; for (let u = 0; u <= 1; u += 0.001) if (clearAt(u)) { uClear = u; break; }
+        const hu = (t) => E.p2o(clamp01((t - tS0) / (t3 - tS0)));  // avance en planta: arranca con la voltereta, frena al caer
+        if (!clearAt(1) || hu(tDown) < uClear) console.warn("toon-object: lidRest/timings no dejan bajar la tapa lejos de la caja", { uClear, at: hu(tDown) });
+        return { t0, t3, tA, a, yA, tS0, tS1, rim, spinBase, margin, uClear, hu, R };
+      })();
+      function poseLid(t) {
+        const { t0, t3, tA, a, yA, tS0, tS1, hu, R } = LP;
+        let y, u = 0, spin = 0;
+        if (t < t0) {
+          // apoyada en el borde (sigue el squash de la caja) y brinca con el temblor: nunca por debajo del borde
+          y = G.h * boxG.scale.y + 0.05 * Math.abs(Math.sin((t - T.rumble) * 19)) * rumbleOf(t);
+        } else if (t < t3) {
+          y = Math.max(0, yA - a * (t - tA) ** 2);
+          u = hu(t);
+          spin = Math.PI * 2 * E.p1io(clamp01((t - tS0) / (tS1 - tS0)));
+        } else {
+          // rebote corto: squash al tocar, saltito de 0.06 y squash chico al volver a tocar
+          u = 1; spin = Math.PI * 2;
+          y = 0.06 * Math.sin(Math.PI * seg(t, t3 + 0.1, t3 + 0.24, E.lin)) * (t < t3 + 0.24 ? 1 : 0);
+        }
+        lid.position.set(u * R.x, y, u * R.z);
+        lid.rotation.y = lerp(0, R.yaw, u);
+        lidSpin.rotation.x = spin;
+        const lk = t >= t3 ? 0.2 * Math.sin(Math.PI * seg(t, t3, t3 + 0.1, E.lin)) + 0.07 * Math.sin(Math.PI * seg(t, t3 + 0.24, t3 + 0.3, E.lin)) : 0;
+        squash(lid, lk);                        // pivote en la base: el squash no la hunde en la mesa
+      }
+      function poseAt(t) { poseBox(t); poseBot(t); poseLid(t); poseCam(t); scene.updateMatrixWorld(true); }
+
+      function renderAt(t) {
+        poseAt(t);
         // sombras: cada pieza proyectada desde su matriz de mundo sobre su plano (mesa o piso)
-        scene.updateMatrixWorld(true);
         for (const { mesh, shadow, proj } of parts) {
           shadow.visible = !botShadow.has(shadow) || bot.visible;
           shadow.matrix.multiplyMatrices(proj, mesh.matrixWorld);
         }
         draw();
       }
+      // para el chequeo de colisiones (check-lid.mjs): pose pura por tiempo y los objetos a medir
+      window.__toon = { poseAt, boxIn, lid, boxG, table, bot, camera, LP, LID, fps: 30, total: T.total };
 
       // ---- DOM con GSAP; la misma timeline dibuja el canvas en cada seek ----
       const tl = gsap.timeline({ paused: true });
