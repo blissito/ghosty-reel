@@ -32,6 +32,7 @@ El contrato de una receta está en `MOLDE.md`. Hoja de contactos: `GALERIA.png`.
 | `smear-dash` | objeto que cruza con smear de 1–2 cuadros, múltiplos y líneas de velocidad en vez de blur; frenón con `back.out` | investigación motion 20 oct (técnica 6) |
 | `camera-rig` | cámara virtual por capas: `camera.to({x, y, zoom, rot, yaw})` con parallax real por profundidad, push-in, paneo, whip-pan con smear que transmuta de escena, zoom-punch y dolly-out con corte invisible; 1080×1920 | investigación motion 20 oct (técnicas 8–9, hueco 1 de la auditoría) |
 | `toon-object` | escena 3D en three.js: caja de regalo hueca en una mesa, la tapa vuela y sale un robot que saluda; toon de 3 tonos, una silueta de tinta por objeto (redonda, interiores delgados), sombra dura gris, dolly + cambio de ángulo, titular palabra por palabra y CTA que se escribe | investigación motion 20 oct (3D toon en HTML) |
+| `ghosty-rig` | Ghosty oficial por piezas (`ghosty.svg`) + `rig.js`: `hop`, `blink`, `wink`, `look`, `happy`, `proud`, `shy`, `wave`, `idle`, `enter`/`exit` con squash y accesorios en capa aparte; ojos completos, olanes que se mecen, sin redibujar ni repintar | rig de ghosty-identidad + gestos de ghosty-verificado-2 (20 oct) |
 
 Las captions cinéticas, scrambles y cortinillas de texto ya están en `../motion-anything/`.
 
