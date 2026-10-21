@@ -16,6 +16,7 @@ touch "$OUT/.nojekyll"
 cp assets/og.png "$OUT/og.png"; # videos de producciones: se sirven desde Pages para verlos sin salir del sitio
 mkdir -p "$OUT/v"; for f in fabrica-reel/docs/fabrica-reel.mp4 partitura-reel/docs/partitura-reel.mp4 harness-reel/docs/harness-reel.mp4; do [ -f "$f" ] && cp "$f" "$OUT/v/"; done
 mkdir -p "$OUT/shorts"; cp assets/shorts/*.mp4 assets/shorts/*.jpg "$OUT/shorts/"   # shorts del taller y de eve
+mkdir -p "$OUT/guia"; cp assets/guia/*.jpg "$OUT/guia/"   # preview de la guía PDF
 cp assets/harness-frame.jpg assets/hero.mp4 assets/hero-poster.jpg assets/partitura.mp4 assets/partitura-poster.jpg "$OUT/"   # meta imagen y poster del reel
 
 # Galería de motion-lab: una página con el preview en video de cada receta y link a su SKILL.md
