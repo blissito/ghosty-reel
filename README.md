@@ -97,6 +97,9 @@ en segundos y saca 2 minutos en 9:16 en menos de un minuto de render. Lo mueve
 - **[fabrica-reel](./fabrica-reel)**: 9:16, 70 s, con narración. Un pedido real de Ghosty Factory cruza el
   tablero; la voz marca el tiempo y cada efecto cae en la palabra que lo nombra. Estilo oficial de la marca y
   sprites de gpt-image-2. Su README trae las reglas que salieron de los errores.
+- **[salon-reel](./salon-reel)**: 9:16, 16 s, con narración. Diorama 3D de un salón de uñas, de noche: Ghosty atiende el
+  WhatsApp cuando ya cerró. Cuarto horneado en Blender, escena three.js y **música sintetizada a partir de los tiempos
+  de la voz**.
 
 ## HyperFrames 0.8.212 (28-oct-2026)
 
@@ -141,6 +144,7 @@ Sin cuentas, sin API keys, sin servicios. La voz corre local.
 | Que la imagen y la música vayan a la nota, sin alinear a mano | [`partitura-reel`](./partitura-reel) — una partitura, dos salidas (GSAP + sintetizador numpy), verificada cuadro por cuadro |
 | Narración + partitura, y las reglas de sonido e imagen que costaron (qué no hacer) | [`fabrica-reel`](./fabrica-reel#lo-que-aprendimos-y-cómo-lo-pagamos) |
 | Sincronizar animación con narración | [`hooks-reel/README.md`](./hooks-reel#las-tres-cosas-que-cuesta-descubrir-solo) — medir con `transcribe`, nunca estimar |
+| Un short 3D con personaje en un cuarto horneado, o una cama musical que se arma sola a partir de la voz | [`salon-reel`](./salon-reel#la-música-por-qué-suena-a-la-medida) — Blender headless, three.js, `setViewOffset`, synth.py por capas |
 | Escribir un guion que el TTS no mastique | [`hooks-reel/SCRIPT.md`](./hooks-reel/SCRIPT.md) — anglicismos escritos fonéticos |
 
 **Nota para agentes:** cada producción trae su propio `README.md` con el estado

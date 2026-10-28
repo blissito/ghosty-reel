@@ -91,6 +91,13 @@ síntesis y no en la mezcla significa que el `loudnorm` final no tiene que pelea
 **El estéreo es un `np.roll` de 90 muestras** (~2ms) en el canal derecho. Ancho
 sutil por retardo; suficiente para que no suene mono, sin romper la suma a mono.
 
+## Camas para shorts con narración
+
+En los shorts con voz la cama no sigue actos de `scene.json` sino **las palabras**: cada capa entra cuando la voz
+llega a ese punto de la historia (intro sólo arpegio → bajo con el conflicto → ritmo cuando el personaje trabaja →
+acorde sostenido en el CTA). Ejemplo completo, con timbres y mezcla con sidechain:
+[`salon-reel`](./salon-reel#la-música-por-qué-suena-a-la-medida).
+
 ## Mezcla — `plan.py` → `audio/plan.json` → `mix.sh`
 
 `plan.json` **se genera**, no se edita. `plan.py` lo escribe leyendo los beats de

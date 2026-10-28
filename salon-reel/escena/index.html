@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El salón que no cierra</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #3F3C78; overflow: hidden; }
+  #stage { position: fixed; inset: 0; display: grid; place-items: center; }
+  /* lienzo vertical 9:16, como el short; el cielo de noche va detrás del lienzo (transparente) */
+  #sky, canvas { display: block; height: 100vh; width: calc(100vh * 9 / 16); max-width: 100vw; }
+  #sky { position: fixed; top: 0; left: 50%; transform: translateX(-50%); background: #3F3C78; overflow: hidden; --u: calc(100vh / 1920); }
+  #sky i { position: absolute; width: calc(var(--u) * 14); height: calc(var(--u) * 14); background: #B8B2F2; border-radius: 3px; transform: rotate(45deg); }
+  #moon { position: absolute; left: calc(var(--u) * 760); top: calc(var(--u) * 300); width: calc(var(--u) * 150); height: calc(var(--u) * 150); border-radius: 50%; background: #F4F1FF; }
+  #moon b { position: absolute; border-radius: 50%; background: #DCD6F6; }
+  canvas { position: relative; }
+  /* capa de texto encima del lienzo, en unidades del lienzo (1080×1920): --u = 1 px del short */
+  #ui { position: fixed; top: 0; left: 50%; transform: translateX(-50%); height: 100vh; width: calc(100vh * 9 / 16); --u: calc(100vh / 1920); pointer-events: none; font-family: "Nunito", system-ui, sans-serif; font-weight: 900; }
+  #sub { position: absolute; left: 0; right: 0; top: calc(var(--u) * 1270); display: flex; justify-content: center; }
+  #sub span.line { background: #1B1B1F; border-radius: calc(var(--u) * 28); padding: calc(var(--u) * 14) calc(var(--u) * 30); font-size: calc(var(--u) * 72); line-height: 1.1; white-space: nowrap; text-align: center; box-shadow: 0 calc(var(--u) * 8) 0 rgba(27,27,31,.25); }
+  #sub b { font-weight: 900; color: #7C7A8E; } #sub b.said { color: #FFFFFF; } #sub b.now { color: #B8B2F2; }
+  #cta { position: absolute; left: 0; right: 0; top: calc(var(--u) * 300); text-align: center; opacity: 0; }
+  #cta .verb { font-size: calc(var(--u) * 66); color: #FFFFFF; }
+  #cta .url { display: inline-block; margin-top: calc(var(--u) * 14); font-size: calc(var(--u) * 100); color: #FFFFFF; background: #8483E0; border-radius: calc(var(--u) * 44); padding: calc(var(--u) * 8) calc(var(--u) * 48) calc(var(--u) * 16); box-shadow: 0 calc(var(--u) * 10) 0 #5E5CC0; }
+  #cta .date { display: inline-block; margin-top: calc(var(--u) * 34); font-size: calc(var(--u) * 40); color: #1B1B1F; background: #F7C873; border-radius: 999px; padding: calc(var(--u) * 8) calc(var(--u) * 32); box-shadow: 0 calc(var(--u) * 6) 0 #C99A3E; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px system-ui; color: #fff; opacity: .5; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=block" rel="stylesheet">
+<script type="importmap">
+  { "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  } }
+</script>
+</head>
+<body>
+<div id="sky"><div id="moon"><b style="left:22%;top:30%;width:22%;height:22%"></b><b style="left:58%;top:52%;width:16%;height:16%"></b><b style="left:40%;top:70%;width:10%;height:10%"></b></div></div>
+<div id="stage"></div>
+<div id="ui"><div id="cta"><div class="verb">Créalo hoy en</div><div class="url">ghosty.studio</div><br><div class="date">Octubre 2026</div></div><div id="sub"></div></div>
+<div id="hud"></div>
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { makeGhosty3D, setLensEnv } from "../../_shared/ghosty-3d/ghosty3d.js";
+import { setupAmbient } from "./ambient.js";
+import * as ui from "./ui2d.js";
+
+const params = new URLSearchParams(location.search);
+// tiempos y palabras de la voz (tools/score.py → score.json): todo lo que pasa en pantalla cae en una palabra
+const SC = await (await fetch("./score.json")).json();
+const T = SC.T, DUR = SC.duration;
+await document.fonts.load('900 72px "Nunito"'); await document.fonts.load('800 30px "Nunito"');
+
+// estrellas del cielo (posición fija, sembrada)
+const sky = document.getElementById("sky");
+[[90, 260], [250, 520], [420, 300], [610, 470], [960, 560], [140, 700], [880, 760], [520, 180], [330, 860], [1000, 250]].forEach(([x, y]) => {
+  const i = document.createElement("i"); i.style.left = `calc(var(--u) * ${x})`; i.style.top = `calc(var(--u) * ${y})`; sky.appendChild(i);
+});
+const moonEl = document.getElementById("moon");
+
+// --- subtítulos: una sola línea a la vez, partida en comas/puntos y a lo más ~20 letras ---
+const CHUNKS = [];
+SC.lines.forEach((l) => {
+  let cur = [];
+  l.words.forEach((w, i) => {
+    const len = cur.map((x) => x.w).join(" ").length;
+    if (cur.length && len + 1 + w.w.length > 20) { CHUNKS.push(cur); cur = []; }
+    cur.push(w);
+    if (/[,.]$/.test(w.w) && i < l.words.length - 1) { CHUNKS.push(cur); cur = []; }
+  });
+  if (cur.length) CHUNKS.push(cur);
+});
+const shown = (w) => w.replace(/^ghosty\.studio\.$/i, "ghosty.studio.");
+const subEl = document.getElementById("sub"), ctaEl = document.getElementById("cta");
+let subKey = "";
+function drawUI(tf) {
+  const i = tf >= SC.lines[4].words[0].s - 0.05 ? -1 : CHUNKS.findIndex((c, k) => tf >= c[0].s - 0.05 && tf <= Math.min(c.at(-1).e + 0.6, CHUNKS[k + 1] ? CHUNKS[k + 1][0].s - 0.05 : DUR));
+  const line = CHUNKS[i];
+  const key = line ? line.map((w) => (tf >= w.e ? "s" : tf >= w.s ? "n" : "p")).join("") + i : "";
+  if (key !== subKey) {
+    subKey = key;
+    subEl.innerHTML = line ? `<span class="line">${line.map((w) => `<b class="${tf >= w.e ? "said" : tf >= w.s ? "now" : ""}">${shown(w.w)}</b>`).join(" ")}</span>` : "";
+  }
+  // CTA: entra con rebote cuando la voz dice «Créalo»; la URL cuando la nombra
+  const bo = (x) => ui.backOut(x);
+  const k = (tf - SC.lines[4].words[0].s + 0.1) / 0.5, ku = (tf - T.url) / 0.45, kd = (tf - T.url - 0.35) / 0.4;
+  ctaEl.style.opacity = k > 0 ? 1 : 0;
+  ctaEl.children[0].style.transform = `scale(${0.6 + 0.4 * bo(k)})`;
+  ctaEl.children[1].style.transform = `scale(${Math.max(0.001, bo(ku))})`;
+  ctaEl.children[3].style.transform = `scale(${Math.max(0.001, bo(kd))}) rotate(-3deg)`;
+  // la luna se esconde detrás del CTA
+  moonEl.style.transform = `scale(${1 - ui.clamp01((tf - T.ctaIn) / 0.4)})`;
+}
+
+const FIXED_T = params.has("t") ? Number(params.get("t")) : null;
+
+const INK = "#1B1B1F";
+const W = 1080, H = 1920;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H, false);
+renderer.setClearColor(0x000000, 0);
+document.getElementById("stage").appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, W / H, 0.02, 100);
+
+// el salón: una sola malla con la luz de Blender horneada (cuarto/armar.py). Sin luces en vivo sobre él.
+const gltf = await new GLTFLoader().loadAsync("../cuarto/cuarto.glb");
+const baked = await new THREE.TextureLoader().loadAsync("../cuarto/cuarto.png");
+baked.flipY = false; baked.colorSpace = THREE.SRGBColorSpace; baked.anisotropy = renderer.capabilities.getMaxAnisotropy();
+gltf.scene.traverse((o) => { if (o.isMesh) o.material = new THREE.MeshBasicMaterial({ map: baked }); });
+scene.add(gltf.scene);
+const ambient = setupAmbient({ THREE, root: gltf.scene, camera });
+const FLOOR_Y = 0.05;
+const v = (x, y, z) => new THREE.Vector3(x, y, z);
+
+// --- Ghosty oficial (vinil mate, sin contorno ni toon: el look aprobado) ---
+const gradientMap = new THREE.DataTexture(new Uint8Array([95, 150, 205, 255]), 4, 1, THREE.RedFormat);
+gradientMap.minFilter = gradientMap.magFilter = THREE.LinearFilter; gradientMap.needsUpdate = true;
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(renderer), 0.04).texture;
+scene.add(new THREE.AmbientLight(0xffffff, 0.12 * Math.PI));
+const key = new THREE.DirectionalLight(0xffffff, 0.4 * Math.PI);
+scene.add(key, key.target);
+// Ghosty mejorado (default del módulo): lentes con volumen, mica con reflejo y chapitas pegadas a la piel
+// la mica refleja un cuarto oscuro con una sola ventana: así queda el brillo nítido del visor de referencia y no el
+// lavado lechoso que daba el techo blanco del RoomEnvironment visto desde arriba
+setLensEnv((() => {
+  const env = new THREE.Scene();
+  env.add(new THREE.Mesh(new THREE.SphereGeometry(5, 16, 8), new THREE.MeshBasicMaterial({ color: "#16151f", side: THREE.BackSide })));
+  const win = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.4), new THREE.MeshBasicMaterial({ color: "#ffffff" }));
+  win.position.set(-2.2, 2.4, 3); win.lookAt(0, 0, 0); env.add(win);
+  return new THREE.PMREMGenerator(renderer).fromScene(env, 0.02).texture;
+})());
+const ghosty = makeGhosty3D({ THREE, SVGLoader, gradientMap, INK, url: "../../_shared/ghosty-3d/ghosty-oficial.svg" });
+await ghosty.userData.ready;
+ghosty.traverse((o) => {
+  if (!o.material?.isMeshStandardMaterial) return;
+  // la mica conserva su reflejo, pero la cámara de este short mira desde arriba y el techo blanco del entorno la
+  // lavaba entera: se baja para que quede sólo el brillo, como en el visor de referencia (cámara de frente)
+  if (o.material.blending === THREE.AdditiveBlending) { if (params.has("mica")) o.material.envMapIntensity = Number(params.get("mica")); } // mica: intensidad del módulo
+  else o.material.envMapIntensity = 0.45; // cuerpo, ojos, chapitas y aro: el entorno del cuarto, tenue
+});
+scene.add(ghosty);
+key.target = ghosty;
+// Blender (x, y, z) → three (x, z, -y). Ghosty atiende la recepción: flota detrás del escritorio, de frente
+const DESK_SPOT = v(-0.52, 0.8, 0.26);
+const DOOR_SPOT = v(0.12, 0.86, -0.6); // junto a la puerta, a la izquierda del cartelito
+const LAPTOP = v(-0.44, 0.52, 0.55); // de aquí brotan las tarjetas
+const GS = 0.36;
+
+const shadowTex = (() => {
+  const c = document.createElement("canvas"); c.width = c.height = 128;
+  const g = c.getContext("2d");
+  const r = g.createRadialGradient(64, 64, 8, 64, 64, 62);
+  r.addColorStop(0, "rgba(40,30,70,0.38)"); r.addColorStop(1, "rgba(40,30,70,0)");
+  g.fillStyle = r; g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+})();
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.42), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false }));
+shadow.rotation.x = -Math.PI / 2;
+scene.add(shadow);
+
+// --- letrero del local sobre el muro del fondo + cartelito CERRADO/ABIERTO colgado en la puerta ---
+const canvasTex = (w, h, draw) => {
+  const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+};
+const polish = (g, x, y, s, color) => {
+  // frasco de esmalte plano: tapa alta + cuerpo redondeado
+  g.fillStyle = INK; ui.rr(g, x - s * 0.16, y - s * 0.62, s * 0.32, s * 0.42, s * 0.08); g.fill();
+  g.fillStyle = color; ui.rr(g, x - s * 0.32, y - s * 0.24, s * 0.64, s * 0.58, s * 0.16); g.fill();
+  g.fillStyle = "rgba(255,255,255,.55)"; ui.rr(g, x - s * 0.2, y - s * 0.14, s * 0.1, s * 0.32, s * 0.05); g.fill();
+};
+const signTex = canvasTex(1100, 300, (g, w, h) => {
+  g.fillStyle = "#FFFFFF"; ui.rr(g, 0, 0, w, h, 70); g.fill();
+  g.fillStyle = "#8483E0"; ui.rr(g, 14, 14, w - 28, h - 28, 58); g.fill();
+  polish(g, 150, 160, 150, "#F39A86");
+  ui.text(g, "Uñas Karla", 620, 156, 150, "#FFFFFF");
+});
+const sign = new THREE.Mesh(new RoundedBoxGeometry(1.1, 0.3, 0.05, 4, 0.02), [0, 1, 2, 3, 4, 5].map((i) => i === 4 ? new THREE.MeshBasicMaterial({ map: signTex }) : new THREE.MeshBasicMaterial({ color: "#5E5CC0" })));
+sign.position.set(-0.1, 1.52, -0.975);
+scene.add(sign);
+const SIGN_POSTS = [-0.5, 0.3].map((x) => { const p = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.1, 0.025), new THREE.MeshBasicMaterial({ color: "#5E5CC0" })); p.position.set(x, 1.36, -0.975); scene.add(p); return p; });
+
+const tagTex = (label, bg, color, size) => canvasTex(560, 300, (g, w, h) => {
+  g.fillStyle = "#FFFFFF"; ui.rr(g, 0, 0, w, h, 48); g.fill();
+  g.fillStyle = bg; ui.rr(g, 12, 12, w - 24, h - 24, 38); g.fill();
+  g.fillStyle = "#FFFFFF"; g.beginPath(); g.arc(w / 2, 46, 16, 0, Math.PI * 2); g.fill();
+  ui.text(g, label[0], w / 2, label[1] ? 128 : 168, size, color);
+  if (label[1]) ui.text(g, label[1], w / 2, 222, size * 0.62, color);
+});
+const TAG_W = 0.4, TAG_H = TAG_W * 300 / 560;
+const tag = new THREE.Group();
+const tagFront = new THREE.Mesh(new THREE.PlaneGeometry(TAG_W, TAG_H), new THREE.MeshBasicMaterial({ map: tagTex(["CERRADO"], "#E4544F", "#FFFFFF", 96) }));
+const tagBack = new THREE.Mesh(new THREE.PlaneGeometry(TAG_W, TAG_H), new THREE.MeshBasicMaterial({ map: tagTex(["ABIERTO", "24/7 con Ghosty"], "#6DBE7C", "#FFFFFF", 104) }));
+tagBack.rotation.y = Math.PI;
+tagFront.position.y = tagBack.position.y = -0.07 - TAG_H / 2;
+tagFront.position.z = 0.001; tagBack.position.z = -0.001;
+const cord = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.08, 0.006), new THREE.MeshBasicMaterial({ color: INK }));
+cord.position.y = -0.04;
+tag.add(tagFront, tagBack, cord);
+tag.position.set(0.5, 1.0, -0.9);
+scene.add(tag);
+
+// --- el celular del salón: flota junto a Ghosty con el chat de la clienta ---
+const PH_W = 0.54, PH_H = 1.0; // geometría unitaria: se escala en pixeles de pantalla
+const phone = new THREE.Group();
+const phoneBody = new THREE.Mesh(new RoundedBoxGeometry(PH_W, PH_H, 0.05, 4, 0.06), new THREE.MeshStandardMaterial({ color: "#3B3F4E", roughness: 0.45, envMapIntensity: 0.5 }));
+const phoneCanvas = document.createElement("canvas"); phoneCanvas.width = 640; phoneCanvas.height = 1240;
+const phoneTex = new THREE.CanvasTexture(phoneCanvas); phoneTex.colorSpace = THREE.SRGBColorSpace; phoneTex.anisotropy = 8;
+const phoneScreen = new THREE.Mesh(new THREE.PlaneGeometry(PH_W * 0.9, PH_H * 0.93), new THREE.MeshBasicMaterial({ map: phoneTex, toneMapped: false }));
+phoneScreen.position.z = 0.026;
+phone.add(phoneBody, phoneScreen);
+scene.add(phone);
+const logo = await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.src = "../../_shared/ghosty-3d/ghosty-logo-oficial.png"; });
+
+// globos del chat: [quién, texto, hora, cuándo aparece]
+const MSGS = [
+  ["in", "¿Tienes lugar el sábado para gelish?", "11:04 p.m.", T.msgIn],
+  ["out", "¡Claro, Sofía! Te aparto el sábado a las 11:00.", "11:04 p.m.", T.reply],
+  ["out", "Listo: anticipo de $150 pagado. Tu factura va a tu correo.", "11:05 p.m.", T.paid],
+  ["in", "¡Gracias, ahí nos vemos!", "11:05 p.m.", T.thanks],
+];
+const wrap = (g, s, maxW) => {
+  const out = []; let cur = "";
+  for (const w of s.split(" ")) { const t = cur ? cur + " " + w : w; if (g.measureText(t).width > maxW && cur) { out.push(cur); cur = w; } else cur = t; }
+  out.push(cur); return out;
+};
+function drawPhone(t) {
+  const g = phoneCanvas.getContext("2d"), Wc = 320, Hc = 620;
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  g.fillStyle = "#F3F0FA"; g.fillRect(0, 0, Wc, Hc);
+  // encabezado: la clienta, en línea
+  g.fillStyle = "#FFFFFF"; g.fillRect(0, 0, Wc, 92);
+  ui.text(g, "11:04", 34, 20, 15, INK, 900);
+  g.fillStyle = "#F39A86"; g.beginPath(); g.arc(40, 60, 22, 0, Math.PI * 2); g.fill();
+  ui.text(g, "S", 40, 61, 24, "#FFFFFF");
+  ui.text(g, "Sofía", 72, 52, 22, INK, 900, "left");
+  ui.text(g, t > T.ghostyIn && t < T.reply ? "Ghosty está escribiendo…" : "en línea", 72, 74, 14, "#6DBE7C", 800, "left");
+  // los globos se apilan de arriba hacia abajo
+  let y = 108;
+  const pop = (k) => ui.backOut(k);
+  for (const [who, txt, hora, at] of MSGS) {
+    if (t < at) continue;
+    g.font = `800 19px ${ui.FONT}`;
+    const lines = wrap(g, txt, 196);
+    const bw = Math.max(...lines.map((l) => g.measureText(l).width)) + 34, bh = lines.length * 24 + 38;
+    const x = who === "in" ? 12 : Wc - 12 - bw, s = pop((t - at) / 0.35);
+    g.save(); g.translate(who === "in" ? x : x + bw, y + bh); g.scale(s, s); g.translate(-(who === "in" ? x : x + bw), -(y + bh));
+    g.fillStyle = who === "in" ? "#FFFFFF" : "#DCD8FA"; ui.rr(g, x, y, bw, bh, 16); g.fill();
+    lines.forEach((l, i) => ui.text(g, l, x + 16, y + 22 + i * 24, 19, INK, 800, "left"));
+    ui.text(g, hora + (who === "out" ? "  ✓✓" : ""), x + bw - 12, y + bh - 13, 11, "#7C7A8E", 800, "right");
+    g.restore();
+    y += bh + 12;
+  }
+  // «escribiendo»: tres puntos que brincan mientras Ghosty contesta
+  if (t > T.ghostyIn && t < T.reply) {
+    g.fillStyle = "#DCD8FA"; ui.rr(g, Wc - 92, y, 80, 40, 16); g.fill();
+    for (let i = 0; i < 3; i++) { g.fillStyle = "#8483E0"; g.beginPath(); g.arc(Wc - 72 + i * 20, y + 20 - 5 * Math.max(0, Math.sin(t * 10 - i)), 5, 0, Math.PI * 2); g.fill(); }
+  }
+  // barra para escribir, abajo
+  g.fillStyle = "#FFFFFF"; g.fillRect(0, Hc - 62, Wc, 62);
+  g.fillStyle = "#F3F0FA"; ui.rr(g, 12, Hc - 50, Wc - 78, 38, 19); g.fill();
+  ui.text(g, "Mensaje", 30, Hc - 31, 15, "#7C7A8E", 800, "left");
+  g.fillStyle = "#8483E0"; g.beginPath(); g.arc(Wc - 32, Hc - 31, 20, 0, Math.PI * 2); g.fill();
+  phoneTex.needsUpdate = true;
+}
+
+// --- tarjetas de lo que Ghosty hizo: brotan de la laptop cuando la voz las nombra ---
+const cardTex = (label, sub, icon) => {
+  const c = document.createElement("canvas"), g = c.getContext("2d");
+  g.font = `900 60px ${ui.FONT}`;
+  const tw = Math.max(g.measureText(label).width, (g.font = `800 38px ${ui.FONT}`, g.measureText(sub).width));
+  const Wd = Math.ceil(196 + tw + 64);
+  c.width = Wd + 16; c.height = 220;
+  g.fillStyle = "#D9D2E8"; ui.rr(g, 8, 22, Wd, 190, 40); g.fill(); // canto del papel
+  g.fillStyle = "#FFFFFF"; ui.rr(g, 8, 8, Wd, 190, 40); g.fill();
+  icon(g);
+  ui.text(g, label, 196, 82, 60, INK, 900, "left");
+  ui.text(g, sub, 196, 140, 38, "#7C7A8E", 800, "left");
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  t.userData = { aspect: c.width / c.height };
+  return t;
+};
+const iconBox = (bg, draw) => (g) => { g.fillStyle = bg; ui.rr(g, 40, 38, 130, 130, 32); g.fill(); draw(g); };
+const textures = [
+  cardTex("Cita: sáb 11:00", "Gelish con Karla", iconBox("#F39A86", (g) => { g.fillStyle = "#FFFFFF"; ui.rr(g, 64, 66, 82, 76, 12); g.fill(); g.fillStyle = "#F39A86"; ui.rr(g, 64, 66, 82, 20, 10); g.fill(); g.fillStyle = "#E4544F"; ui.rr(g, 104, 104, 26, 24, 6); g.fill(); })),
+  cardTex("Anticipo $150", "Pagado", iconBox("#F7C873", (g) => { g.fillStyle = "#FFFFFF"; g.beginPath(); g.arc(105, 103, 42, 0, Math.PI * 2); g.fill(); ui.text(g, "$", 105, 106, 56, "#C99A3E"); })),
+  cardTex("Factura CFDI", "Enviada a su correo", iconBox("#85DDCB", (g) => { g.fillStyle = "#FFFFFF"; ui.rr(g, 72, 58, 66, 92, 10); g.fill(); g.fillStyle = "#85DDCB"; for (let i = 0; i < 3; i++) { ui.rr(g, 84, 76 + i * 18, 42, 8, 4); g.fill(); } ui.check(g, 132, 140, 20, 1); })),
+];
+const CARDS_AT = [T.card1, T.card2, T.card3];
+const cards = textures.map((map) => {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(map.userData.aspect, 1), new THREE.MeshBasicMaterial({ map, transparent: true, depthTest: false }));
+  m.renderOrder = 5; m.visible = false; scene.add(m); return m;
+});
+
+// --- la cámara: llaves en polar alrededor del centro (az en grados, 0 = lado +z) ---
+const KEYS = [
+  // abre frente a la puerta: el letrero del local y CERRADO (sx, sy: dónde cae `at` en pantalla)
+  { t: 0, az: -50, r: 7.6, y: 4.8, at: v(0.05, 0.62, -0.1), fov: 30 },
+  // el salón entero, cerrado y de noche: gira despacito
+  { t: 3.3, az: -36, r: 6.4, y: 4.1, at: v(0.05, 0.62, -0.1), fov: 30, hold: true },
+  // la recepción: el celular se enciende con el mensaje; Ghosty queda abajo a la derecha
+  { t: 4.6, az: -30, r: 3.7, y: 2.05, at: v(-0.52, 0.99, 0.26), fov: 30, sx: 760, sy: 1000 },
+  { t: 6.3, az: -27, r: 3.6, y: 2.0, at: v(-0.52, 0.99, 0.26), fov: 30, sx: 760, sy: 1000, hold: true },
+  { t: 10.0, az: -22, r: 3.5, y: 1.95, at: v(-0.52, 0.99, 0.26), fov: 30, sx: 760, sy: 1000, hold: true },
+  // a la puerta: el letrero se voltea
+  { t: 11.2, az: 4, r: 2.7, y: 1.3, at: v(0.05, 1.1, -0.9), fov: 40, sy: 860 },
+  { t: 12.9, az: 2, r: 2.6, y: 1.3, at: v(0.05, 1.1, -0.9), fov: 40, sy: 860, hold: true },
+  // cierre circular: el salón entero, abierto con Ghosty
+  { t: 14.4, az: -40, r: 7.4, y: 4.4, at: v(0, 1.75, 0), fov: 30 },
+  { t: DUR, az: -44, r: 7.4, y: 4.4, at: v(0, 1.75, 0), fov: 30 },
+];
+KEYS.forEach((k) => { k.sx ??= W / 2; k.sy ??= H / 2; });
+const hermite = (get, t) => {
+  const n = KEYS.length;
+  if (t <= KEYS[0].t) return get(KEYS[0]);
+  if (t >= KEYS[n - 1].t) return get(KEYS[n - 1]);
+  let i = 0; while (KEYS[i + 1].t < t) i++;
+  const k0 = KEYS[i], k1 = KEYS[i + 1], h = k1.t - k0.t, u = (t - k0.t) / h;
+  const u2 = u * u, u3 = u2 * u;
+  const h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2;
+  const val = (kk, c) => { const x = get(kk); return c ? x[c] : x; };
+  const m = (j, c) => (j === 0 || j === n - 1 || KEYS[j].hold ? 0 : (val(KEYS[j + 1], c) - val(KEYS[j - 1], c)) / (KEYS[j + 1].t - KEYS[j - 1].t) * h);
+  const one = (c) => h00 * val(k0, c) + h10 * m(i, c) + h01 * val(k1, c) + h11 * m(i + 1, c);
+  return typeof get(k0) === "number" ? one(null) : new THREE.Vector3(one("x"), one("y"), one("z"));
+};
+const camPos = (t) => {
+  const az = THREE.MathUtils.degToRad(hermite((k) => k.az, t)), r = hermite((k) => k.r, t);
+  return v(r * Math.sin(az), hermite((k) => k.y, t), r * Math.cos(az));
+};
+const ease = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
+const pulse = (x, w) => (x <= 0 || x >= w ? 0 : Math.sin((x / w) * Math.PI));
+
+// punto del mundo que cae en el pixel (sx, sy) a `d` metros de la cámara, y cuántos px mide 1 m ahí
+const ndc = new THREE.Vector3();
+const atScreen = (sx, sy, d) => {
+  ndc.set(sx / W * 2 - 1, 1 - sy / H * 2, 0.5).unproject(camera).sub(camera.position).normalize();
+  return camera.position.clone().addScaledVector(ndc, d);
+};
+const pxPerM = (d) => H / (2 * d * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
+// tamaño en pantalla de los objetos que flotan frente a la cámara
+const PHONE_SLOT = { x: 270, y: 660, h: 760, d: 1.3 };
+const CARD_SLOTS = [{ x: 770, y: 330 }, { x: 770, y: 500 }, { x: 770, y: 670 }];
+const CARD_H = 150;
+
+const rollQ = new THREE.Quaternion(), Z_AXIS = new THREE.Vector3(0, 0, 1);
+const right = new THREE.Vector3(), up = new THREE.Vector3();
+function frame(t, dt, draw = true) {
+  const tf = Math.min(t, DUR);
+  camera.position.copy(camPos(tf));
+  camera.lookAt(hermite((k) => k.at, tf));
+  camera.fov = hermite((k) => k.fov, tf);
+  // desplazamiento de lente: `at` cae en (sx, sy) sin girar la cámara
+  camera.setViewOffset(W, H, W / 2 - hermite((k) => k.sx, tf), H / 2 - hermite((k) => k.sy, tf), W, H);
+  camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+  key.position.copy(camera.position).add(v(-0.6, 1.2, 0).applyQuaternion(camera.quaternion));
+  right.set(1, 0, 0).applyQuaternion(camera.quaternion); up.set(0, 1, 0).applyQuaternion(camera.quaternion);
+
+  // --- Ghosty: entra volando desde arriba, atiende, reacciona a cada entrega y vuela a voltear el letrero ---
+  const IN_FROM = T.ghostyIn - 0.3, IN_TO = T.ghostyIn + 0.35;      // aterriza cuando la voz dice «Ghosty»
+  const GO_FROM = T.flip - 1.25, GO_TO = T.flip - 0.15;             // vuela a la puerta y llega justo antes de «sigue»
+  ghosty.visible = tf > IN_FROM;
+  const fly = (a, b, c, u) => a.clone().multiplyScalar((1 - u) * (1 - u)).addScaledVector(b, 2 * u * (1 - u)).addScaledVector(c, u * u);
+  const START = DESK_SPOT.clone().add(v(0.55, 1.1, -0.35)), IN_CTRL = DESK_SPOT.clone().add(v(0.5, 0.15, 0.1));
+  const GO_CTRL = DESK_SPOT.clone().lerp(DOOR_SPOT, 0.5).add(v(0, 0.42, 0.1));
+  const uIn = ease((tf - IN_FROM) / (IN_TO - IN_FROM)), uGo = ease((tf - GO_FROM) / (GO_TO - GO_FROM));
+  const pos = tf < GO_FROM ? fly(START, IN_CTRL, DESK_SPOT, uIn) : fly(DESK_SPOT, GO_CTRL, DOOR_SPOT, uGo);
+  const vel = (tf < GO_FROM ? fly(START, IN_CTRL, DESK_SPOT, ease((tf + 0.02 - IN_FROM) / (IN_TO - IN_FROM))) : fly(DESK_SPOT, GO_CTRL, DOOR_SPOT, ease((tf + 0.02 - GO_FROM) / (GO_TO - GO_FROM)))).sub(pos).divideScalar(0.02);
+  // al aterrizar: asentamiento rígido amortiguado (sin aplastarse); en reposo, flota
+  const land = (t0) => { const d = tf - t0; return d > 0 ? Math.exp(-d * 7) * Math.sin(d * 16) : 0; };
+  const settle = land(IN_TO) + land(GO_TO);
+  const flying = (tf > IN_FROM && tf < IN_TO) || (tf > GO_FROM && tf < GO_TO);
+  pos.y += -0.04 * settle + (flying ? 0 : Math.sin(t * 1.8) * 0.012);
+  // trabajo: un cabeceo y un brinquito con cada tarjeta; gusto con el «gracias»; empujoncito al letrero
+  const nods = CARDS_AT.reduce((m, at) => m + pulse(tf - at + 0.05, 0.4), 0) + pulse(tf - T.reply, 0.35);
+  const joy = pulse(tf - T.thanks, 0.55), push = pulse(tf - T.flip + 0.12, 0.4);
+  pos.y += nods * 0.025 + joy * 0.07;
+  ghosty.position.copy(pos);
+  ghosty.scale.setScalar(GS);
+  // siempre de frente a la cámara (nunca de espaldas); en vuelo se ladea hacia donde va
+  ghosty.rotation.order = "YXZ";
+  ghosty.rotation.y = Math.atan2(camera.position.x - pos.x, camera.position.z - pos.z) + push * 0.25;
+  const side = vel.dot(right), fwdV = vel.dot(up);
+  ghosty.rotation.z = THREE.MathUtils.clamp(-side * 0.18, -0.35, 0.35) + settle * 0.06;
+  ghosty.rotation.x = nods * 0.14 + THREE.MathUtils.clamp(-fwdV * 0.05, -0.15, 0.15) - joy * 0.08;
+  // mirada: al celular mientras atiende, hacia donde vuela, al letrero al voltearlo, a ti al final
+  if (flying) ghosty.userData.look(THREE.MathUtils.clamp(side * 0.6, -0.8, 0.8), THREE.MathUtils.clamp(fwdV * 0.3, -0.5, 0.5));
+  else if (tf > T.reply - 0.3 && tf < T.thanks) ghosty.userData.look(-0.65 + Math.sin(t * 2.2) * 0.1, 0.1 - nods * 0.3);
+  else if (tf > GO_TO && tf < T.flip + 0.8) ghosty.userData.look(0.75, 0.05);
+  else ghosty.userData.look(0, 0);
+  if (Math.floor(t / 3.2) !== Math.floor((t - dt) / 3.2)) ghosty.userData.blink(t);
+  for (const at of [IN_TO, T.thanks, GO_TO]) if (tf >= at && tf - dt < at) ghosty.userData.blink(t);
+  if (tf >= T.thanks && tf - dt < T.thanks) ghosty.userData.blush?.(t);
+  if (tf >= T.flip + 0.5 && tf - dt < T.flip + 0.5) ghosty.userData.blush?.(t);
+  ghosty.userData.update(t, dt);
+  // sombra en el piso: se encoge y se aclara con la altura
+  shadow.visible = ghosty.visible;
+  shadow.position.set(pos.x, FLOOR_Y + 0.002, pos.z);
+  const hgt = pos.y - FLOOR_Y;
+  shadow.scale.setScalar(THREE.MathUtils.clamp(1.25 - hgt * 0.4, 0.45, 1));
+  shadow.material.opacity = THREE.MathUtils.clamp(1.3 - hgt * 0.7, 0, 1);
+
+  // --- el celular: entra desde abajo cuando la voz dice «clienta» y se va antes del cierre ---
+  const pin = ui.backOut((tf - T.phoneIn) / 0.6), pout = ease((tf - T.flip + 1.3) / 0.5);
+  phone.visible = tf > T.phoneIn && pout < 1;
+  if (phone.visible) {
+    const s = PHONE_SLOT, sy = s.y + (1 - pin) * 900 + pout * 1100;
+    phone.position.copy(atScreen(s.x, sy, s.d));
+    phone.quaternion.copy(camera.quaternion).multiply(rollQ.setFromAxisAngle(Z_AXIS, (1 - pin) * 0.3 + 0.05 + Math.sin(t * 1.3) * 0.012));
+    phone.scale.setScalar(s.h / pxPerM(s.d));
+    drawPhone(tf);
+  }
+
+  // --- tarjetas: brotan de la laptop y se acomodan en columna a la derecha ---
+  const gone = ease((tf - T.flip + 1.3) / 0.5);
+  const lapPx = LAPTOP.clone().project(camera);
+  cards.forEach((c, i) => {
+    const b = (tf - CARDS_AT[i]) / 0.6;
+    c.visible = b > 0 && gone < 1;
+    if (!c.visible) return;
+    const e = ease(b), slot = CARD_SLOTS[i], d = 1.3;
+    const fx = (lapPx.x + 1) / 2 * W, fy = (1 - lapPx.y) / 2 * H;
+    const sx = fx + (slot.x - fx) * e, sy = fy + (slot.y - fy) * e - Math.sin(e * Math.PI) * 220 + gone * 1300;
+    c.position.copy(atScreen(sx, sy, d));
+    const roll = (1 - e) * 0.5 * (i % 2 ? 1 : -1) + [0.03, -0.025, 0.02][i];
+    c.quaternion.copy(camera.quaternion).multiply(rollQ.setFromAxisAngle(Z_AXIS, roll));
+    c.scale.setScalar(CARD_H / pxPerM(d) * (0.3 + 0.7 * ui.backOut(b)));
+  });
+
+  // --- cartelito: se mece al inicio y gira a ABIERTO cuando la voz dice «sigue» ---
+  const flip = ui.backOut((tf - T.flip) / 0.7, 1.4);
+  tag.rotation.y = Math.PI * flip;
+  tag.rotation.z = 0.08 * Math.exp(-tf * 0.9) * Math.sin(tf * 5) + 0.05 * Math.exp(-Math.max(0, tf - T.flip - 0.5) * 2.5) * Math.sin(Math.max(0, tf - T.flip - 0.5) * 9) * (tf > T.flip + 0.5 ? 1 : 0);
+
+  ambient.update(tf, dt, Infinity);
+  if (!draw) return;
+  renderer.render(scene, camera);
+  drawUI(tf);
+  document.getElementById("hud").textContent = `t=${tf.toFixed(2)}`;
+}
+if (params.has("seq")) {
+  document.getElementById("hud").style.display = "none";
+  window.__frame = (i) => frame(i / 30, 1 / 30);
+  window.__ready = true;
+} else if (FIXED_T !== null) {
+  document.getElementById("hud").style.display = "none";
+  for (let s = 0; s < FIXED_T; s += 1 / 30) frame(s, 1 / 30, false);
+  frame(FIXED_T, 1 / 30);
+  window.__ready = true;
+} else {
+  let t = 0, last = performance.now();
+  const loop = (now) => { const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now; t = (t + dt) % (DUR + 1.5); frame(t, dt); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>
