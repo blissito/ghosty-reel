@@ -99,7 +99,7 @@ if not mixed:
 # desperdiciado y remuestreo en cada reproductor.
 graph = ";".join(filters) + ";" + "".join(mixed) + \
     f"amix=inputs={len(mixed)}:normalize=0:dropout_transition=0," \
-    f"atrim=0:{dur},alimiter=limit=0.95,loudnorm=I=-16:TP=-1.5:LRA=11," \
+    f"atrim=0:{dur},alimiter=limit=0.95:level=disabled,loudnorm=I=-16:TP=-1.5:LRA=11," \
     f"aresample=48000:resampler=soxr,aformat=sample_fmts=s16[out]"
 
 cmd = ["ffmpeg", "-y"]

@@ -91,9 +91,35 @@ en segundos y saca 2 minutos en 9:16 en menos de un minuto de render. Lo mueve
 - **[partitura-reel](./partitura-reel)** — 9:16, 37s, Ghosty Factory. Una partitura mueve la
   animación y el sintetizador; cada objeto toca su nota en el mismo cuadro. HTML + GSAP.
   **La ruta por defecto desde el 24 sep 2026.**
+- **HyperFrames 0.8.212 · beats y audio** — 9:16, 33 s. Cinco escenas, una por medida de `beats`/`audio`;
+  se ve en [el sitio](https://blissito.github.io/ghosty-reel/#producciones). Música: «Electro Cabello», Kevin MacLeod
+  (incompetech.com), CC BY 4.0.
 - **[fabrica-reel](./fabrica-reel)**: 9:16, 70 s, con narración. Un pedido real de Ghosty Factory cruza el
   tablero; la voz marca el tiempo y cada efecto cae en la palabra que lo nombra. Estilo oficial de la marca y
   sprites de gpt-image-2. Su README trae las reglas que salieron de los errores.
+
+## HyperFrames 0.8.212 (28-oct-2026)
+
+Probamos lo nuevo con `npx -y hyperframes@0.8.212`, una demo por función.
+
+**Adoptamos**
+- `audio --only beats,downbeats,bpm,sections` para medir la música: acertó 112 BPM donde `medir-bgm` dio 75.
+- `beats` alimenta a `beat-snap.js`, que se queda para ajustar tiempos a la rejilla; `medir-bgm` sólo rankea por RMS y punch.
+- `echo-smear` como estela por default en entradas y salidas rápidas; `smear-dash` queda para el plano heroico.
+- `filmed-screen` para demos de producto con UI real, sólo con el parche que agrega `glow`, `grain` y `bg` (es lento).
+- `render --format mov --prores-profile 4444` para overlays con alfa.
+- `keyframes --shot`, `snapshot --range`, `check --range` y `compare` para revisar un movimiento antes del render.
+- `remove-background` para fotos y tomas de personas (no recorta objetos).
+- `transcribe --to srt|vtt` sólo para el sidecar de YouTube/TikTok, exportado del JSON ya corregido.
+
+**No adoptamos (o sólo a medias)**
+- parakeet: segunda opinión rápida de tiempos; el estándar sigue siendo `-m large-v3 -l es`.
+- Mezcla dentro de la composición (`data-fx-chain`, `truepeak`): funciona, pero sin sidechain; la cama se agacha con una curva.
+- Shaders WebGPU y motion blur: chocan con la caricatura plana; sólo para piezas que rompen la regla a propósito o fondos de EasyBits.
+- `inspect`: alias obsoleto de `check`, no acepta `--range`.
+
+**Bug arreglado:** en ffmpeg 9, `alimiter` trae auto-ganancia (`level=true`) y el short salía a −13.1 LUFS con pico de
++0.1 dBTP. Arreglo: `alimiter=limit=0.84:level=disabled`.
 
 ## Stack — todo libre
 
