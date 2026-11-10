@@ -86,6 +86,26 @@ hacer `fetch`, el JSON entra como `<script>` generado (ver `beat-scenes/scripts/
 En `plan.py` (SFX derivados de beats): `sys.path.insert(0, "skills/motion-lab/_lib"); from beat_snap import grid, words, word_at, snap`
 — mismo contrato (`max_shift`, `impact`, `duration`, `to`), así imagen y sonido se ajustan con la misma regla.
 
+## Medir y comparar contra el original (HyperFrames ≥ 0.9)
+Toda receta que sale de replicar un video se mide con el CLI y se califica con `diff`, no a ojo.
+`measure` y `diff` corren gratis y sin sesión; sólo `reverse start` (la skill `/reverse-any-video`) pide HyperFrames Pro.
+
+1. **Recortar la referencia al shot.** `npx hyperframes measure cuts ref.mp4` da cada corte con su cuadro; los cuadros
+   colados de la escena vecina se quitan con `select='between(n,A,B)'`. Si no se recortan, el diff los cuenta como
+   «contenido faltante» y como cortes que no existen.
+2. **Medir antes de construir.** `measure probe` (lienzo, fps, duración en cuadros), `measure events` (qué aparece, se
+   va o se queda quieto, y cuándo), `measure frames --range a,b --roi x,y,w,h` en cada cambio, `measure curve` para
+   el ease de GSAP más cercano de un movimiento y `measure ink --at t --roi …` para la caja real del texto o de una
+   figura (posición y tamaño en píxeles del video).
+3. **Comprobar sin render** mientras se construye: `npx hyperframes diff ref.mp4 . --at t1,t2,…`.
+4. **Calificar el render:** `npx hyperframes diff ref.mp4 out.mp4 --out <carpeta>` → SSIM media y p05, cortes que faltan
+   o sobran, duración, sonido, tramos con contenido o textura faltante y `worst.jpg` con los peores momentos lado a lado.
+5. Corregir lo que nombra, renderizar y correr el diff **una vez más**, y ahí parar. El último número va al `SKILL.md`.
+
+Primer caso (9 nov, la rueda de `replica-typesafe/wheel`): `ink` encontró el texto 48 px más abajo y 5 % más ancho, y
+el punto de 52 px contra 76 px; los frames mostraron que la entrada arranca en gris y más inclinada. SSIM 0.863 → 0.894
+y se fue el aviso de «37 % de cuadros con contenido faltante».
+
 ## Trampas aprendidas (valen para cualquier composición)
 - El renderizador lee el `data-duration` **estático** del HTML; ponerlo desde JS deja cuadros negros al final.
 - `gsap.set` fuera de la timeline no sobrevive al seek del render: todo estado inicial va como `tl.set(…, 0)`.
@@ -107,3 +127,5 @@ En `plan.py` (SFX derivados de beats): `sys.path.insert(0, "skills/motion-lab/_l
   `filmed-screen` traía glow, grano y negro fijos en el shader y sólo entra con el parche (`filmed-screen.patch`).
 - `echo-smear` obliga a la captura por screenshot (render más lento) y con `maximum` los contornos oscuros de las
   copias se pierden: se lee como mancha plana.
+- `hyperframes diff` (0.9.27) a veces se queda trabado o falla al escribir `worst-NN-cell.png` (ffmpeg con `ppm_pipe`).
+  Correrlo con `timeout 240` y `--out` en una carpeta nueva, y reintentar una vez; el resumen sale antes de las celdas.

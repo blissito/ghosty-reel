@@ -42,6 +42,9 @@ representativo (no el 0). Verificar sobre `preview.mp4`: `ffprobe -show_entries 
 `blackdetect` sin hallazgos.
 
 ## `SKILL.md`
+Si la receta replica un video, el `SKILL.md` cierra con una sección «Contra el original» que lleva el último
+`hyperframes diff` (SSIM media y p05, y qué quedó aproximado). Ciclo completo en la sección «Medir y comparar» del README.
+
 ```md
 ---
 name: <nombre>
